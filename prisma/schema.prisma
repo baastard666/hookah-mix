@@ -7,70 +7,127 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ProfileStatus {
+  DRAFT
+  TESTED
+  VERIFIED
+}
+
+enum ProfileSource {
+  MANUAL
+  MANUFACTURER
+  COMMUNITY
+  MIXED
+}
+
+enum FlavorNoteCategory {
+  FRUIT
+  BERRY
+  CITRUS
+  DESSERT
+  DRINK
+  SPICE
+  FLORAL
+  HERBAL
+  COOLING
+  NUT
+  COFFEE
+  CHOCOLATE
+  DAIRY
+  TROPICAL
+  SMOKY
+  OTHER
+}
+
+enum FlavorNoteType {
+  DOMINANT
+  SECONDARY
+  ACCENT
+}
+
 model Brand {
-  id Int @id @default(autoincrement())
-  name String @unique
-  slug String @unique
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  slug      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  flavors Flavor[]
+  flavors   Flavor[]
 }
 
 model Flavor {
-  id Int @id @default(autoincrement())
-  brandId Int
-  brand Brand @relation(fields: [brandId], references: [id], onDelete: Cascade)
-  name String
-  slug String
-  description String
-  strength Int
-  heatResistance Int
-  intensity Int
-  sweetness Int
-  acidity Int
-  cooling Int
-  creaminess Int
-  bitterness Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  notes FlavorNoteAssignment[]
-  mixComponents MixComponent[]
+  id             Int                    @id @default(autoincrement())
+  brandId        Int
+  brand          Brand                  @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  name           String
+  slug           String
+  description    String
+  strength       Float
+  heatResistance Float
+  intensity      Float
+  sweetness      Float
+  acidity        Float
+  cooling        Float
+  creaminess     Float
+  bitterness     Float
+  dryness        Float
+  juiciness      Float
+  freshness      Float
+  dessertLevel   Float
+  spiceLevel     Float
+  floralLevel    Float
+  herbalLevel    Float
+  smokyLevel     Float
+  naturalness    Float
+  persistence    Float
+  profileStatus  ProfileStatus
+  profileSource  ProfileSource
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  notes          FlavorNoteAssignment[]
+  mixComponents  MixComponent[]
+
   @@unique([brandId, slug])
 }
 
 model FlavorNote {
-  id Int @id @default(autoincrement())
-  name String @unique
-  category String
-  flavors FlavorNoteAssignment[]
+  id        Int                    @id @default(autoincrement())
+  name      String
+  slug      String                 @unique
+  category  FlavorNoteCategory
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
+  flavors   FlavorNoteAssignment[]
 }
 
 model FlavorNoteAssignment {
-  flavorId Int
+  flavorId     Int
   flavorNoteId Int
-  intensity Int
-  noteType String
-  flavor Flavor @relation(fields: [flavorId], references: [id], onDelete: Cascade)
-  flavorNote FlavorNote @relation(fields: [flavorNoteId], references: [id], onDelete: Cascade)
+  intensity    Int
+  noteType     FlavorNoteType
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  flavor       Flavor         @relation(fields: [flavorId], references: [id], onDelete: Cascade)
+  flavorNote   FlavorNote     @relation(fields: [flavorNoteId], references: [id], onDelete: Cascade)
+
   @@id([flavorId, flavorNoteId])
 }
 
 model Mix {
-  id Int @id @default(autoincrement())
-  title String
-  bowlType String
-  coalCount Int
-  warmupMinutes Int
+  id                 Int            @id @default(autoincrement())
+  title              String
+  bowlType           String
+  coalCount          Int
+  warmupMinutes      Int
   compatibilityScore Float
-  createdAt DateTime @default(now())
-  components MixComponent[]
+  createdAt          DateTime       @default(now())
+  components         MixComponent[]
 }
 
 model MixComponent {
-  id Int @id @default(autoincrement())
-  mixId Int
-  flavorId Int
+  id         Int    @id @default(autoincrement())
+  mixId      Int
+  flavorId   Int
   percentage Int
-  mix Mix @relation(fields: [mixId], references: [id], onDelete: Cascade)
-  flavor Flavor @relation(fields: [flavorId], references: [id])
+  mix        Mix    @relation(fields: [mixId], references: [id], onDelete: Cascade)
+  flavor     Flavor @relation(fields: [flavorId], references: [id])
 }

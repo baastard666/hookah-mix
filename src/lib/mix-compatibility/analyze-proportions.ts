@@ -1,0 +1,12 @@
+import { BASE_SCORES } from "./constants";
+import { applied,block,factor } from "./helpers";
+import type { AnalysisBlock,AnalysisFactor,AppliedRule,MixCompatibilityInput,RuleType } from "./types";
+
+export function analyzeProportions(input:MixCompatibilityInput):AnalysisBlock{
+  const components=[input.mixProfile.dominantComponent,...input.mixProfile.secondaryComponents];const intensity=new Map(input.componentIntensities.map(item=>[String(item.flavorId),item.intensity]));const positives:AnalysisFactor[]=[],warnings:AnalysisFactor[]=[],rules:AppliedRule[]=[];let total=0;
+  const add=(id:string,type:RuleType,impact:number,title:string,description:string,ids:Array<number|string>)=>{total+=impact;rules.push(applied(id,type,impact,description));(type==="positive"?positives:warnings).push(factor(id,"PROPORTION_BALANCE",title,description,impact,[],ids))};
+  for(const component of components){const value=intensity.get(String(component.flavorId))??0;if(component.percentage<=5)add(`proportion.tiny.${component.flavorId}`,"caution",-.4,"Очень малая доля","Доля компонента может быть слишком маленькой, чтобы он заметно раскрылся",[component.flavorId]);if(component.percentage<=10&&value<=4)add(`proportion.weak-small.${component.flavorId}`,"caution",-.6,"Риск потери компонента","Слабый компонент с маленькой долей может практически потеряться",[component.flavorId]);if(value>=8&&component.percentage>=60)add(`proportion.bright-large.${component.flavorId}`,"caution",-.6,"Большая доля яркого компонента","Яркий компонент занимает большую долю и может подавить остальной микс",[component.flavorId]);if(Math.abs(component.percentage-component.influenceShare)>=20)add(`proportion.influence-gap.${component.flavorId}`,"caution",-.4,"Доля и влияние различаются","Фактическое влияние вкуса заметно отличается от его физической доли",[component.flavorId])}
+  if(components.length===2&&components.every(c=>Math.abs(c.percentage-50)<=2)&&components.every(c=>(intensity.get(String(c.flavorId))??0)>=8))add("proportion.bright-equal","caution",-.5,"Яркие равные доли","Два очень ярких компонента в близких долях могут конкурировать",components.map(c=>c.flavorId));
+  if(components.length>=3&&components.every(c=>c.influenceShare>=10))add("proportion.all-visible","positive",.4,"Все компоненты различимы","Все компоненты должны оставаться заметными",components.map(c=>c.flavorId));
+  return block(BASE_SCORES.proportionBalance,total,positives,warnings,rules);
+}

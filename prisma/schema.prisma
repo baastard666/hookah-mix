@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Brand {
+  id Int @id @default(autoincrement())
+  name String @unique
+  slug String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  flavors Flavor[]
+}
+
+model Flavor {
+  id Int @id @default(autoincrement())
+  brandId Int
+  brand Brand @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  name String
+  slug String
+  description String
+  strength Int
+  heatResistance Int
+  intensity Int
+  sweetness Int
+  acidity Int
+  cooling Int
+  creaminess Int
+  bitterness Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  notes FlavorNoteAssignment[]
+  mixComponents MixComponent[]
+  @@unique([brandId, slug])
+}
+
+model FlavorNote {
+  id Int @id @default(autoincrement())
+  name String @unique
+  category String
+  flavors FlavorNoteAssignment[]
+}
+
+model FlavorNoteAssignment {
+  flavorId Int
+  flavorNoteId Int
+  intensity Int
+  noteType String
+  flavor Flavor @relation(fields: [flavorId], references: [id], onDelete: Cascade)
+  flavorNote FlavorNote @relation(fields: [flavorNoteId], references: [id], onDelete: Cascade)
+  @@id([flavorId, flavorNoteId])
+}
+
+model Mix {
+  id Int @id @default(autoincrement())
+  title String
+  bowlType String
+  coalCount Int
+  warmupMinutes Int
+  compatibilityScore Float
+  createdAt DateTime @default(now())
+  components MixComponent[]
+}
+
+model MixComponent {
+  id Int @id @default(autoincrement())
+  mixId Int
+  flavorId Int
+  percentage Int
+  mix Mix @relation(fields: [mixId], references: [id], onDelete: Cascade)
+  flavor Flavor @relation(fields: [flavorId], references: [id])
+}

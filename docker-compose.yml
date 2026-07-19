@@ -1,0 +1,22 @@
+name: hookah-mix
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: hookah-mix-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hookah
+      POSTGRES_PASSWORD: hookah
+      POSTGRES_DB: hookah_mix
+    ports:
+      - "5432:5432"
+    volumes:
+      - hookah_mix_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hookah -d hookah_mix"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+volumes:
+  hookah_mix_data:

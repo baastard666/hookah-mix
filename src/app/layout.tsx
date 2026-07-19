@@ -1,0 +1,3 @@
+import type { Metadata } from "next"; import Link from "next/link"; import "./globals.css";
+export const metadata: Metadata={title:"Чаша — конструктор кальянных миксов",description:"Составляйте и анализируйте кальянные миксы"};
+export default function Layout({children}:{children:React.ReactNode}){return <html lang="ru"><body><header className="container nav"><Link className="logo" href="/">ЧАША.</Link><nav className="navlinks"><Link href="/catalog">Каталог</Link><Link href="/builder">Конструктор</Link></nav><Link href="/builder" className="btn btn-accent">Составить микс</Link></header>{children}<footer className="container footer">ЧАША. Детерминированный анализ кальянных миксов · MVP</footer></body></html>}

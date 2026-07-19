@@ -7,3 +7,4 @@ export * from "./analyze-intensity-balance";
 export * from "./analyze-proportions";
 export * from "./calculate-compatibility";
 export * from "./summary-tags";
+export { getKnowledgeRelationForLegacyCategories } from "./knowledge-adapter";

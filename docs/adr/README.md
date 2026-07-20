@@ -6,3 +6,4 @@
 - [ADR-004](ADR-004-recommendations-over-analysis.md) — рекомендации поверх анализа.
 - [ADR-005](ADR-005-recommendation-ranges.md) — диапазоны процентов.
 - [ADR-006](ADR-006-mix-analysis-orchestration-layer.md) — единая точка оркестрации.
+- [ADR-007](ADR-007-tobacco-product-profile-registry.md) — отдельный технический реестр производителей и линеек.

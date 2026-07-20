@@ -8,3 +8,4 @@
 - [ADR-006](ADR-006-mix-analysis-orchestration-layer.md) — единая точка оркестрации.
 - [ADR-007](ADR-007-tobacco-product-profile-registry.md) — отдельный технический реестр производителей и линеек.
 - [ADR-008](ADR-008-deterministic-tobacco-product-identity.md) — детерминированная идентификация товаров и read-only аудит каталога.
+- [ADR-009](ADR-009-canonical-catalog-identity-persistence.md) — постоянная canonical identity, защищённый backfill и registry ID без SQL foreign keys.

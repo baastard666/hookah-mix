@@ -5,3 +5,4 @@
 - [v0.2.7 Tobacco Product Profile Registry](v0.2.7-tobacco-profile-registry.md)
 - [v0.2.8 Tobacco Product Identity & Catalog Audit](v0.2.8-tobacco-product-identity.md)
 - [v0.2.9 Canonical Catalog Identity Persistence](v0.2.9-canonical-catalog-identity.md)
+- [v0.3.0 Expert Mix Knowledge Schema Foundation](v0.3.0-expert-mix-knowledge.md)

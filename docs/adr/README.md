@@ -7,3 +7,4 @@
 - [ADR-005](ADR-005-recommendation-ranges.md) — диапазоны процентов.
 - [ADR-006](ADR-006-mix-analysis-orchestration-layer.md) — единая точка оркестрации.
 - [ADR-007](ADR-007-tobacco-product-profile-registry.md) — отдельный технический реестр производителей и линеек.
+- [ADR-008](ADR-008-deterministic-tobacco-product-identity.md) — детерминированная идентификация товаров и read-only аудит каталога.

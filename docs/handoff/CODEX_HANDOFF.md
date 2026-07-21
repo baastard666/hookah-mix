@@ -13,6 +13,7 @@
 - real-workbook импортируется read-only и проходит audit;
 - создан ручной identity-decision pipeline для P0/P1;
 - добавлен первый versioned batch из 20 рассмотренных P1 identity decisions: 19 `CONFIRMED`/`RESOLVED` и 1 безопасный `MANUFACTURER_ONLY`/`NEEDS_MORE_EVIDENCE`;
+- добавлен первый deterministic P0 batch: 15 `CONFIRMED`/`RESOLVED` identity-групп, покрывающих 31 occurrence и улучшающих распознавание 14 VERIFIED-миксов;
 - decision infrastructure не подключена к UI и не сохраняется в PostgreSQL.
 
 ## 2. Git baseline
@@ -90,7 +91,7 @@ v0.3.2 уже реализована в `src/lib/tobacco-identity-decisions/` и
 - privacy-safe mapping, fixtures, 54 unit tests и verify script;
 - ADR-012 и архитектурная документация.
 
-Первый operational batch P1 завершён в `src/lib/tobacco-identity-decisions/p1-decisions-batch-1.ts`: рассмотрены все 20 P1 group IDs, 19 продуктов получили canonical identity, а `MustHave / Ананас` сохранён как `MANUFACTURER_ONLY` без guessed alias к отдельному `Pineapple Rings`. Следующий identity-шаг — ручной evidence review P0; P2/P3 по-прежнему не применять. Следующая продуктовая итерация в roadmap — v0.3.3 Product Flavor Taxonomy Foundation.
+Первый operational batch P1 завершён в `src/lib/tobacco-identity-decisions/p1-decisions-batch-1.ts`: рассмотрены все 20 P1 group IDs, 19 продуктов получили canonical identity, а `MustHave / Ананас` сохранён как `MANUFACTURER_ONLY` без guessed alias к отдельному `Pineapple Rings`. Первый P0 batch завершён в `src/lib/tobacco-identity-decisions/p0-decisions-batch-1.ts`: 15/15 exact identities подтверждены evidence, отдельный P0 registry не создавался, authoritative aggregate объединяет P1 и P0. Следующий identity-шаг — следующая ограниченная ручная P0-партия; P2/P3 по-прежнему не применять. Следующая продуктовая итерация в roadmap — v0.3.3 Product Flavor Taxonomy Foundation.
 
 ## 5. Архитектура и основные модули
 
@@ -140,7 +141,7 @@ unresolved report
   -> coverage comparison + domain filters
 ```
 
-Фактический decision layer теперь содержит P1 batch 1 и даёт после применения к real-workbook: 80 resolved, 58 manufacturer-only и 359 unresolved записей суммарно. Import остаётся неизменным; решение применяется поверх staging по exact source identity. Planned: ручной P0 review, persistence решениями и UI-интеграция. Конкретная итерация persistence/UI — `unknown`.
+Фактический decision layer теперь содержит P1 batch 1 и P0 batch 1. После применения aggregate к real-workbook: 111 resolved, 58 manufacturer-only и 328 unresolved записей суммарно; components — 36/2/75, VERIFIED components — 35/1/61. Import остаётся неизменным; решения применяются поверх staging по exact source identity. Planned: следующие ограниченные P0 batches, persistence решениями и UI-интеграция. Конкретная итерация persistence/UI — `unknown`.
 
 ## 7. Workbook
 
@@ -310,11 +311,11 @@ pnpm verify:tobacco-identity-decisions "data/hookah_mix_database.xlsx"
 Implementation baseline: 25c01f62c9957c8a71c7104d269bef7ca65a8a48
 Фактический HEAD: проверить git rev-parse HEAD (должен включать CODEX_HANDOFF.md).
 
-Задача: продолжить operational часть v0.3.2 — ручной review P0/P1 identity records.
+Задача: продолжить operational часть v0.3.2 — следующая ограниченная ручная партия P0 identity records.
 
 Цель:
 - открыть локальный reports/tobacco-identity-review-p0-p1.json или CSV;
-- проверить USER_PRIORITY и наиболее важные P1/P0;
+- исключить уже подтверждённые P1 и P0 batch 1, затем выбрать следующую партию P0 детерминированно;
 - добавлять только подтверждённые evidence-backed decisions;
 - повторить validation/Decision Registry/coverage comparison;
 - зафиксировать applied/skipped/conflict/invalid counts.
@@ -322,7 +323,7 @@ Implementation baseline: 25c01f62c9957c8a71c7104d269bef7ca65a8a48
 Перед началом:
 - проверить branch, HEAD и clean status;
 - проверить SHA-256 workbook;
-- подтвердить наличие P0=76, P1=20, USER_PRIORITY=3;
+- подтвердить исходный review plan P0=76, P1=20, USER_PRIORITY=3 и отдельно учесть versioned decisions P1=20, P0 batch 1=15;
 - прочитать ADR-012 и architecture document;
 - не выполнять web research без отдельного явного разрешения.
 
@@ -348,8 +349,8 @@ Implementation baseline: 25c01f62c9957c8a71c7104d269bef7ca65a8a48
 
 Последний подтверждённый baseline текущей ветки v0.3.2:
 
-- 554 tests passed, 15 test files;
-- новых v0.3.2 tests: 54;
+- 639 tests passed, 17 test files;
+- новых P0 batch 1 tests: 38;
 - Prisma validate: passed;
 - Prisma generate: passed;
 - lint: passed;
@@ -365,10 +366,10 @@ Implementation baseline: 25c01f62c9957c8a71c7104d269bef7ca65a8a48
 
 ## 16. Known issues
 
-- Canonical identity coverage низкий: components имеют 0 resolved, 21 manufacturer-only, 92 unresolved.
-- VERIFIED-компоненты: 0 resolved, 20 manufacturer-only, 77 unresolved.
+- Без decision layer исходная coverage остаётся низкой: components имеют 0 resolved, 21 manufacturer-only, 92 unresolved.
+- После aggregate P1 + P0 batch 1: components 36 resolved, 2 manufacturer-only, 75 unresolved; VERIFIED components 35/1/61.
 - В 208 exact groups отсутствует `productLine`; отсутствие линии не всегда ошибка.
-- Исходный review plan по-прежнему генерируется как 99 `UNREVIEWED`; отдельно в versioned registry сохранены 20 рассмотренных P1 decisions: 19 `CONFIRMED`/`RESOLVED`, 1 `MANUFACTURER_ONLY`/`NEEDS_MORE_EVIDENCE`.
+- Исходный review plan по-прежнему генерируется как 99 `UNREVIEWED`; отдельно в versioned registry сохранены 20 P1 decisions и 15 подтверждённых P0 decisions batch 1.
 - Есть одна invalid mix row (`DOMAIN_VALIDATION_FAILED`).
 - Есть `PERCENT_SUM_ROUNDING` warning.
 - Есть contradictory source weights (`WEIGHT_SUM_MISMATCH`).

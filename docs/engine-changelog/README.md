@@ -2,6 +2,7 @@
 
 - [v0.3.2 Canonical Tobacco Catalog Expansion & Identity Decisions](v0.3.2-canonical-tobacco-catalog-expansion.md)
 - [v0.3.2 P1 Tobacco Identity Decisions — batch 1](v0.3.2-p1-identity-decisions-batch-1.md)
+- [v0.3.2 P0 Tobacco Identity Decisions — batch 1](v0.3.2-p0-identity-decisions-batch-1.md)
 
 - [v0.2.5 Recommendation Engine](v0.2.5-recommendation-engine.md)
 - [v0.2.6 Analysis Service & UI](v0.2.6-analysis-service-ui.md)

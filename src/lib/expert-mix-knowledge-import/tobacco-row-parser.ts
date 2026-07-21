@@ -1,0 +1,31 @@
+import { createExpertMixComponentId } from "../expert-mix-knowledge";
+import type { ExpertKnowledgeConfidence } from "../expert-mix-knowledge";
+import { normalizeImportText, parseImportNumber, splitImportTags } from "./normalizer";
+import { resolveImportedTobaccoIdentity } from "./identity-mapper";
+import type { ImportedCatalogFact, ImportedDerivedCharacteristic, ImportedExternalRating, ImportedFrom, ImportedObservation, ImportedSourceReference, NormalizedTobaccoStagingRecord, RawTobaccoRow } from "./types";
+
+const confidence = (value: string | null, fallback: ExpertKnowledgeConfidence): ExpertKnowledgeConfidence => ["HIGH", "MEDIUM", "LOW", "UNKNOWN"].includes(value?.toUpperCase() ?? "") ? value!.toUpperCase() as ExpertKnowledgeConfidence : fallback;
+export const normalizeTobaccoRow = (row: RawTobaccoRow, workbookName: string): NormalizedTobaccoStagingRecord => {
+  const manufacturer = normalizeImportText(row.cells.manufacturer); const productLine = normalizeImportText(row.cells.productLine); const productName = normalizeImportText(row.cells.productName);
+  const displayName = [manufacturer, productLine, productName].filter(Boolean).join(" ") || normalizeImportText(row.cells.productName) || `Строка ${row.rowNumber}`;
+  const explicitCanonicalProductId = normalizeImportText(row.cells.canonicalProductId);
+  const identity = resolveImportedTobaccoIdentity({ explicitCanonicalProductId, manufacturer, productLine, productName, displayName });
+  const importedFrom: ImportedFrom = { workbookName, sheet: row.sheet, rowNumber: row.rowNumber };
+  const sourceReference = normalizeImportText(row.cells.sourceUrl) ?? undefined; const source = normalizeImportText(row.cells.author) ?? "Excel catalog row";
+  const fact = (factType: ImportedCatalogFact["factType"], value: string, originalValue: string | number | boolean | null, level: ExpertKnowledgeConfidence = "HIGH"): ImportedCatalogFact => ({ factType, value, sourceType: "CATALOG_FACT", source, ...(sourceReference ? { sourceReference } : {}), confidence: level, importedFrom, originalValue });
+  const catalogFacts: ImportedCatalogFact[] = [];
+  if (manufacturer) catalogFacts.push(fact("MANUFACTURER", manufacturer, row.cells.manufacturer));
+  if (productLine) catalogFacts.push(fact("PRODUCT_LINE", productLine, row.cells.productLine));
+  if (productName) catalogFacts.push(fact("PRODUCT_NAME", productName, row.cells.productName));
+  const description = normalizeImportText(row.cells.description); if (description) catalogFacts.push(fact("DESCRIPTION", description, row.cells.description, "MEDIUM"));
+  const strength = normalizeImportText(row.cells.strength); if (strength) catalogFacts.push(fact("STRENGTH", strength, row.cells.strength, "MEDIUM"));
+  const observations: ImportedObservation[] = [];
+  const experience = normalizeImportText(row.cells.observation); if (experience) observations.push({ observationType: "REAL_EXPERIENCE", value: experience, sourceType: "SOURCE_STATED", source, ...(sourceReference ? { sourceReference } : {}), confidence: "MEDIUM", importedFrom, originalValue: row.cells.observation });
+  const externalRatings: ImportedExternalRating[] = [];
+  const rating = parseImportNumber(row.cells.rating); const scale = parseImportNumber(row.cells.ratingScale) ?? 10; const sampleSize = parseImportNumber(row.cells.sampleSize);
+  if (rating !== null && scale > 0) externalRatings.push({ originalValue: rating, originalScale: scale, normalizedValue10: Math.round((rating / scale) * 100) / 10, ...(sampleSize !== null ? { sampleSize } : {}), source, ...(sourceReference ? { sourceReference } : {}), confidence: sampleSize && sampleSize > 1 ? "MEDIUM" : "LOW", importedFrom });
+  const derivedCharacteristics: ImportedDerivedCharacteristic[] = splitImportTags(row.cells.tags).map(tag => ({ characteristic: "flavorCategory", kind: "TAG_CATEGORY", value: tag, sourceType: "DERIVED", source, ...(sourceReference ? { sourceReference } : {}), confidence: "MEDIUM", importedFrom, originalValue: row.cells.tags }));
+  const preliminary = parseImportNumber(row.cells.preliminaryValue); if (preliminary !== null) derivedCharacteristics.push({ characteristic: "preliminaryValue", kind: "PRELIMINARY_INFERENCE", value: preliminary, sourceType: "DERIVED", source, ...(sourceReference ? { sourceReference } : {}), confidence: confidence(normalizeImportText(row.cells.preliminaryConfidence), "LOW"), importedFrom, originalValue: row.cells.preliminaryValue, notes: "Предварительное предположение, не сенсорный факт." });
+  const sources: ImportedSourceReference[] = [{ source, ...(sourceReference ? { sourceReference } : {}), visibility: normalizeImportText(row.cells.author) ? "INTERNAL" : "PUBLIC", importedFrom }];
+  return { stagingId: createExpertMixComponentId({ workbookName, sheet: row.sheet, row: row.rowNumber, displayName }), displayName, manufacturer, productLine, productName, explicitCanonicalProductId, identityStatus: identity.status, canonicalProductId: identity.canonicalProductId, manufacturerId: identity.manufacturerId, productLineId: identity.productLineId, catalogFacts, observations, externalRatings, derivedCharacteristics, sources, raw: row };
+};

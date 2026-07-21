@@ -43,7 +43,7 @@ describe("tobacco profile registry", () => {
   it("does not export the registry from the public index", () => { expect("TOBACCO_PROFILE_REGISTRY" in publicApi).toBe(false); });
   it("adapts a current Flavor-like object", () => { expect(publicApi.resolveProfileForTobacco({ brand: { name: "Darkside" }, productLine: "Core" })).toMatchObject({ status: "FOUND", manufacturer: "Darkside", productLine: "Core" }); });
   it("adapts a string brand without a line", () => { expect(publicApi.resolveProfileForTobacco({ brand: "JENT" })).toMatchObject({ status: "FOUND", manufacturer: "Jent", productLine: null }); });
-  it("lists seven manufacturers and nine lines", () => { expect(publicApi.listManufacturerProfiles()).toHaveLength(7); expect(publicApi.listProductLineProfiles()).toHaveLength(9); });
+  it("lists eight manufacturers and nine lines", () => { expect(publicApi.listManufacturerProfiles()).toHaveLength(8); expect(publicApi.listManufacturerProfiles().some(item => item.manufacturerId === "nash")).toBe(true); expect(publicApi.listProductLineProfiles()).toHaveLength(9); });
   it("filters lines through a manufacturer alias", () => { expect(publicApi.listProductLineProfiles("HLGN").map(item => item.productLine)).toEqual(["Hard", "Medium"]); });
   it("provides public presence queries", () => { expect(publicApi.hasManufacturerProfile("dogma")).toBe(true); expect(publicApi.hasProductLineProfile("darkside", "Sabotage")).toBe(true); expect(publicApi.hasProductLineProfile("darkside", "Unknown")).toBe(false); });
   it("keeps MUASSEL lines categorically distinct", () => {

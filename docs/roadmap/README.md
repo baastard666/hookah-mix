@@ -10,13 +10,13 @@
 - v0.2.8 Tobacco Product Identity & Catalog Audit
 - v0.2.9 Canonical Catalog Identity Persistence
 - v0.3.0 Expert Mix Knowledge Schema Foundation
+- v0.3.1 Excel Knowledge Import & Audit
 
 ## In progress
 
-Нет активной итерации после завершения v0.3.0.
+Нет активной итерации после завершения v0.3.1.
 
 ## Planned directions
-- v0.3.1 Expert Mix Import Adapter — только после стабилизации реальной базы и аудита её структуры;
 - v0.3.2 Product Flavor Taxonomy Foundation;
 - v0.3.3 Expert Observation Aggregation;
 - v0.3.4 Product Flavor Profile Registry;
@@ -31,6 +31,6 @@
 - Tobacco Compatibility Engine на основе технических профилей производителей и линеек;
 - AI как дополнительный слой, но не замена детерминированным движкам.
 
-База реальных экспертных миксов собирается и нормализуется параллельно вне кода. Формат импорта будет определён после аудита фактических колонок и качества данных.
+База реальных экспертных миксов собирается и нормализуется параллельно вне кода. Import boundary готов; фактическое сопоставление колонок будет уточнено после передачи и аудита реального `hookah_mix_database_v2.xlsx`.
 
 Сроки намеренно не фиксируются.

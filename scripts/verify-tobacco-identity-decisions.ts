@@ -1,0 +1,43 @@
+import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { createUnresolvedIdentityReport, importExpertMixKnowledge } from "../src/lib/expert-mix-knowledge-import";
+import {
+  adaptExpertMixImportForIdentityDecisions, applyTobaccoIdentityDecisions, auditPublicTobaccoIdentityDecisions, auditTobaccoIdentityDecisions,
+  compareTobaccoIdentityCoverage, createCanonicalTobaccoProductId, createTobaccoIdentityDecisionFixtures, createTobaccoIdentityDecisionRegistry,
+  createTobaccoIdentityReviewPlan, mapTobaccoIdentityDecisionToPublic, resolveIdentityWithDecisions, reviewPlanToJson, validateTobaccoIdentityDecision,
+} from "../src/lib/tobacco-identity-decisions";
+import type { DecisionApplicableIdentityRecord } from "../src/lib/tobacco-identity-decisions";
+import { listManufacturerProfiles, listProductLineProfiles } from "../src/lib/tobacco-profile";
+
+const hash = async (filePath: string) => createHash("sha256").update(await readFile(filePath)).digest("hex").toUpperCase();
+const main = async (): Promise<void> => {
+  const workbookPath = path.resolve(process.argv[2] ?? "data/hookah_mix_database.xlsx"); const beforeHash = await hash(workbookPath);
+  const importedBefore = await importExpertMixKnowledge(workbookPath); const importedAfter = await importExpertMixKnowledge(workbookPath); assert.deepEqual(importedAfter, importedBefore, "Repeated workbook import is not deterministic.");
+  const unresolved = createUnresolvedIdentityReport({ components: importedBefore.components, catalog: importedBefore.tobacco, mixes: importedBefore.mixes, manufacturers: listManufacturerProfiles(), productLines: listProductLineProfiles() });
+  const plan = createTobaccoIdentityReviewPlan(unresolved); assert.equal(plan.counts.p0, 76); assert.equal(plan.counts.p1, 20); assert.equal(plan.counts.userPriority, 3); assert.ok(plan.records.every(record => record.priority === "P0" || record.priority === "P1")); assert.ok([...plan.records, ...plan.userPriority].every(record => record.decisionState === "UNREVIEWED" && record.canonicalProductId === null));
+  const fixtures = createTobaccoIdentityDecisionFixtures();
+  assert.equal(validateTobaccoIdentityDecision(fixtures.unconfirmed).applicable, false);
+  assert.ok(validateTobaccoIdentityDecision(fixtures.missingEvidence).issues.some(issue => issue.code === "DECISION_EVIDENCE_MISSING"));
+  assert.ok(validateTobaccoIdentityDecision(fixtures.missingCanonicalProductId).issues.some(issue => issue.code === "DECISION_CANONICAL_ID_MISSING"));
+  assert.equal(fixtures.withoutLine.decision.productLineId, null); assert.equal(fixtures.withoutLine.decision.canonicalProductId, "blackburn-raspberry-shock");
+  assert.equal(createCanonicalTobaccoProductId("darkside", "darkside-core", "Blueberry"), "darkside-core-blueberry");
+  assert.ok(auditTobaccoIdentityDecisions([fixtures.collisionA, fixtures.collisionB]).some(issue => issue.code === "CANONICAL_ID_COLLISION"));
+  assert.ok(validateTobaccoIdentityDecision(fixtures.p2Blocked).issues.some(issue => issue.code === "P2_P3_DECISION_NOT_ALLOWED")); assert.ok(validateTobaccoIdentityDecision(fixtures.p3Blocked).issues.some(issue => issue.code === "P2_P3_DECISION_NOT_ALLOWED"));
+  const registry = createTobaccoIdentityDecisionRegistry([fixtures.withLine, fixtures.withoutLine, fixtures.unconfirmed, fixtures.nashLavender, fixtures.dogmaLavender]);
+  assert.notEqual(fixtures.nashLavender.decision.canonicalProductId, fixtures.dogmaLavender.decision.canonicalProductId);
+  assert.equal(resolveIdentityWithDecisions({ manufacturer: "MustHave", productLine: null, productName: "Unconfirmed Product" }, createTobaccoIdentityDecisionRegistry([fixtures.exactManufacturerAliasOnly])).source, "EXISTING_RESOLVER");
+  const synthetic: DecisionApplicableIdentityRecord[] = [
+    { recordId: "confirmed", scope: "COMPONENT", sourcePriority: "P1", usedInVerifiedMix: true, manufacturer: "BlackBurn", productLine: null, productName: "Raspberry Shock", identityStatus: "UNRESOLVED", manufacturerId: null, productLineId: null, canonicalProductId: null, canonicalProductName: null, confidence: null, evidenceTypes: [], confirmedDecision: false },
+    { recordId: "unconfirmed", scope: "COMPONENT", sourcePriority: "P0", usedInVerifiedMix: true, manufacturer: "BlackBurn", productLine: null, productName: "Unconfirmed Product", identityStatus: "UNRESOLVED", manufacturerId: null, productLineId: null, canonicalProductId: null, canonicalProductName: null, confidence: null, evidenceTypes: [], confirmedDecision: false },
+  ];
+  const applied = applyTobaccoIdentityDecisions(synthetic, registry); assert.equal(applied.appliedDecisionCount, 1); assert.equal(applied.records[0]?.identityStatus, "RESOLVED"); assert.equal(applied.records[1]?.identityStatus, "UNRESOLVED");
+  const coverage = compareTobaccoIdentityCoverage(synthetic, applied); assert.equal(coverage.resolvedDelta, 1); assert.equal(coverage.unresolvedDelta, -1);
+  const realRecords = adaptExpertMixImportForIdentityDecisions(importedAfter, unresolved, plan); const realUnreviewed = applyTobaccoIdentityDecisions(realRecords, createTobaccoIdentityDecisionRegistry([])); const realCoverage = compareTobaccoIdentityCoverage(realRecords, realUnreviewed); assert.equal(realCoverage.resolvedDelta, 0); assert.equal(realCoverage.appliedDecisionCount, 0);
+  const publicOutput = [mapTobaccoIdentityDecisionToPublic(fixtures.privateEvidence)]; assert.deepEqual(auditPublicTobaccoIdentityDecisions(publicOutput, ["private.example", "author-real-name", "private notes"]), []);
+  assert.ok(Object.isFrozen(registry)); assert.ok(Object.isFrozen(registry.list()[0]?.evidence)); assert.equal(reviewPlanToJson(plan), reviewPlanToJson(createTobaccoIdentityReviewPlan(unresolved)));
+  const afterHash = await hash(workbookPath); assert.equal(afterHash, beforeHash, "Source workbook changed.");
+  console.log(JSON.stringify({ workbookPath, sha256Before: beforeHash, sha256After: afterHash, workbookUnchanged: true, review: plan.counts, syntheticConfirmedCoverage: coverage, realUnreviewedCoverage: realCoverage, checks: { p2p3Blocked: true, fuzzyMatching: false, unconfirmedSkipped: true, evidenceRequired: true, noLineSupported: true, fictitiousLinesForbidden: true, collisionDetected: true, nashDogmaSeparate: true, aliasDoesNotResolveProduct: true, privacyPassed: true, immutable: true, deterministic: true } }, null, 2));
+};
+main().catch(error => { console.error(error instanceof Error ? error.stack ?? error.message : String(error)); process.exitCode = 1; });

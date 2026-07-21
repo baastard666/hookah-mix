@@ -11,18 +11,19 @@
 - v0.2.9 Canonical Catalog Identity Persistence
 - v0.3.0 Expert Mix Knowledge Schema Foundation
 - v0.3.1 Excel Knowledge Import & Audit
+- v0.3.2 Canonical Tobacco Catalog Expansion & Identity Decisions
 
 ## In progress
 
-Нет активной итерации после завершения v0.3.1.
+Нет активной итерации после завершения v0.3.2.
 
 ## Planned directions
-- v0.3.2 Product Flavor Taxonomy Foundation;
-- v0.3.3 Expert Observation Aggregation;
-- v0.3.4 Product Flavor Profile Registry;
-- v0.3.5 Tobacco Compatibility Engine;
-- v0.3.6 Mix Analysis Integration;
-- v0.3.7 UI Analysis Breakdown;
+- v0.3.3 Product Flavor Taxonomy Foundation;
+- v0.3.4 Expert Observation Aggregation;
+- v0.3.5 Product Flavor Profile Registry;
+- v0.3.6 Tobacco Compatibility Engine;
+- v0.3.7 Mix Analysis Integration;
+- v0.3.8 UI Analysis Breakdown;
 - сохранение и история миксов;
 - сравнение вариантов;
 - рекомендации конкретных продуктов;

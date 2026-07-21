@@ -12,7 +12,7 @@
 - v0.2.7–v0.3.2 реализованы отдельными доменными модулями;
 - real-workbook импортируется read-only и проходит audit;
 - создан ручной identity-decision pipeline для P0/P1;
-- реальных `CONFIRMED` identity decisions пока нет;
+- добавлен первый versioned batch из 20 рассмотренных P1 identity decisions: 19 `CONFIRMED`/`RESOLVED` и 1 безопасный `MANUFACTURER_ONLY`/`NEEDS_MORE_EVIDENCE`;
 - decision infrastructure не подключена к UI и не сохраняется в PostgreSQL.
 
 ## 2. Git baseline
@@ -90,7 +90,7 @@ v0.3.2 уже реализована в `src/lib/tobacco-identity-decisions/` и
 - privacy-safe mapping, fixtures, 54 unit tests и verify script;
 - ADR-012 и архитектурная документация.
 
-Следующий operational шаг: вручную проверить P0/P1, добавить подтверждаемое evidence и переводить только доказанные записи в `CONFIRMED`. Массовое автоматическое разрешение запрещено. Следующая продуктовая итерация после этого в roadmap — v0.3.3 Product Flavor Taxonomy Foundation.
+Первый operational batch P1 завершён в `src/lib/tobacco-identity-decisions/p1-decisions-batch-1.ts`: рассмотрены все 20 P1 group IDs, 19 продуктов получили canonical identity, а `MustHave / Ананас` сохранён как `MANUFACTURER_ONLY` без guessed alias к отдельному `Pineapple Rings`. Следующий identity-шаг — ручной evidence review P0; P2/P3 по-прежнему не применять. Следующая продуктовая итерация в roadmap — v0.3.3 Product Flavor Taxonomy Foundation.
 
 ## 5. Архитектура и основные модули
 
@@ -140,7 +140,7 @@ unresolved report
   -> coverage comparison + domain filters
 ```
 
-Planned: заполнение реальных decisions, persistence решениями и UI-интеграция. Конкретная итерация persistence/UI — `unknown`.
+Фактический decision layer теперь содержит P1 batch 1 и даёт после применения к real-workbook: 80 resolved, 58 manufacturer-only и 359 unresolved записей суммарно. Import остаётся неизменным; решение применяется поверх staging по exact source identity. Planned: ручной P0 review, persistence решениями и UI-интеграция. Конкретная итерация persistence/UI — `unknown`.
 
 ## 7. Workbook
 
@@ -368,7 +368,7 @@ Implementation baseline: 25c01f62c9957c8a71c7104d269bef7ca65a8a48
 - Canonical identity coverage низкий: components имеют 0 resolved, 21 manufacturer-only, 92 unresolved.
 - VERIFIED-компоненты: 0 resolved, 20 manufacturer-only, 77 unresolved.
 - В 208 exact groups отсутствует `productLine`; отсутствие линии не всегда ошибка.
-- Реальные review records: 99 `UNREVIEWED`, 0 `CONFIRMED`.
+- Исходный review plan по-прежнему генерируется как 99 `UNREVIEWED`; отдельно в versioned registry сохранены 20 рассмотренных P1 decisions: 19 `CONFIRMED`/`RESOLVED`, 1 `MANUFACTURER_ONLY`/`NEEDS_MORE_EVIDENCE`.
 - Есть одна invalid mix row (`DOMAIN_VALIDATION_FAILED`).
 - Есть `PERCENT_SUM_ROUNDING` warning.
 - Есть contradictory source weights (`WEIGHT_SUM_MISMATCH`).

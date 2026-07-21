@@ -7,6 +7,7 @@ export { validateTobaccoIdentityDecision } from "./decision-validator";
 export { compareTobaccoIdentityCoverage } from "./coverage-comparison";
 export { filterCanonicalTobaccoProducts } from "./filter";
 export { createDecisionFixture, createTobaccoIdentityDecisionFixtures } from "./fixtures";
+export { P1_IDENTITY_DECISIONS_BATCH_1, P1_IDENTITY_DECISION_REGISTRY_BATCH_1 } from "./p1-decisions-batch-1";
 export { adaptExpertMixImportForIdentityDecisions } from "./import-adapter";
 export { createCanonicalTobaccoProductId, createSourceIdentityKey, normalizeDecisionText } from "./normalization";
 export { auditPublicTobaccoIdentityDecisions, mapTobaccoIdentityDecisionToPublic } from "./public-safe-mapper";

@@ -6,7 +6,8 @@ import { createUnresolvedIdentityReport, importExpertMixKnowledge } from "../src
 import {
   adaptExpertMixImportForIdentityDecisions, applyTobaccoIdentityDecisions, auditPublicTobaccoIdentityDecisions, auditTobaccoIdentityDecisions,
   compareTobaccoIdentityCoverage, createCanonicalTobaccoProductId, createTobaccoIdentityDecisionFixtures, createTobaccoIdentityDecisionRegistry,
-  createTobaccoIdentityReviewPlan, mapTobaccoIdentityDecisionToPublic, resolveIdentityWithDecisions, reviewPlanToJson, validateTobaccoIdentityDecision,
+  createTobaccoIdentityReviewPlan, mapTobaccoIdentityDecisionToPublic, P1_IDENTITY_DECISIONS_BATCH_1, P1_IDENTITY_DECISION_REGISTRY_BATCH_1,
+  resolveIdentityWithDecisions, reviewPlanToJson, validateTobaccoIdentityDecision,
 } from "../src/lib/tobacco-identity-decisions";
 import type { DecisionApplicableIdentityRecord } from "../src/lib/tobacco-identity-decisions";
 import { listManufacturerProfiles, listProductLineProfiles } from "../src/lib/tobacco-profile";
@@ -35,9 +36,13 @@ const main = async (): Promise<void> => {
   const applied = applyTobaccoIdentityDecisions(synthetic, registry); assert.equal(applied.appliedDecisionCount, 1); assert.equal(applied.records[0]?.identityStatus, "RESOLVED"); assert.equal(applied.records[1]?.identityStatus, "UNRESOLVED");
   const coverage = compareTobaccoIdentityCoverage(synthetic, applied); assert.equal(coverage.resolvedDelta, 1); assert.equal(coverage.unresolvedDelta, -1);
   const realRecords = adaptExpertMixImportForIdentityDecisions(importedAfter, unresolved, plan); const realUnreviewed = applyTobaccoIdentityDecisions(realRecords, createTobaccoIdentityDecisionRegistry([])); const realCoverage = compareTobaccoIdentityCoverage(realRecords, realUnreviewed); assert.equal(realCoverage.resolvedDelta, 0); assert.equal(realCoverage.appliedDecisionCount, 0);
+  const p1Applied = applyTobaccoIdentityDecisions(realRecords, P1_IDENTITY_DECISION_REGISTRY_BATCH_1); const p1Coverage = compareTobaccoIdentityCoverage(realRecords, p1Applied);
+  assert.equal(P1_IDENTITY_DECISIONS_BATCH_1.length, 20); assert.equal(P1_IDENTITY_DECISION_REGISTRY_BATCH_1.getByStatus("RESOLVED").length, 19); assert.equal(P1_IDENTITY_DECISION_REGISTRY_BATCH_1.getByStatus("MANUFACTURER_ONLY").length, 1);
+  assert.equal(p1Coverage.appliedDecisionCount, 37); assert.equal(p1Coverage.skippedDecisionCount, 2); assert.equal(p1Coverage.resolvedDelta, 37); assert.equal(p1Coverage.manufacturerOnlyDelta, -37); assert.equal(p1Coverage.unresolvedDelta, 0); assert.equal(p1Coverage.invalidDecisionCount, 0); assert.equal(p1Coverage.conflictCount, 0);
+  assert.equal(p1Coverage.componentsAfter.resolved - p1Coverage.componentsBefore.resolved, 19); assert.equal(p1Coverage.catalogAfter.resolved - p1Coverage.catalogBefore.resolved, 18); assert.equal(p1Coverage.verifiedComponents.after.resolved - p1Coverage.verifiedComponents.before.resolved, 19);
   const publicOutput = [mapTobaccoIdentityDecisionToPublic(fixtures.privateEvidence)]; assert.deepEqual(auditPublicTobaccoIdentityDecisions(publicOutput, ["private.example", "author-real-name", "private notes"]), []);
   assert.ok(Object.isFrozen(registry)); assert.ok(Object.isFrozen(registry.list()[0]?.evidence)); assert.equal(reviewPlanToJson(plan), reviewPlanToJson(createTobaccoIdentityReviewPlan(unresolved)));
   const afterHash = await hash(workbookPath); assert.equal(afterHash, beforeHash, "Source workbook changed.");
-  console.log(JSON.stringify({ workbookPath, sha256Before: beforeHash, sha256After: afterHash, workbookUnchanged: true, review: plan.counts, syntheticConfirmedCoverage: coverage, realUnreviewedCoverage: realCoverage, checks: { p2p3Blocked: true, fuzzyMatching: false, unconfirmedSkipped: true, evidenceRequired: true, noLineSupported: true, fictitiousLinesForbidden: true, collisionDetected: true, nashDogmaSeparate: true, aliasDoesNotResolveProduct: true, privacyPassed: true, immutable: true, deterministic: true } }, null, 2));
+  console.log(JSON.stringify({ workbookPath, sha256Before: beforeHash, sha256After: afterHash, workbookUnchanged: true, review: plan.counts, p1Batch1: { decisions: P1_IDENTITY_DECISIONS_BATCH_1.length, resolvedDecisions: P1_IDENTITY_DECISION_REGISTRY_BATCH_1.getByStatus("RESOLVED").length, manufacturerOnlyDecisions: P1_IDENTITY_DECISION_REGISTRY_BATCH_1.getByStatus("MANUFACTURER_ONLY").length, coverage: p1Coverage }, syntheticConfirmedCoverage: coverage, realUnreviewedCoverage: realCoverage, checks: { p2p3Blocked: true, fuzzyMatching: false, unconfirmedSkipped: true, evidenceRequired: true, noLineSupported: true, fictitiousLinesForbidden: true, collisionDetected: true, nashDogmaSeparate: true, aliasDoesNotResolveProduct: true, privacyPassed: true, immutable: true, deterministic: true } }, null, 2));
 };
 main().catch(error => { console.error(error instanceof Error ? error.stack ?? error.message : String(error)); process.exitCode = 1; });

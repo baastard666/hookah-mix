@@ -5,6 +5,7 @@ import { P0_IDENTITY_DECISIONS_BATCH_2 } from "./p0-decisions-batch-2";
 import { P0_IDENTITY_DECISIONS_BATCH_3 } from "./p0-decisions-batch-3";
 import { P0_IDENTITY_DECISIONS_BATCH_4 } from "./p0-decisions-batch-4";
 import { P0_IDENTITY_DECISIONS_BATCH_5 } from "./p0-decisions-batch-5";
+import { P0_IDENTITY_DECISIONS_BATCH_6 } from "./p0-decisions-batch-6";
 import { P1_IDENTITY_DECISIONS_BATCH_1 } from "./p1-decisions-batch-1";
 import type { TobaccoIdentityDecision } from "./types";
 
@@ -15,6 +16,7 @@ export const TOBACCO_IDENTITY_DECISIONS: readonly TobaccoIdentityDecision[] = Ob
   ...P0_IDENTITY_DECISIONS_BATCH_3,
   ...P0_IDENTITY_DECISIONS_BATCH_4,
   ...P0_IDENTITY_DECISIONS_BATCH_5,
+  ...P0_IDENTITY_DECISIONS_BATCH_6,
 ]);
 
 export const TOBACCO_IDENTITY_DECISION_REGISTRY = createTobaccoIdentityDecisionRegistry(TOBACCO_IDENTITY_DECISIONS, LEGACY_CANONICAL_PRODUCT_ID_ALIASES);

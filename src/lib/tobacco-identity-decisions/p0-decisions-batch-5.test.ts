@@ -173,9 +173,9 @@ describe("P0 identity decisions batch 5", () => {
     expect(serialized).not.toMatch(/sourceUrl|sourceReference|reviewerNotes|reviewedByType|sourceRows|workbook|internalReference/);
   });
 
-  it("leaves the final batch 6 group untouched", () => {
-    expect(TOBACCO_IDENTITY_DECISION_REGISTRY.getBySourceGroupId("identity-group-0023")).toEqual({ status: "NOT_FOUND" });
-    expect(TOBACCO_IDENTITY_DECISION_REGISTRY.getBySourceIdentity("Sebero", null, "Черника")).toEqual({ status: "NOT_FOUND" });
+  it("does not include the final batch 6 group in the batch 5 module", () => {
+    expect(P0_IDENTITY_DECISIONS_BATCH_5.some(item => item.sourceIdentity.sourceGroupId === "identity-group-0023")).toBe(false);
+    expect(P0_IDENTITY_DECISIONS_BATCH_5.some(item => item.sourceIdentity.normalizedProductName === "черника")).toBe(false);
   });
 
   it("is deterministic, immutable and contains no P2/P3 decisions", () => {

@@ -18,6 +18,7 @@
 - добавлен третий deterministic P0 batch: 15/15 групп подтверждены как `CONFIRMED`/`RESOLVED`; применено 30 occurrences и улучшено 12 уникальных VERIFIED-миксов;
 - добавлен четвёртый deterministic P0 batch: рассмотрено 15 групп, 13 `CONFIRMED`/`RESOLVED`, 2 Spectrum identities безопасно сохранены как `AMBIGUOUS`; применено 26 из 30 occurrences и улучшено 11 VERIFIED-миксов;
 - добавлен пятый deterministic P0 batch: рассмотрено 15 групп, 12 `CONFIRMED`/`RESOLVED`, Sebero / Vanilla сохранён как `AMBIGUOUS`, а Sapphire Crown / Kiwi Fruit и «не указан / Освежающий мохито» — как `UNRESOLVED`/`DEFERRED`; применено 15 из 19 occurrences и улучшено 10 VERIFIED-миксов;
+- добавлен финальный P0 batch 6: `Sebero / Черника` сохранён как `AMBIGUOUS` из-за подтверждённых кандидатов Classic/Bilberry и Limited Edition/Blueberry; все 76 исходных P0-групп теперь имеют versioned outcome;
 - canonicalProductId стандартизирован как ASCII-only: 12 authoritative Unicode ID мигрированы, а immutable legacy registry содержит 18 compatibility mappings;
 - decision infrastructure не подключена к UI и не сохраняется в PostgreSQL.
 
@@ -98,7 +99,7 @@ v0.3.2 уже реализована в `src/lib/tobacco-identity-decisions/` и
 
 ASCII-представление canonical ID дополнительно закреплено ADR-013. Все новые ID соответствуют `^[a-z0-9]+(?:-[a-z0-9]+)*$`; official English canonical name имеет приоритет, иначе применяется фиксированная русская транслитерация без смыслового перевода. Старые Unicode ID разрешаются только immutable legacy mapping, public-safe output возвращает новый ASCII ID.
 
-Первый operational batch P1 завершён в `src/lib/tobacco-identity-decisions/p1-decisions-batch-1.ts`: рассмотрены все 20 P1 group IDs, 19 продуктов получили canonical identity, а `MustHave / Ананас` сохранён как `MANUFACTURER_ONLY` без guessed alias к отдельному `Pineapple Rings`. P0 batches 1–5 хранятся в одноимённых versioned файлах. Batch 1 содержит 15 resolved identities, batch 2 — 12 resolved и 3 ambiguous, batch 3 — 15 resolved, batch 4 — 13 resolved и 2 ambiguous, batch 5 — 12 resolved, 1 ambiguous и 2 unresolved/deferred. Отдельные batch registry не создавались, authoritative aggregate объединяет P1 и пять P0 batch. Следующий identity-шаг — финальный batch 6 из одной оставшейся группы `identity-group-0023`; P2/P3 по-прежнему не применять. Следующая продуктовая итерация в roadmap — v0.3.3 Product Flavor Taxonomy Foundation.
+Первый operational batch P1 завершён в `src/lib/tobacco-identity-decisions/p1-decisions-batch-1.ts`: рассмотрены все 20 P1 group IDs, 19 продуктов получили canonical identity, а `MustHave / Ананас` сохранён как `MANUFACTURER_ONLY` без guessed alias к отдельному `Pineapple Rings`. P0 batches 1–6 хранятся в одноимённых versioned файлах. Batch 1 содержит 15 resolved identities, batch 2 — 12 resolved и 3 ambiguous, batch 3 — 15 resolved, batch 4 — 13 resolved и 2 ambiguous, batch 5 — 12 resolved, 1 ambiguous и 2 unresolved/deferred, batch 6 — 1 ambiguous. Authoritative aggregate объединяет P1 и все шесть P0 batch; все 76 P0-групп рассмотрены. P2/P3 по-прежнему не применять. Следующая продуктовая итерация в roadmap — v0.3.3 Product Flavor Taxonomy Foundation.
 
 ## 5. Архитектура и основные модули
 
@@ -148,7 +149,7 @@ unresolved report
   -> coverage comparison + domain filters
 ```
 
-Фактический decision layer теперь содержит P1 batch 1 и P0 batch 1–5. После применения aggregate к real-workbook: 206 resolved, 58 manufacturer-only и 233 unresolved записей суммарно; components — 88/2/23, VERIFIED components — 87/1/9. Восемь ambiguous/unresolved решений batch 2, 4 и 5 остаются неприменимыми. Import остаётся неизменным; решения применяются поверх staging по exact source identity. Planned: финальный P0 batch 6, persistence решениями и UI-интеграция. Конкретная итерация persistence/UI — `unknown`.
+Фактический decision layer содержит P1 batch 1 и P0 batches 1–6. После применения aggregate к real-workbook: 206 resolved, 58 manufacturer-only и 233 unresolved записей суммарно; components — 88/2/23, VERIFIED components — 87/1/9. Девять ambiguous/unresolved решений P0 batches 2, 4, 5 и 6 остаются неприменимыми. Import остаётся неизменным; решения применяются поверх staging по exact source identity. Planned: v0.3.3 Product Flavor Taxonomy Foundation, persistence решениями и UI-интеграция. Конкретная итерация persistence/UI — `unknown`.
 
 ## 7. Workbook
 
@@ -319,19 +320,18 @@ pnpm verify:tobacco-identity-decisions "data/hookah_mix_database.xlsx"
 Implementation baseline до ASCII-миграции: 8b727298c9470bda73ba9e0e2b6133dc2434e675
 Фактический HEAD: проверить git rev-parse HEAD (должен включать CODEX_HANDOFF.md).
 
-Задача: завершить operational P0-наполнение v0.3.2 — финальная группа batch 6.
+Задача: начать v0.3.3 — Product Flavor Taxonomy Foundation.
 
 Цель:
-- открыть локальный reports/tobacco-identity-review-p0-p1.json или CSV;
-- проверить единственную оставшуюся P0-группу `identity-group-0023 — Sebero / — / Черника`;
-- добавлять только подтверждённые evidence-backed decisions;
-- повторить validation/Decision Registry/coverage comparison;
-- зафиксировать applied/skipped/conflict/invalid counts.
+- сначала найти и полностью прочитать отдельное ТЗ v0.3.3;
+- сохранить exact-only identity, privacy и provenance contracts v0.2.7–v0.3.2;
+- не подключать taxonomy к UI/persistence без прямого требования;
+- не переоткрывать завершённые P0/P1 decisions без отдельного evidence-backed задания.
 
 Перед началом:
 - проверить branch, HEAD и clean status;
 - проверить SHA-256 workbook;
-- подтвердить исходный review plan P0=76, P1=20, USER_PRIORITY=3 и отдельно учесть versioned decisions P1=20 и P0 batch 1–5 по 15 решений;
+- подтвердить исходный review plan P0=76, P1=20, USER_PRIORITY=3 и versioned decisions P1=20, P0 batches 1–5 по 15 и batch 6 из 1 решения;
 - прочитать ADR-012 и architecture document;
 - не выполнять web research без отдельного явного разрешения.
 
@@ -355,15 +355,16 @@ Implementation baseline до ASCII-миграции: 8b727298c9470bda73ba9e0e2b6
 
 ## 15. Validation baseline
 
-Последний подтверждённый baseline текущей ветки v0.3.2 после P0 batch 5:
+Последний подтверждённый baseline текущей ветки v0.3.2 после P0 batch 6:
 
-- 799 tests passed, 22 test files;
+- 812 tests passed, 23 test files;
 - новых ASCII policy tests: 50;
 - новых P0 batch 1 tests: 38;
 - новых P0 batch 2 tests: 25;
 - новых P0 batch 3 tests: 26;
 - новых P0 batch 4 tests: 27;
 - новых P0 batch 5 tests: 32;
+- новых P0 batch 6 tests: 13;
 - Prisma validate: passed;
 - Prisma generate: passed;
 - lint: passed;
@@ -377,14 +378,14 @@ Implementation baseline до ASCII-миграции: 8b727298c9470bda73ba9e0e2b6
 
 ASCII migration baseline после успешной проверки следует читать в `docs/engine-changelog/v0.3.2-ascii-canonical-product-ids.md`: 34 authoritative ID проверены, 12 Unicode ID мигрированы, 18 legacy mappings, collisions/conflicts/invalid IDs = 0. Фактическое итоговое число тестов и commit необходимо сверять по последнему отчёту/HEAD.
 
-Исторический baseline после unresolved report в v0.3.1: 500 tests. Baseline после ASCII-стандартизации: 689 tests; после P0 batch 2: 714 tests; после P0 batch 3: 740 tests; после P0 batch 4: 767 tests; после P0 batch 5: 799 tests.
+Исторический baseline после unresolved report в v0.3.1: 500 tests. Baseline после ASCII-стандартизации: 689 tests; после P0 batch 2: 714 tests; после P0 batch 3: 740 tests; после P0 batch 4: 767 tests; после P0 batch 5: 799 tests; после P0 batch 6: 812 tests.
 
 ## 16. Known issues
 
 - Без decision layer исходная coverage остаётся низкой: components имеют 0 resolved, 21 manufacturer-only, 92 unresolved.
-- После aggregate P1 + P0 batch 1–5: components 88 resolved, 2 manufacturer-only, 23 unresolved; VERIFIED components 87/1/9.
+- После aggregate P1 + P0 batches 1–6: components 88 resolved, 2 manufacturer-only, 23 unresolved; VERIFIED components 87/1/9. Batch 6 не меняет coverage, поскольку решение `AMBIGUOUS`.
 - В 208 exact groups отсутствует `productLine`; отсутствие линии не всегда ошибка.
-- Исходный review plan по-прежнему генерируется как 99 `UNREVIEWED`; отдельно в versioned registry сохранены 20 P1 decisions и по 15 decisions в P0 batch 1–5 (batch 2: 12 resolved, 3 ambiguous; batch 4: 13 resolved, 2 ambiguous; batch 5: 12 resolved, 1 ambiguous, 2 unresolved/deferred).
+- Исходный review plan по-прежнему генерируется как 99 `UNREVIEWED`; отдельно в versioned registry сохранены 20 P1 decisions, по 15 decisions в P0 batches 1–5 и 1 ambiguous decision в batch 6. Все 76 P0-групп имеют authoritative outcome.
 - Есть одна invalid mix row (`DOMAIN_VALIDATION_FAILED`).
 - Есть `PERCENT_SUM_ROUNDING` warning.
 - Есть contradictory source weights (`WEIGHT_SUM_MISMATCH`).

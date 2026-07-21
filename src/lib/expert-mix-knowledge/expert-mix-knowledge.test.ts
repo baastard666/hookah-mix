@@ -84,7 +84,7 @@ describe("evaluation and preparation", () => {
 });
 
 describe("privacy mapper", () => {
-  it("removes internalLabel, hidden URL, record notes and private excerpt", () => { const record = valid(input({ notes: "internal notes", evidence: [{ evidenceId: "e-private", type: "DIRECT_STATEMENT", sourceId: "source-base", excerpt: "secret", confidence: "HIGH" }] })); const result = toPublicExpertMixKnowledgeRecord(record); expect(result.source).not.toHaveProperty("internalLabel"); expect(result.source).not.toHaveProperty("url"); expect(result).not.toHaveProperty("notes"); expect(result.evidence[0]).not.toHaveProperty("excerpt"); });
+  it("removes internalLabel, hidden URL, record notes and all evidence", () => { const record = valid(input({ notes: "internal notes", evidence: [{ evidenceId: "e-private", type: "DIRECT_STATEMENT", sourceId: "source-base", excerpt: "secret", confidence: "HIGH" }] })); const result = toPublicExpertMixKnowledgeRecord(record); expect(result.source).not.toHaveProperty("internalLabel"); expect(result.source).not.toHaveProperty("url"); expect(result).not.toHaveProperty("notes"); expect(result).not.toHaveProperty("evidence"); });
   it("uses a neutral public label for INTERNAL_ONLY sources", () => expect(toPublicExpertMixKnowledgeRecord(valid()).source.label).toBe("Проверенный обзор"));
   it("does not expose a private author name", () => expect(JSON.stringify(toPublicExpertMixKnowledgeRecord(valid()))).not.toContain("Private Author"));
   it("retains INTERNAL_ONLY visibility without identity", () => expect(toPublicExpertMixKnowledgeRecord(valid()).source.authorVisibility).toBe("INTERNAL_ONLY"));

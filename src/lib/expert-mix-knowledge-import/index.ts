@@ -1,7 +1,7 @@
 export { DEFAULT_EXPERT_MIX_IMPORT_OPTIONS, OPTIONAL_EXPERT_MIX_SHEETS, REQUIRED_EXPERT_MIX_SHEETS } from "./constants";
 export { detectExpertMixImportDuplicates } from "./duplicate-detector";
 export { createSyntheticExpertMixWorkbookBuffer } from "./fixtures";
-export { resolveHeaderIndexes, rowsToRawEntities } from "./header-resolver";
+export { findHeaderRow, resolveHeaderIndexes, rowsToRawEntities } from "./header-resolver";
 export { resolveImportedTobaccoIdentity } from "./identity-mapper";
 export { createExpertMixImportPlan } from "./import-plan";
 export { createExpertMixImportReport, serializeExpertMixImportReport } from "./import-report";

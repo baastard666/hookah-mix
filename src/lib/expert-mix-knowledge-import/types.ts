@@ -7,8 +7,8 @@ export type ExpertMixWorkbookData = { readonly workbookPath: string; readonly wo
 
 export type ExcelSheetInspection = {
   readonly name: string; readonly state: "visible" | "hidden" | "veryHidden"; readonly role: "PRIMARY_TOBACCO" | "PRIMARY_MIX" | "PRIMARY_COMPONENT" | "DERIVED_APP" | "ARCHIVE_OR_UNKNOWN";
-  readonly rowCount: number; readonly dataRowCount: number; readonly emptyRowCount: number; readonly columnCount: number;
-  readonly headers: readonly string[]; readonly normalizedHeaders: readonly string[]; readonly duplicateHeaders: readonly string[]; readonly emptyColumnIndexes: readonly number[];
+  readonly rowCount: number; readonly dataRowCount: number; readonly emptyRowCount: number; readonly columnCount: number; readonly headerRowNumber: number | null;
+  readonly headers: readonly string[]; readonly normalizedHeaders: readonly string[]; readonly duplicateHeaders: readonly string[]; readonly unknownHeaders: readonly string[]; readonly emptyColumnIndexes: readonly number[];
   readonly formulaCellCount: number; readonly errorCellCount: number; readonly mergedRanges: readonly string[];
 };
 export type ExpertMixWorkbookInspection = { readonly workbookPath: string; readonly workbookName: string; readonly sheets: readonly ExcelSheetInspection[]; readonly sheetsFound: readonly string[]; readonly sheetsMissing: readonly string[]; readonly totalRows: number; readonly totalFormulaCells: number; readonly totalErrorCells: number };
@@ -35,7 +35,7 @@ export type NormalizedTobaccoStagingRecord = {
 };
 export type NormalizedMixStagingRecord = {
   readonly mixId: string; readonly title: string | null; readonly status: ExpertMixRecordStatus | null; readonly proportionType: "PERCENT" | "PARTS" | "ORDER_ONLY" | "UNKNOWN"; readonly declaredTotalWeightGrams: number | null;
-  readonly sourceUrl: string | null; readonly internalAuthor: string | null; readonly observation: string | null; readonly rating: ImportedExternalRating | null; readonly tags: readonly string[]; readonly raw: RawMixRow;
+  readonly ratioQuality: string | null; readonly sourceUrl: string | null; readonly internalAuthor: string | null; readonly observation: string | null; readonly rating: ImportedExternalRating | null; readonly tags: readonly string[]; readonly raw: RawMixRow;
 };
 export type NormalizedMixComponentStagingRecord = {
   readonly mixId: string; readonly componentId: string; readonly position: number; readonly displayName: string; readonly manufacturer: string | null; readonly productLine: string | null; readonly productName: string | null; readonly explicitCanonicalProductId: string | null;

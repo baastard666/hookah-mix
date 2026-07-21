@@ -16,11 +16,11 @@ const publicSource = (source: ExpertKnowledgeSource) => ({
 });
 
 export const toPublicExpertMixKnowledgeRecord = (record: ExpertMixKnowledgeRecord): PublicExpertMixKnowledgeRecord => {
-  const { source, evidence, notes: _notes, ...safeRecord } = record;
-  void _notes;
-  const safeEvidence = evidence.filter(item => item.type !== "EDITOR_NOTE").map(({ sourceId: _sourceId, excerpt: _excerpt, reference: _reference, ...item }) => { void _sourceId; void _excerpt; void _reference; return item; });
+  const { source, evidence: _evidence, notes: _notes, ...safeRecord } = record;
+  void _evidence; void _notes;
   const components = safeRecord.components.map(({ notes: _componentNotes, ...component }) => { void _componentNotes; return component; });
-  const observations = safeRecord.observations.map(({ notes: _observationNotes, ...observation }) => { void _observationNotes; return observation; });
+  const observations = safeRecord.observations.map(({ notes: _observationNotes, evidenceIds: _evidenceIds, ...observation }) => { void _observationNotes; void _evidenceIds; return observation; });
   const preparation = safeRecord.preparation ? (() => { const { notes: _preparationNotes, ...value } = safeRecord.preparation; void _preparationNotes; return value; })() : undefined;
-  return deepCloneAndFreeze({ ...safeRecord, components, observations, ...(preparation ? { preparation } : {}), source: publicSource(source), evidence: safeEvidence });
+  const evaluation = safeRecord.evaluation ? (() => { const { evidenceIds: _evidenceIds, ...value } = safeRecord.evaluation; void _evidenceIds; return value; })() : undefined;
+  return deepCloneAndFreeze({ ...safeRecord, components, observations, ...(preparation ? { preparation } : {}), ...(evaluation ? { evaluation } : {}), source: publicSource(source) });
 };

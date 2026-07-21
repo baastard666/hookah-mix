@@ -1,14 +1,46 @@
 import { describe, expect, it } from "vitest";
+import JSZip from "jszip";
 import {
-  auditImportedKnowledgePrivacy, createExpertMixImportPlan, createSyntheticExpertMixWorkbookBuffer, importExpertMixKnowledgeBuffer, inspectExpertMixWorkbookData,
-  normalizeHeader, parseImportNumber, readExpertMixWorkbookBuffer, readExpertMixWorkbookSafe, resolveHeaderIndexes,
+  auditImportedKnowledgePrivacy, createExpertMixImportPlan, createSyntheticExpertMixWorkbookBuffer, findHeaderRow, importExpertMixKnowledgeBuffer, inspectExpertMixWorkbookData,
+  normalizeHeader, normalizeImportText, normalizeMixRow, parseImportNumber, readExpertMixWorkbookBuffer, readExpertMixWorkbookSafe, resolveHeaderIndexes,
   resolveImportedTobaccoIdentity, serializeExpertMixImportReport, splitImportTags,
 } from "./index";
 
 const imported = async () => importExpertMixKnowledgeBuffer(await createSyntheticExpertMixWorkbookBuffer(), "C:\\private\\hookah_mix_database_v2.xlsx");
 
+const prefixSpreadsheetMlElements = async (buffer: Buffer): Promise<Buffer> => {
+  const namespace = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+  const archive = await JSZip.loadAsync(buffer);
+  const entries = Object.values(archive.files).filter(entry => !entry.dir && entry.name.endsWith(".xml"));
+  await Promise.all(entries.map(async entry => {
+    const xml = await entry.async("string");
+    if (!xml.includes(`xmlns="${namespace}"`)) return;
+    archive.file(entry.name, xml
+      .replace(`xmlns="${namespace}"`, `xmlns:x="${namespace}"`)
+      .replace(/<(\/?)([A-Za-z_][\w.-]*)(?=[\s/>])/g, "<$1x:$2"));
+  }));
+  return Buffer.from(await archive.generateAsync({ type: "nodebuffer", compression: "DEFLATE" }));
+};
+
 describe("workbook reader and inspection", () => {
   it("reads an xlsx buffer", async () => expect((await readExpertMixWorkbookBuffer(await createSyntheticExpertMixWorkbookBuffer())).sheets.length).toBe(6));
+  it("reads SpreadsheetML elements with an explicit x prefix", async () => {
+    const prefixed = await prefixSpreadsheetMlElements(await createSyntheticExpertMixWorkbookBuffer());
+    expect((await readExpertMixWorkbookBuffer(prefixed)).sheets.map(sheet => sheet.name)).toEqual(expect.arrayContaining(["ОСНОВНАЯ_БАЗА", "Mixes_Internal", "Mix_Components"]));
+  });
+  it("does not mutate a prefixed source buffer", async () => {
+    const prefixed = await prefixSpreadsheetMlElements(await createSyntheticExpertMixWorkbookBuffer());
+    const before = Buffer.from(prefixed);
+    await readExpertMixWorkbookBuffer(prefixed);
+    expect(prefixed.equals(before)).toBe(true);
+  });
+  it("finds a real header below merged title rows", () => {
+    const sheet = { name: "Mixes_Internal", state: "visible" as const, mergedRanges: [], formulaCellCount: 0, errorCellCount: 0, rows: [
+      { rowNumber: 1, values: ["ВНУТРЕННИЙ ЛИСТ", "ВНУТРЕННИЙ ЛИСТ"], isEmpty: false },
+      { rowNumber: 2, values: ["mix_id", "recipe_status", "title_internal"], isEmpty: false },
+    ] };
+    expect(findHeaderRow(sheet)?.rowNumber).toBe(2);
+  });
   it("detects expected primary sheets", async () => expect((await imported()).inspection.sheetsFound).toEqual(expect.arrayContaining(["ОСНОВНАЯ_БАЗА", "Mixes_Internal", "Mix_Components"])));
   it("marks App sheets as derived", async () => expect((await imported()).inspection.sheets.find(sheet => sheet.name === "App_Tobacco")?.role).toBe("DERIVED_APP"));
   it("detects hidden sheets", async () => expect((await imported()).inspection.sheets.find(sheet => sheet.name === "App_Mixes")?.state).toBe("hidden"));
@@ -23,8 +55,10 @@ describe("workbook reader and inspection", () => {
 });
 
 describe("headers and cell parsing", () => {
+  it("normalizes a missing optional cell to null instead of the string undefined", () => expect(normalizeImportText(undefined)).toBeNull());
   it.each([[" Производитель ", "производитель"], ["Product Line", "product_line"], ["ID-микса", "id_микса"]])("normalizes header %s", (input, output) => expect(normalizeHeader(input)).toBe(output));
   it("resolves Russian and English aliases", () => expect(resolveHeaderIndexes(["бренд", "линейка", "вкус"])).toEqual({ manufacturer: 0, productLine: 1, productName: 2 }));
+  it("resolves headers used by the real workbook", () => expect(resolveHeaderIndexes(["Бренд", "Линейка", "Вкус / продукт", "Оценка 1–10", "Количество обзоров"])).toMatchObject({ manufacturer: 0, productLine: 1, productName: 2, rating: 3, sampleSize: 4 }));
   it.each([["4,7", 4.7], [" 50% ", 50], [10, 10], ["bad", null], [null, null]] as const)("parses numeric cell %s", (input, output) => expect(parseImportNumber(input)).toBe(output));
   it("normalizes and deduplicates tags", () => expect(splitImportTags(" Ягодный; цветочный | ягодный ")).toEqual(["ягодный", "цветочный"]));
 });
@@ -47,10 +81,20 @@ describe("fact provenance", () => {
   it("derives only categorical values from tags", async () => { const derived = (await imported()).tobacco[0]?.derivedCharacteristics.filter(item => item.kind === "TAG_CATEGORY") ?? []; expect(derived.length).toBeGreaterThan(0); expect(derived.every(item => typeof item.value === "string" && item.sourceType === "DERIVED")).toBe(true); });
   it("keeps preliminary inference separate", async () => expect((await imported()).tobacco[0]?.derivedCharacteristics.find(item => item.kind === "PRELIMINARY_INFERENCE")).toMatchObject({ confidence: "LOW", sourceType: "DERIVED" }));
   it("rejects preliminary inference with elevated confidence", async () => expect((await imported()).report.issues.some(issue => issue.code === "PRELIMINARY_VALUE_WITHOUT_LOW_CONFIDENCE")).toBe(true));
+  it("never exposes a preliminary inference above LOW confidence", async () => expect((await imported()).tobacco.flatMap(item => item.derivedCharacteristics).filter(item => item.kind === "PRELIMINARY_INFERENCE").every(item => item.confidence === "LOW")).toBe(true));
   it("stores provenance per value", async () => expect((await imported()).tobacco[0]?.catalogFacts[0]?.importedFrom).toMatchObject({ sheet: "ОСНОВНАЯ_БАЗА", rowNumber: 2 }));
 });
 
 describe("mix mapping and validation", () => {
+  it.each([
+    ["tested", true, "exact", "yes", "VERIFIED"],
+    ["tested", true, "partial_product", "review", "PARTIALLY_VERIFIED"],
+    ["proposed_then_test_unknown", false, "partial", "no", "DRAFT"],
+    ["tested", true, "inconsistent_source_weights", "review", "DISPUTED"],
+  ] as const)("maps real workbook status %s/%s/%s", (status, tested, quality, ready, expected) => {
+    const row = { sheet: "Mixes_Internal", rowNumber: 3, cells: { mixId: "mix-real", status, tested, proportionType: quality, exportReady: ready } };
+    expect(normalizeMixRow(row, "fixture.xlsx").status).toBe(expected);
+  });
   it("imports valid 100 percent mix", async () => expect((await imported()).registry.records.some(record => record.title === "Валидный 60/40")).toBe(true));
   it("accepts 99 percent as explicit rounding warning", async () => { const result = await imported(); expect(result.report.issues.some(issue => issue.entityId === "mix-99" && issue.code === "PERCENT_SUM_ROUNDING")).toBe(true); expect(result.registry.records.some(record => record.title === "Округление")).toBe(true); });
   it("rejects 120 percent domain record", async () => { const result = await imported(); expect(result.report.issues.some(issue => issue.entityId === "mix-120" && issue.code === "PERCENT_SUM_MISMATCH")).toBe(true); expect(result.rejectedMixIds).toContain("mix-120"); });

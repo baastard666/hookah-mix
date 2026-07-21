@@ -2,6 +2,7 @@ import path from "node:path";
 import { access, readFile } from "node:fs/promises";
 import ExcelJS from "exceljs";
 import type { CellValue } from "exceljs";
+import { normalizeSpreadsheetMlNamespaces } from "./normalize-xlsx-namespaces";
 import type { ExcelCellValue, ExcelRowData, ExpertMixWorkbookData } from "./types";
 
 const cellValue = (value: CellValue): ExcelCellValue => {
@@ -19,7 +20,10 @@ const isFormula = (value: CellValue): boolean => Boolean(value && typeof value =
 
 export const readExpertMixWorkbookBuffer = async (buffer: Buffer, workbookPath = "<memory>/synthetic.xlsx"): Promise<ExpertMixWorkbookData> => {
   const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.load(buffer as never);
+  const readableBuffer = await normalizeSpreadsheetMlNamespaces(buffer);
+  // Table metadata is not needed for the import and some valid generators use
+  // relationship shapes that ExcelJS cannot hydrate. Cell data remains intact.
+  await workbook.xlsx.load(readableBuffer as never, { ignoreNodes: ["tableParts"] });
   const sheets = workbook.worksheets.map(worksheet => {
     const rows: ExcelRowData[] = [];
     let formulaCellCount = 0; let errorCellCount = 0;
@@ -34,6 +38,7 @@ export const readExpertMixWorkbookBuffer = async (buffer: Buffer, workbookPath =
       });
       rows.push({ rowNumber, values, isEmpty: values.every(value => value === null || value === "") });
     }
+    while (rows.at(-1)?.isEmpty) rows.pop();
     return { name: worksheet.name, state: worksheet.state ?? "visible", rows, mergedRanges: [...(worksheet.model.merges ?? [])].sort(), formulaCellCount, errorCellCount };
   });
   return { workbookPath, workbookName: path.basename(workbookPath), sheets };

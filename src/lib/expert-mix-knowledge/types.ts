@@ -178,9 +178,12 @@ export type ExternalExpertMixInput = {
 export type AdaptExternalExpertMixResult = ExpertMixValidationResult;
 
 export type PublicExpertKnowledgeSource = { readonly sourceType: ExpertKnowledgeSourceType; readonly label: string; readonly url?: string; readonly publishedAt?: string; readonly language?: string; readonly authorVisibility: AuthorVisibility };
-export type PublicExpertMixKnowledgeRecord = Omit<ExpertMixKnowledgeRecord, "source" | "evidence" | "notes"> & {
+type PublicExpertMixObservation = ExpertMixObservation extends infer T ? T extends ExpertMixObservation ? Omit<T, "notes" | "evidenceIds"> : never : never;
+type PublicExpertMixEvaluation = Omit<ExpertMixEvaluation, "evidenceIds">;
+export type PublicExpertMixKnowledgeRecord = Omit<ExpertMixKnowledgeRecord, "source" | "evidence" | "notes" | "observations" | "evaluation"> & {
   readonly source: PublicExpertKnowledgeSource;
-  readonly evidence: readonly Omit<ExpertKnowledgeEvidence, "sourceId" | "excerpt" | "reference">[];
+  readonly observations: readonly PublicExpertMixObservation[];
+  readonly evaluation?: PublicExpertMixEvaluation;
 };
 
 export type ExpertMixKnowledgeRegistry = {

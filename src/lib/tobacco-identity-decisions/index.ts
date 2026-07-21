@@ -10,6 +10,7 @@ export { filterCanonicalTobaccoProducts } from "./filter";
 export { createDecisionFixture, createTobaccoIdentityDecisionFixtures } from "./fixtures";
 export { P1_IDENTITY_DECISIONS_BATCH_1, P1_IDENTITY_DECISION_REGISTRY_BATCH_1 } from "./p1-decisions-batch-1";
 export { P0_IDENTITY_DECISIONS_BATCH_1 } from "./p0-decisions-batch-1";
+export { P0_IDENTITY_DECISIONS_BATCH_2 } from "./p0-decisions-batch-2";
 export { TOBACCO_IDENTITY_DECISIONS, TOBACCO_IDENTITY_DECISION_REGISTRY } from "./verified-decisions";
 export { createLegacyCanonicalProductIdAliasRegistry, LEGACY_CANONICAL_PRODUCT_ID_ALIASES, LEGACY_CANONICAL_PRODUCT_ID_ALIAS_REGISTRY, validateLegacyCanonicalProductIdAliases } from "./legacy-canonical-product-id-aliases";
 export { adaptExpertMixImportForIdentityDecisions } from "./import-adapter";

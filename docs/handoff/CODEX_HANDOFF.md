@@ -19,17 +19,18 @@
 - добавлен четвёртый deterministic P0 batch: рассмотрено 15 групп, 13 `CONFIRMED`/`RESOLVED`, 2 Spectrum identities безопасно сохранены как `AMBIGUOUS`; применено 26 из 30 occurrences и улучшено 11 VERIFIED-миксов;
 - добавлен пятый deterministic P0 batch: рассмотрено 15 групп, 12 `CONFIRMED`/`RESOLVED`, Sebero / Vanilla сохранён как `AMBIGUOUS`, а Sapphire Crown / Kiwi Fruit и «не указан / Освежающий мохито» — как `UNRESOLVED`/`DEFERRED`; применено 15 из 19 occurrences и улучшено 10 VERIFIED-миксов;
 - добавлен финальный P0 batch 6: `Sebero / Черника` сохранён как `AMBIGUOUS` из-за подтверждённых кандидатов Classic/Bilberry и Limited Edition/Blueberry; все 76 исходных P0-групп теперь имеют versioned outcome;
+- финальный интеграционный аудит v0.3.2 зафиксирован в `docs/engine-changelog/v0.3.2-canonical-tobacco-catalog-expansion-release-summary.md`;
 - canonicalProductId стандартизирован как ASCII-only: 12 authoritative Unicode ID мигрированы, а immutable legacy registry содержит 18 compatibility mappings;
 - decision infrastructure не подключена к UI и не сохраняется в PostgreSQL.
 
 ## 2. Git baseline
 
 - Репозиторий: `https://github.com/baastard666/hookah-mix`.
-- Текущая ветка: `feature/v0.3.2-canonical-tobacco-catalog-expansion`.
+- Release source branch: `feature/v0.3.2-canonical-tobacco-catalog-expansion`; после интеграции рабочей веткой становится `main`.
 - Baseline перед ASCII-стандартизацией: `8b727298c9470bda73ba9e0e2b6133dc2434e675`.
 - Фактический HEAD после получения репозитория: commit, содержащий этот файл; проверить командой `git rev-parse HEAD`. Хеш handoff-коммита нельзя самоссылочно зафиксировать внутри его содержимого.
 - Ветка основана на `c09494ba4ec9bfff2f64e05f44b1ad4b24e9f53c`.
-- `main` остаётся на baseline v0.2.6; feature-ветки v0.2.7–v0.3.2 не merged в `main`.
+- Pre-merge baseline `origin/main`: `86a1eb0554b773d0b0a5d1b3d537e4e42c6a6dfe`. После release merge v0.2.7–v0.3.2 должны быть доступны из `main`; фактический merge commit проверять через `git log -1`.
 
 Важные commits:
 
@@ -373,6 +374,9 @@ Implementation baseline до ASCII-миграции: 8b727298c9470bda73ba9e0e2b6
 - real-workbook import verify: passed;
 - unresolved identity report verify: passed;
 - `verify:tobacco-identity-decisions`: passed;
+- targeted Tobacco Identity Decisions Vitest: 312/312, 9 files;
+- все 11 `verify:*` scripts: passed;
+- Registry: 96 decisions, 86 resolved, 7 ambiguous, 1 manufacturer-only, 2 unresolved; applied/skipped = 163/17;
 - workbook SHA до/после verify совпал;
 - privacy, immutability и deterministic checks: passed.
 

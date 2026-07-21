@@ -1,0 +1,430 @@
+# CODEX HANDOFF — hookah-mix
+
+## 1. Назначение и текущее состояние
+
+`hookah-mix` — MVP веб-приложения для составления и детерминированного анализа кальянных миксов. Пользователь выбирает 2–5 табаков, задаёт проценты, чашу, угли и прогрев; приложение показывает рассчитанный профиль, совместимость, конфликты, риск перегрева и рекомендации.
+
+Технологии: Next.js App Router, TypeScript strict, Tailwind CSS, Prisma ORM, PostgreSQL, Docker Compose и Vitest. Интерфейс русский.
+
+Текущее состояние:
+
+- пользовательский MVP и доменные движки работают;
+- v0.2.7–v0.3.2 реализованы отдельными доменными модулями;
+- real-workbook импортируется read-only и проходит audit;
+- создан ручной identity-decision pipeline для P0/P1;
+- реальных `CONFIRMED` identity decisions пока нет;
+- decision infrastructure не подключена к UI и не сохраняется в PostgreSQL.
+
+## 2. Git baseline
+
+- Репозиторий: `https://github.com/baastard666/hookah-mix`.
+- Текущая ветка: `feature/v0.3.2-canonical-tobacco-catalog-expansion`.
+- Implementation baseline перед добавлением этого handoff: `25c01f62c9957c8a71c7104d269bef7ca65a8a48`.
+- Фактический HEAD после получения репозитория: commit, содержащий этот файл; проверить командой `git rev-parse HEAD`. Хеш handoff-коммита нельзя самоссылочно зафиксировать внутри его содержимого.
+- Ветка основана на `c09494ba4ec9bfff2f64e05f44b1ad4b24e9f53c`.
+- `main` остаётся на baseline v0.2.6; feature-ветки v0.2.7–v0.3.2 не merged в `main`.
+
+Важные commits:
+
+| Итерация | Commit | Смысл |
+|---|---|---|
+| v0.2.7 | `d803e5a5` | Tobacco Product Profile Registry |
+| v0.2.8 | `1ac5602c` | Tobacco Product Identity audit |
+| v0.2.9 | `1f02446e` | Canonical catalog identity persistence |
+| v0.3.0 | `c12dc3ee` | Expert Mix Knowledge schema |
+| v0.3.1 | `471819ca` | Excel import/audit foundation |
+| v0.3.1 audit fix | `051510fe` | Real-workbook parsing/audit corrections |
+| unresolved report | `c09494ba` | Deterministic unresolved identity report |
+| v0.3.2 | `25c01f62` | Canonical identity decisions |
+
+## 3. Завершённые итерации
+
+### v0.2.7 — Tobacco Product Profile Registry Foundation
+
+- `src/lib/tobacco-profile/`;
+- immutable Manufacturer/Product Line Registry;
+- категориальные strength, heat resistance и leaf types с evidence/confidence;
+- `НАШ` и `Dogma` зарегистрированы как разные manufacturers.
+
+### v0.2.8 — Tobacco Product Identity & Catalog Audit
+
+- `src/lib/tobacco-product-identity/`;
+- exact canonical/alias и controlled-prefix resolution;
+- typed `RESOLVED`, `MANUFACTURER_ONLY`, unresolved/ambiguous statuses;
+- fuzzy matching отсутствует.
+
+### v0.2.9 — Canonical Catalog Identity Persistence
+
+- `src/lib/catalog-identity/`;
+- persisted canonical identity mapper, consistency checks, coverage, backfill и Prisma store;
+- backfill защищает verified/test records;
+- `productLineId` nullable в persistence/domain contract.
+
+### v0.3.0 — Expert Mix Knowledge Schema Foundation
+
+- `src/lib/expert-mix-knowledge/`;
+- source-specific expert records, proportions, preparation, observations, evaluation;
+- immutable registry и public-safe mapping;
+- private evidence отделено от публичного DTO.
+
+### v0.3.1 — Excel Knowledge Import & Audit
+
+- `src/lib/expert-mix-knowledge-import/`;
+- Node-only XLSX reader, header mapping, normalization, staging, identity mapping, validation и audit;
+- catalog facts, real observations, ratings, tag-derived data и preliminary inference разделены по provenance;
+- `src/lib/expert-mix-knowledge-import/unresolved-identity-report.ts` создаёт exact-normalized P0–P3 report.
+
+## 4. v0.3.2 — фактический статус и следующий шаг
+
+v0.3.2 уже реализована в `src/lib/tobacco-identity-decisions/` и commit `25c01f62…`.
+
+Реализовано:
+
+- typed `TobaccoIdentityDecision`, evidence, review states и `ProductLineInterpretation`;
+- deterministic canonical ID с nullable product line;
+- immutable multi-index Decision Registry;
+- exact-only resolver перед существующим resolver;
+- validation, duplicate/conflict/collision detection;
+- decision application, coverage comparison и domain filtering;
+- P0/P1 review generator с отдельным `USER_PRIORITY`;
+- privacy-safe mapping, fixtures, 54 unit tests и verify script;
+- ADR-012 и архитектурная документация.
+
+Следующий operational шаг: вручную проверить P0/P1, добавить подтверждаемое evidence и переводить только доказанные записи в `CONFIRMED`. Массовое автоматическое разрешение запрещено. Следующая продуктовая итерация после этого в roadmap — v0.3.3 Product Flavor Taxonomy Foundation.
+
+## 5. Архитектура и основные модули
+
+| Модуль | Путь | Назначение |
+|---|---|---|
+| Tobacco Product Profile Registry | `src/lib/tobacco-profile/` | Manufacturer и Product Line technical profiles |
+| Product Line Registry | `src/lib/tobacco-profile/registry.ts` | Canonical manufacturers/lines и aliases |
+| Tobacco Product Identity Resolver | `src/lib/tobacco-product-identity/` | Exact identity resolution без fuzzy |
+| Canonical Catalog Identity Persistence | `src/lib/catalog-identity/` | Persisted identity, validation, coverage, backfill |
+| Expert Mix Knowledge Schema | `src/lib/expert-mix-knowledge/` | Typed expert mix records и privacy boundary |
+| Excel Knowledge Import | `src/lib/expert-mix-knowledge-import/` | Read-only XLSX → staging → audit |
+| Unresolved Identity Report | `src/lib/expert-mix-knowledge-import/unresolved-identity-report.ts` | Exact grouping и P0–P3 |
+| Identity Decisions | `src/lib/tobacco-identity-decisions/` | Manual review, immutable decisions, apply/coverage/filter |
+| Public-safe mapping | `src/lib/expert-mix-knowledge/public-mapper.ts`, `src/lib/tobacco-identity-decisions/public-safe-mapper.ts` | Удаление private/internal полей |
+| Privacy audit | `src/lib/expert-mix-knowledge-import/privacy-auditor.ts`, decision public audit | Проверка утечек |
+
+Registries возвращают readonly/deep-frozen данные. React-компоненты не содержат доменные формулы.
+
+## 6. Data pipeline
+
+Реализованный pipeline:
+
+```text
+data/hookah_mix_database.xlsx (read-only)
+  -> XLSX reader
+  -> sheet/header inspection
+  -> raw rows
+  -> normalization
+  -> typed staging
+  -> existing exact identity resolution
+  -> validation
+  -> immutable imported registries
+  -> audit + public-safe output
+  -> deterministic unresolved identity report
+```
+
+Реализованный как библиотечный API, но ещё не подключённый к UI/persistence pipeline:
+
+```text
+unresolved report
+  -> P0/P1 review plan
+  -> manual evidence + CONFIRMED
+  -> decision validation
+  -> immutable Decision Registry
+  -> exact decision resolution/application
+  -> existing resolver fallback
+  -> coverage comparison + domain filters
+```
+
+Planned: заполнение реальных decisions, persistence решениями и UI-интеграция. Конкретная итерация persistence/UI — `unknown`.
+
+## 7. Workbook
+
+- Локальный путь: `data/hookah_mix_database.xlsx`.
+- Файл исключён из Git правилом `data/*.xlsx`.
+- Workbook нельзя исправлять, пересохранять или нормализовать in-place.
+- Последний подтверждённый SHA-256: `AFBEB062EF5B23AC0340E8D5F15AD9E20FF41A6892146915E8FC8BB1008E2E8B`.
+
+Команды read-only проверки:
+
+```bash
+pnpm verify:expert-mix-knowledge-import "data/hookah_mix_database.xlsx"
+pnpm report:unresolved-identities "data/hookah_mix_database.xlsx"
+pnpm generate:tobacco-identity-review "data/hookah_mix_database.xlsx"
+pnpm verify:tobacco-identity-decisions "data/hookah_mix_database.xlsx"
+```
+
+Verify scripts сравнивают SHA-256 до и после.
+
+## 8. Последний real-workbook audit
+
+Подтверждённые показатели:
+
+### Tobacco (`ОСНОВНАЯ_БАЗА`)
+
+- rows/imported: 384/384;
+- `RESOLVED`: 43;
+- `MANUFACTURER_ONLY`: 74;
+- `UNRESOLVED`: 267;
+- `AMBIGUOUS`: 0;
+- invalid: 0.
+
+### Mixes (`Mixes_Internal`)
+
+- rows read: 42;
+- imported: 41;
+- `VERIFIED`: 37;
+- `PARTIALLY_VERIFIED`: 2;
+- `DISPUTED`: 2;
+- invalid: 1.
+
+### Components (`Mix_Components`)
+
+- rows/imported: 113/113;
+- `RESOLVED`: 0;
+- `MANUFACTURER_ONLY`: 21;
+- `UNRESOLVED`: 92;
+- `AMBIGUOUS`: 0.
+
+Наблюдавшиеся validation issue codes:
+
+- `IDENTITY_NOT_FOUND`;
+- `IDENTITY_MANUFACTURER_ONLY`;
+- `DOMAIN_VALIDATION_FAILED` — одна invalid mix row;
+- `PERCENT_SUM_ROUNDING` — известен warning для округления;
+- `WEIGHT_SUM_MISMATCH` — известны противоречивые source weights.
+
+Точные количества остальных duplicate/source/identity warning codes в handoff не подтверждены: `unknown`; при необходимости получить их повторным verify, не переписывая workbook.
+
+Privacy audit: public privacy issues = 0; ratings не превращаются в observations, tag-derived values остаются категориальными, preliminary inference остаётся `LOW`.
+
+## 9. Unresolved identity report
+
+Последний подтверждённый report:
+
+- components: 113;
+- catalog: 384;
+- exact-normalized groups: 403;
+- P0: 76;
+- P1: 20;
+- P2: 15;
+- P3: 292;
+- manufacturer известен Registry: 152 groups;
+- product line известна: 43 groups;
+- exact alias candidates: 148 groups;
+- missing `productLine`: 208 groups.
+
+Группировка: exact normalized `manufacturer + productLine + productName`. Fuzzy matching отключён. Report не создаёт и не назначает canonical ID.
+
+## 10. Identity и provenance rules
+
+Обязательно сохранять:
+
+1. `НАШ` и `Dogma` — разные manufacturers.
+2. `НАШ / Лаванда` нельзя объединять с `Dogma / Крымская лаванда`.
+3. Совпадение вкусового слова не является identity evidence.
+4. `UNRESOLVED`/`AMBIGUOUS` не получают guessed canonical ID.
+5. Exact manufacturer alias подтверждает только manufacturer, не product.
+6. `productLine` нельзя придумывать или автоматически выделять из составных значений.
+7. Фиктивные lines `default`, `unknown`, `main`, `base` запрещены.
+8. Confirmed product может иметь `productLineId = null` только при доказанном `CONFIRMED_NONE`.
+9. `RESOLVED` требует `CONFIRMED`, evidence, confidence, canonical manufacturer/product и корректный deterministic ID.
+10. P2/P3 нельзя применять в v0.3.2.
+11. Catalog facts, real observations и external ratings — разные provenance types.
+12. Tag-derived data остаётся категориальной и не создаёт точные sensory values.
+13. Preliminary inference всегда `LOW`.
+14. Collision/duplicate/conflict не разрешаются выбором «лучшего» кандидата.
+
+## 11. Privacy rules
+
+Public output не должен содержать:
+
+- авторов, блогеров, reviewer names, каналы;
+- private URLs и private evidence references;
+- internal notes, reviewer notes, evidence excerpts/IDs;
+- локальные пути и содержимое `.env`;
+- workbook row numbers или workbook SHA;
+- внутренние source IDs.
+
+Публично допустимы canonical identity, общий evidence type, confidence, status и public-safe aliases.
+
+## 12. Локальные файлы вне Git
+
+Перенести отдельно безопасным приватным способом:
+
+- `data/hookah_mix_database.xlsx`;
+- `reports/unresolved-identity-report.md`;
+- `reports/unresolved-identity-report.json`;
+- `reports/tobacco-identity-review-p0-p1.md`;
+- `reports/tobacco-identity-review-p0-p1.json`;
+- `reports/tobacco-identity-review-p0-p1.csv`;
+- будущие review/audit reports;
+- `.env` — только приватно, содержимое не публиковать.
+
+`reports/`, `data/*.xlsx` и `.env` исключены из Git. Зависимости, `.next` и generated Prisma Client переносить не нужно.
+
+## 13. Подключение другого аккаунта Codex
+
+```bash
+git clone https://github.com/baastard666/hookah-mix.git
+cd hookah-mix
+git fetch --all
+git switch feature/v0.3.2-canonical-tobacco-catalog-expansion
+git pull --ff-only
+git rev-parse HEAD
+git status
+pnpm install
+```
+
+Затем:
+
+1. Приватно поместить workbook в `data/hookah_mix_database.xlsx`.
+2. Создать `.env` по `.env.example`, не копируя его в Git.
+3. Запустить PostgreSQL: `docker compose up -d`.
+4. Выполнить:
+
+```bash
+pnpm exec prisma validate
+pnpm prisma:generate
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm verify:expert-mix-knowledge-import "data/hookah_mix_database.xlsx"
+pnpm verify:tobacco-identity-decisions "data/hookah_mix_database.xlsx"
+```
+
+5. Прочитать `docs/handoff/CODEX_HANDOFF.md`, `docs/architecture/`, `docs/adr/README.md`, `docs/engine-changelog/README.md` и `docs/roadmap/README.md`.
+
+Если `node`, `pnpm` или Docker отсутствуют, окружение нового аккаунта/машины — `unknown`; настроить их отдельно, не добавляя runtime paths в репозиторий.
+
+## 14. Next Task — готовый блок
+
+```text
+Проект: hookah-mix
+Ветка: feature/v0.3.2-canonical-tobacco-catalog-expansion
+Implementation baseline: 25c01f62c9957c8a71c7104d269bef7ca65a8a48
+Фактический HEAD: проверить git rev-parse HEAD (должен включать CODEX_HANDOFF.md).
+
+Задача: продолжить operational часть v0.3.2 — ручной review P0/P1 identity records.
+
+Цель:
+- открыть локальный reports/tobacco-identity-review-p0-p1.json или CSV;
+- проверить USER_PRIORITY и наиболее важные P1/P0;
+- добавлять только подтверждённые evidence-backed decisions;
+- повторить validation/Decision Registry/coverage comparison;
+- зафиксировать applied/skipped/conflict/invalid counts.
+
+Перед началом:
+- проверить branch, HEAD и clean status;
+- проверить SHA-256 workbook;
+- подтвердить наличие P0=76, P1=20, USER_PRIORITY=3;
+- прочитать ADR-012 и architecture document;
+- не выполнять web research без отдельного явного разрешения.
+
+Запрещено:
+- fuzzy/Levenshtein/AI guessing;
+- auto-resolution по вкусовому слову или manufacturer alias;
+- массовое подтверждение P0/P1;
+- изменение P2/P3;
+- придумывание productLine или sensory properties;
+- изменение Prisma/UI/workbook/main.
+
+Финальный отчёт должен включать:
+- branch, commit, push и clean status;
+- рассмотренные groupIds без private evidence details;
+- confirmed/unresolved/ambiguous/rejected counts;
+- coverage before/after и deltas;
+- conflicts/collisions/invalid decisions;
+- privacy, determinism, immutability и validation results;
+- подтверждение неизменности workbook и отсутствия merge в main.
+```
+
+## 15. Validation baseline
+
+Последний подтверждённый baseline текущей ветки v0.3.2:
+
+- 554 tests passed, 15 test files;
+- новых v0.3.2 tests: 54;
+- Prisma validate: passed;
+- Prisma generate: passed;
+- lint: passed;
+- typecheck: passed;
+- production build: passed;
+- real-workbook import verify: passed;
+- unresolved identity report verify: passed;
+- `verify:tobacco-identity-decisions`: passed;
+- workbook SHA до/после verify совпал;
+- privacy, immutability и deterministic checks: passed.
+
+Исторический baseline после unresolved report в v0.3.1: 500 tests. Использовать 554 как актуальное значение ветки v0.3.2.
+
+## 16. Known issues
+
+- Canonical identity coverage низкий: components имеют 0 resolved, 21 manufacturer-only, 92 unresolved.
+- VERIFIED-компоненты: 0 resolved, 20 manufacturer-only, 77 unresolved.
+- В 208 exact groups отсутствует `productLine`; отсутствие линии не всегда ошибка.
+- Реальные review records: 99 `UNREVIEWED`, 0 `CONFIRMED`.
+- Есть одна invalid mix row (`DOMAIN_VALIDATION_FAILED`).
+- Есть `PERCENT_SUM_ROUNDING` warning.
+- Есть contradictory source weights (`WEIGHT_SUM_MISMATCH`).
+- Точные количества части warning codes: `unknown` без нового audit run.
+- Workbook и reports существуют только локально.
+- Decision/backend infrastructure не подключена к UI и PostgreSQL persistence.
+- Runtime environment нового аккаунта и его локальные credentials: `unknown`.
+
+## 17. Non-goals без отдельного задания
+
+- Prisma schema и migrations;
+- PostgreSQL structure и seed;
+- UI, страницы и конструктор;
+- Recommendation Engine;
+- Compatibility Engine;
+- Mix Analysis scoring;
+- изменение workbook;
+- fuzzy resolution;
+- выдумывание sensory characteristics;
+- web research;
+- merge в `main`.
+
+## 18. Glossary
+
+- **Manufacturer** — канонический производитель с `manufacturerId`.
+- **Product Line** — отдельная подтверждённая линейка производителя; может отсутствовать.
+- **Canonical Product ID** — стабильный exact-normalized ID продукта.
+- **Source identity** — исходная тройка manufacturer/productLine/productName.
+- **Decision** — ручное решение по source identity.
+- **Evidence** — проверяемое основание решения с type/confidence.
+- **CONFIRMED** — review state, разрешающий применение валидного decision.
+- **MANUFACTURER_ONLY** — известен производитель, конкретный продукт не подтверждён.
+- **UNRESOLVED** — данных недостаточно.
+- **AMBIGUOUS** — есть несколько допустимых точных вариантов.
+- **P0** — unresolved-компоненты VERIFIED-миксов.
+- **P1** — manufacturer-only компоненты VERIFIED-миксов.
+- **P2** — остальные компоненты.
+- **P3** — каталог, не встречающийся в миксах.
+- **USER_PRIORITY** — отдельная ручная очередь трёх приоритетных продуктов.
+- **Public-safe** — DTO без private/internal provenance.
+
+## 19. Handoff checklist
+
+- [ ] Репозиторий клонирован из правильного remote.
+- [ ] Выполнены `git fetch --all` и checkout актуальной feature-ветки.
+- [ ] HEAD и implementation baseline сверены.
+- [ ] `git status` чистый.
+- [ ] `.env` настроен приватно.
+- [ ] Workbook помещён в `data/` и его SHA-256 проверен.
+- [ ] Workbook и reports подтверждены как ignored.
+- [ ] Dependencies установлены.
+- [ ] Prisma validate/generate проходят.
+- [ ] Lint, typecheck, tests и build проходят.
+- [ ] Real-workbook verify проходит без изменения SHA.
+- [ ] ADR-012, architecture, changelog и roadmap прочитаны.
+- [ ] P0/P1/USER_PRIORITY counts сверены.
+- [ ] Никакие identity не подтверждаются без evidence.
+- [ ] Privacy audit проходит.
+- [ ] P2/P3, Prisma, UI, workbook и `main` не изменены без отдельного задания.

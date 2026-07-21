@@ -16,4 +16,6 @@ export { auditImportedKnowledgePrivacy } from "./privacy-auditor";
 export { normalizeTobaccoRow } from "./tobacco-row-parser";
 export { inspectExpertMixWorkbook, inspectExpertMixWorkbookData } from "./workbook-inspector";
 export { readExpertMixWorkbook, readExpertMixWorkbookBuffer } from "./workbook-reader";
+export { createUnresolvedIdentityReport } from "./unresolved-identity-report";
+export type { CreateUnresolvedIdentityReportInput, ExactIdentityAliasCandidate, MissingIdentityField, UnresolvedIdentityGroup, UnresolvedIdentityPriority, UnresolvedIdentityReport } from "./unresolved-identity-report";
 export type { ExcelCellValue, ExcelRowData, ExcelSheetData, ExcelSheetInspection, ExpertMixImportIssue, ExpertMixImportIssueCode, ExpertMixImportIssueSeverity, ExpertMixImportOptions, ExpertMixImportPlan, ExpertMixImportReport, ExpertMixImportResult, ExpertMixWorkbookData, ExpertMixWorkbookInspection, ImportedCatalogFact, ImportedDerivedCharacteristic, ImportedExpertMixRegistry, ImportedExternalRating, ImportedFrom, ImportedObservation, ImportedSourceReference, ImportedValue, ImportedValueSourceType, NormalizedMixComponentStagingRecord, NormalizedMixStagingRecord, NormalizedTobaccoStagingRecord, RawExcelEntityRow, RawMixComponentRow, RawMixRow, RawTobaccoRow } from "./types";

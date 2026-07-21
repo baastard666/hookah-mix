@@ -15,22 +15,22 @@ import type { DecisionApplicableIdentityRecord, TobaccoIdentityDecision } from "
 
 const expectedResolved = [
   ["identity-group-0001", "MustHave", "Клубничный сорбет", "musthave-sorbetto", null, "Sorbetto", "Клубничный сорбет"],
-  ["identity-group-0003", "BlackBurn", "Банановое суфле", "blackburn-на-расслабоне", null, "На расслабоне", "Банановое суфле"],
-  ["identity-group-0004", "BlackBurn", "Клюквенный морс", "blackburn-клюквенный-морс", null, "Клюквенный морс", null],
-  ["identity-group-0005", "BlackBurn", "На чиле", "blackburn-на-чилле", null, "На чилле", "На чиле"],
+  ["identity-group-0003", "BlackBurn", "Банановое суфле", "blackburn-na-rasslabone", null, "На расслабоне", "Банановое суфле"],
+  ["identity-group-0004", "BlackBurn", "Клюквенный морс", "blackburn-klyukvennyi-mors", null, "Клюквенный морс", null],
+  ["identity-group-0005", "BlackBurn", "На чиле", "blackburn-na-chille", null, "На чилле", "На чиле"],
   ["identity-group-0006", "MustHave", "Ежевика", "musthave-blackberry", null, "Blackberry", "Ежевика"],
   ["identity-group-0007", "MustHave", "Кислые ягоды", "musthave-sour-berries", null, "Sour Berries", "Кислые ягоды"],
   ["identity-group-0008", "BlackBurn", "Tic Tac", "blackburn-tic-tac", null, "Tic Tac", "Tik Tak"],
   ["identity-group-0009", "BlackBurn", "Ice Baby", "blackburn-ice-baby", null, "Ice Baby", "BLACKBURN feat. GUF - ICE BABY"],
   ["identity-group-0010", "MustHave", "Кислые тропики", "musthave-sour-tropic", null, "Sour Tropic", "Кислые тропики"],
   ["identity-group-0013", "MustHave", "Кислый цитрус", "musthave-sour-citrus", null, "Sour Citrus", "Кислый цитрус"],
-  ["identity-group-0016", "НАШ", "Карамель-цитрус", "nash-white-line-карамель-цитрус", "nash-white-line", "Карамель цитрус", "Карамель-цитрус"],
+  ["identity-group-0016", "НАШ", "Карамель-цитрус", "nash-white-line-karamel-tsitrus", "nash-white-line", "Карамель цитрус", "Карамель-цитрус"],
   ["identity-group-0025", "BlackBurn", "Raspberry Shock", "blackburn-shock-raspberry", "blackburn-shock", "Raspberry", "Raspberry Shock"],
   ["identity-group-0028", "BlackBurn", "Green Tea", "blackburn-green-tea", null, "Green Tea", "Зеленый чай"],
   ["identity-group-0034", "BlackBurn", "Миндальная груша", "blackburn-almond-pear", null, "Almond Pear", "Миндальная груша"],
   ["identity-group-0036", "MustHave", "Яблочные леденцы", "musthave-apple-drops", null, "Apple Drops", "Яблочные леденцы"],
   ["identity-group-0067", "MustHave", "Pineapple Rings", "musthave-pineapple-rings", null, "Pineapple Rings", "Ананасовый колечки"],
-  ["identity-group-0076", "НАШ", "Арбуз", "nash-black-line-арбуз", "nash-black-line", "Арбуз", null],
+  ["identity-group-0076", "НАШ", "Арбуз", "nash-black-line-arbuz", "nash-black-line", "Арбуз", null],
   ["identity-group-0098", "MustHave", "Ванильный крем", "musthave-vanilla-cream", null, "Vanilla Cream", "Ванильный крем"],
   ["identity-group-0099", "MustHave", "Кленовый пекан", "musthave-maple-pecan", null, "Maple Pecan", "Кленовый пекан"],
 ] as const;
@@ -121,8 +121,8 @@ describe("P1 identity decisions batch 1", () => {
 
   it("keeps НАШ products separate from Dogma identities", () => {
     const dogma = createDecisionFixture({ id: "dogma-batch-separation", manufacturer: "Dogma", manufacturerId: "dogma", productName: "Арбуз" });
-    expect(P1_IDENTITY_DECISION_REGISTRY_BATCH_1.getBySourceIdentity("НАШ", null, "Арбуз")).toMatchObject({ status: "FOUND", decision: { decision: { manufacturerId: "nash", canonicalProductId: "nash-black-line-арбуз" } } });
-    expect(dogma.decision.canonicalProductId).not.toBe("nash-black-line-арбуз");
+    expect(P1_IDENTITY_DECISION_REGISTRY_BATCH_1.getBySourceIdentity("НАШ", null, "Арбуз")).toMatchObject({ status: "FOUND", decision: { decision: { manufacturerId: "nash", canonicalProductId: "nash-black-line-arbuz" } } });
+    expect(dogma.decision.canonicalProductId).not.toBe("nash-black-line-arbuz");
   });
 
   it("maps the whole batch to public-safe output without evidence details", () => {

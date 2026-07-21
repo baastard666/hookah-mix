@@ -14,13 +14,14 @@
 - создан ручной identity-decision pipeline для P0/P1;
 - добавлен первый versioned batch из 20 рассмотренных P1 identity decisions: 19 `CONFIRMED`/`RESOLVED` и 1 безопасный `MANUFACTURER_ONLY`/`NEEDS_MORE_EVIDENCE`;
 - добавлен первый deterministic P0 batch: 15 `CONFIRMED`/`RESOLVED` identity-групп, покрывающих 31 occurrence и улучшающих распознавание 14 VERIFIED-миксов;
+- canonicalProductId стандартизирован как ASCII-only: 12 authoritative Unicode ID мигрированы, а immutable legacy registry содержит 18 compatibility mappings;
 - decision infrastructure не подключена к UI и не сохраняется в PostgreSQL.
 
 ## 2. Git baseline
 
 - Репозиторий: `https://github.com/baastard666/hookah-mix`.
 - Текущая ветка: `feature/v0.3.2-canonical-tobacco-catalog-expansion`.
-- Implementation baseline перед добавлением этого handoff: `25c01f62c9957c8a71c7104d269bef7ca65a8a48`.
+- Baseline перед ASCII-стандартизацией: `8b727298c9470bda73ba9e0e2b6133dc2434e675`.
 - Фактический HEAD после получения репозитория: commit, содержащий этот файл; проверить командой `git rev-parse HEAD`. Хеш handoff-коммита нельзя самоссылочно зафиксировать внутри его содержимого.
 - Ветка основана на `c09494ba4ec9bfff2f64e05f44b1ad4b24e9f53c`.
 - `main` остаётся на baseline v0.2.6; feature-ветки v0.2.7–v0.3.2 не merged в `main`.
@@ -90,6 +91,8 @@ v0.3.2 уже реализована в `src/lib/tobacco-identity-decisions/` и
 - P0/P1 review generator с отдельным `USER_PRIORITY`;
 - privacy-safe mapping, fixtures, 54 unit tests и verify script;
 - ADR-012 и архитектурная документация.
+
+ASCII-представление canonical ID дополнительно закреплено ADR-013. Все новые ID соответствуют `^[a-z0-9]+(?:-[a-z0-9]+)*$`; official English canonical name имеет приоритет, иначе применяется фиксированная русская транслитерация без смыслового перевода. Старые Unicode ID разрешаются только immutable legacy mapping, public-safe output возвращает новый ASCII ID.
 
 Первый operational batch P1 завершён в `src/lib/tobacco-identity-decisions/p1-decisions-batch-1.ts`: рассмотрены все 20 P1 group IDs, 19 продуктов получили canonical identity, а `MustHave / Ананас` сохранён как `MANUFACTURER_ONLY` без guessed alias к отдельному `Pineapple Rings`. Первый P0 batch завершён в `src/lib/tobacco-identity-decisions/p0-decisions-batch-1.ts`: 15/15 exact identities подтверждены evidence, отдельный P0 registry не создавался, authoritative aggregate объединяет P1 и P0. Следующий identity-шаг — следующая ограниченная ручная P0-партия; P2/P3 по-прежнему не применять. Следующая продуктовая итерация в roadmap — v0.3.3 Product Flavor Taxonomy Foundation.
 
@@ -239,6 +242,7 @@ Privacy audit: public privacy issues = 0; ratings не превращаются 
 12. Tag-derived data остаётся категориальной и не создаёт точные sensory values.
 13. Preliminary inference всегда `LOW`.
 14. Collision/duplicate/conflict не разрешаются выбором «лучшего» кандидата.
+15. `canonicalProductId` является ASCII-only; Unicode допустим только как ключ legacy lookup, не как публичный или новый canonical ID.
 
 ## 11. Privacy rules
 
@@ -308,7 +312,7 @@ pnpm verify:tobacco-identity-decisions "data/hookah_mix_database.xlsx"
 ```text
 Проект: hookah-mix
 Ветка: feature/v0.3.2-canonical-tobacco-catalog-expansion
-Implementation baseline: 25c01f62c9957c8a71c7104d269bef7ca65a8a48
+Implementation baseline до ASCII-миграции: 8b727298c9470bda73ba9e0e2b6133dc2434e675
 Фактический HEAD: проверить git rev-parse HEAD (должен включать CODEX_HANDOFF.md).
 
 Задача: продолжить operational часть v0.3.2 — следующая ограниченная ручная партия P0 identity records.
@@ -349,7 +353,8 @@ Implementation baseline: 25c01f62c9957c8a71c7104d269bef7ca65a8a48
 
 Последний подтверждённый baseline текущей ветки v0.3.2:
 
-- 639 tests passed, 17 test files;
+- 689 tests passed, 18 test files;
+- новых ASCII policy tests: 50;
 - новых P0 batch 1 tests: 38;
 - Prisma validate: passed;
 - Prisma generate: passed;
@@ -362,7 +367,9 @@ Implementation baseline: 25c01f62c9957c8a71c7104d269bef7ca65a8a48
 - workbook SHA до/после verify совпал;
 - privacy, immutability и deterministic checks: passed.
 
-Исторический baseline после unresolved report в v0.3.1: 500 tests. Использовать 554 как актуальное значение ветки v0.3.2.
+ASCII migration baseline после успешной проверки следует читать в `docs/engine-changelog/v0.3.2-ascii-canonical-product-ids.md`: 34 authoritative ID проверены, 12 Unicode ID мигрированы, 18 legacy mappings, collisions/conflicts/invalid IDs = 0. Фактическое итоговое число тестов и commit необходимо сверять по последнему отчёту/HEAD.
+
+Исторический baseline после unresolved report в v0.3.1: 500 tests. Актуальный baseline ветки после ASCII-стандартизации: 689 tests.
 
 ## 16. Known issues
 
@@ -396,7 +403,8 @@ Implementation baseline: 25c01f62c9957c8a71c7104d269bef7ca65a8a48
 
 - **Manufacturer** — канонический производитель с `manufacturerId`.
 - **Product Line** — отдельная подтверждённая линейка производителя; может отсутствовать.
-- **Canonical Product ID** — стабильный exact-normalized ID продукта.
+- **Canonical Product ID** — стабильный ASCII-only ID продукта по ADR-013.
+- **Legacy Canonical Product ID** — прежний Unicode ID, разрешённый только для lookup/migration compatibility.
 - **Source identity** — исходная тройка manufacturer/productLine/productName.
 - **Decision** — ручное решение по source identity.
 - **Evidence** — проверяемое основание решения с type/confidence.
@@ -424,7 +432,7 @@ Implementation baseline: 25c01f62c9957c8a71c7104d269bef7ca65a8a48
 - [ ] Prisma validate/generate проходят.
 - [ ] Lint, typecheck, tests и build проходят.
 - [ ] Real-workbook verify проходит без изменения SHA.
-- [ ] ADR-012, architecture, changelog и roadmap прочитаны.
+- [ ] ADR-012, ADR-013, architecture, changelog и roadmap прочитаны.
 - [ ] P0/P1/USER_PRIORITY counts сверены.
 - [ ] Никакие identity не подтверждаются без evidence.
 - [ ] Privacy audit проходит.

@@ -60,7 +60,8 @@ export type TobaccoIdentityDecision = {
 export type TobaccoIdentityDecisionIssueCode =
   | "DECISION_INVALID" | "DECISION_NOT_CONFIRMED" | "DECISION_EVIDENCE_MISSING" | "DECISION_CONFIDENCE_MISSING" | "DECISION_CANONICAL_ID_MISSING" | "DECISION_CONFLICT" | "DECISION_DUPLICATE" | "DECISION_SOURCE_IDENTITY_INVALID"
   | "PRODUCT_LINE_UNCONFIRMED" | "PRODUCT_LINE_AMBIGUOUS" | "PRODUCT_LINE_FICTITIOUS" | "PRODUCT_LINE_REQUIRED_BY_LEGACY_MODEL"
-  | "CANONICAL_ID_COLLISION" | "CANONICAL_ID_INVALID" | "CANONICAL_PRODUCT_CONFLICT" | "MANUFACTURER_CONFLICT"
+  | "CANONICAL_ID_COLLISION" | "CANONICAL_ID_INVALID" | "CANONICAL_ID_NON_ASCII" | "CANONICAL_ID_TRANSLITERATION_COLLISION" | "CANONICAL_PRODUCT_CONFLICT" | "MANUFACTURER_CONFLICT"
+  | "LEGACY_CANONICAL_ID_CONFLICT" | "LEGACY_CANONICAL_ID_CYCLE" | "LEGACY_CANONICAL_ID_DUPLICATE"
   | "REVIEW_RECORD_INVALID" | "REVIEW_STATE_NOT_APPLICABLE" | "P2_P3_DECISION_NOT_ALLOWED"
   | "PUBLIC_PRIVATE_REFERENCE_EXPOSED" | "PUBLIC_REVIEWER_NOTE_EXPOSED";
 export type TobaccoIdentityDecisionIssue = { readonly code: TobaccoIdentityDecisionIssueCode; readonly severity: "ERROR" | "WARNING"; readonly decisionId?: string; readonly groupId?: string; readonly message: string };
@@ -80,6 +81,21 @@ export type TobaccoIdentityDecisionRegistry = {
   readonly getBySourceIdentity: (manufacturer: string | null, productLine: string | null, productName: string | null) => TobaccoIdentityLookup;
   readonly getByCanonicalProductId: (canonicalProductId: string) => TobaccoIdentityLookup;
   readonly getByStatus: (status: TobaccoIdentityDecisionStatus) => readonly Readonly<TobaccoIdentityDecision>[];
+};
+
+export type LegacyCanonicalProductIdAlias = {
+  readonly legacyCanonicalProductId: string;
+  readonly canonicalProductId: string;
+  readonly reason: "ASCII_TRANSLITERATION_POLICY";
+};
+export type LegacyCanonicalProductIdLookup =
+  | { readonly status: "FOUND"; readonly legacyCanonicalProductId: string; readonly canonicalProductId: string }
+  | { readonly status: "NOT_FOUND" };
+export type LegacyCanonicalProductIdAliasRegistry = {
+  readonly version: "legacy-canonical-product-id-aliases-v1";
+  readonly size: number;
+  readonly list: () => readonly Readonly<LegacyCanonicalProductIdAlias>[];
+  readonly resolve: (legacyCanonicalProductId: string) => LegacyCanonicalProductIdLookup;
 };
 
 export type TobaccoIdentityReviewRecord = {

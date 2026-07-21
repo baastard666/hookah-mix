@@ -1,18 +1,16 @@
-import { normalizeTobaccoIdentityText } from "../tobacco-product-identity";
-
-const slug = (value: string): string => normalizeTobaccoIdentityText(value).replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "");
+import { createAsciiCanonicalSlug } from "../tobacco-canonical-id";
 
 export const normalizeCanonicalProductName = (value: string): string =>
   value.normalize("NFKC").trim().replace(/\s+/g, " ");
 
 export const createResolvedCanonicalProductId = (productLineId: string, productName: string): string | null => {
-  const line = slug(productLineId);
-  const product = slug(productName);
+  const line = createAsciiCanonicalSlug(productLineId);
+  const product = createAsciiCanonicalSlug(productName);
   return line && product ? `${line}-${product}` : null;
 };
 
 export const createManufacturerOnlyCanonicalProductId = (manufacturerId: string, productName: string): string | null => {
-  const manufacturer = slug(manufacturerId);
-  const product = slug(productName);
+  const manufacturer = createAsciiCanonicalSlug(manufacturerId);
+  const product = createAsciiCanonicalSlug(productName);
   return manufacturer && product ? `${manufacturer}-manufacturer-only-${product}` : null;
 };

@@ -1,6 +1,7 @@
 import { listManufacturerProfiles, listProductLineProfiles } from "../tobacco-profile";
+import { createAsciiCanonicalSlug } from "../tobacco-canonical-id";
 import type { ManufacturerProfile, ProductLineProfile } from "../tobacco-profile";
-import { cleanTobaccoIdentityText, normalizeTobaccoIdentityText, slugTobaccoIdentityText } from "./normalizer";
+import { cleanTobaccoIdentityText, normalizeTobaccoIdentityText } from "./normalizer";
 import type { CatalogTobaccoIdentityInput, NormalizedTobaccoIdentityInput, TobaccoIdentityMatchType, TobaccoIdentityResolution, TobaccoIdentityWarningCode } from "./types";
 
 type IdentityDirectory = {
@@ -72,7 +73,7 @@ export const resolveCatalogTobaccoIdentityWithDirectory = (input: CatalogTobacco
   const prefixToStrip = parsed?.alias ?? selectLongest(linePrefixes(productText, manufacturer.manufacturerId, { manufacturers: directory.manufacturers, productLines: [line] }))[0]?.alias;
   const productName = prefixToStrip ? removePrefix(productText, prefixToStrip) : cleanTobaccoIdentityText(productText);
   if (!productName) return { ...base, warnings, status: "INVALID_INPUT", reasonCodes: ["EMPTY_PRODUCT_NAME"] };
-  const productSlug = slugTobaccoIdentityText(productName);
+  const productSlug = createAsciiCanonicalSlug(productName);
   if (!productSlug) return { ...base, warnings, status: "INVALID_INPUT", reasonCodes: ["EMPTY_PRODUCT_NAME"] };
   return { ...base, warnings, status: "RESOLVED", manufacturerId: manufacturer.manufacturerId, manufacturer: manufacturer.manufacturer, productLineId: line.productLineId, productLine: line.productLine, productName, displayName: `${manufacturer.manufacturer} ${line.productLine} ${productName}`, productId: `${line.productLineId}-${productSlug}`, matchType, confidence: matchType === "EXPLICIT_FIELDS" ? "HIGH" : "MEDIUM", reasonCodes: [] };
 };

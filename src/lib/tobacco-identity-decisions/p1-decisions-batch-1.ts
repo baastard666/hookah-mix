@@ -1,4 +1,5 @@
 import { createTobaccoIdentityDecisionRegistry } from "./decision-registry";
+import { LEGACY_CANONICAL_PRODUCT_ID_ALIASES } from "./legacy-canonical-product-id-aliases";
 import { createCanonicalTobaccoProductId, normalizeDecisionText } from "./normalization";
 import type {
   ProductLineInterpretation,
@@ -180,4 +181,4 @@ const manufacturerOnly: TobaccoIdentityDecision = {
 };
 
 export const P1_IDENTITY_DECISIONS_BATCH_1: readonly TobaccoIdentityDecision[] = Object.freeze([...resolved, manufacturerOnly]);
-export const P1_IDENTITY_DECISION_REGISTRY_BATCH_1 = createTobaccoIdentityDecisionRegistry(P1_IDENTITY_DECISIONS_BATCH_1);
+export const P1_IDENTITY_DECISION_REGISTRY_BATCH_1 = createTobaccoIdentityDecisionRegistry(P1_IDENTITY_DECISIONS_BATCH_1, LEGACY_CANONICAL_PRODUCT_ID_ALIASES);

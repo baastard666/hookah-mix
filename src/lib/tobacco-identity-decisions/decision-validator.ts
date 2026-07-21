@@ -1,4 +1,5 @@
 import { FICTITIOUS_PRODUCT_LINES, PRODUCT_LINE_INTERPRETATIONS, TOBACCO_IDENTITY_DECISION_STATUSES, TOBACCO_IDENTITY_EVIDENCE_TYPES, TOBACCO_IDENTITY_REVIEW_STATES } from "./constants";
+import { ASCII_CANONICAL_PRODUCT_ID_PATTERN } from "./canonical-id";
 import { createCanonicalTobaccoProductId, normalizeDecisionText } from "./normalization";
 import type { TobaccoIdentityDecision, TobaccoIdentityDecisionIssue, TobaccoIdentityDecisionValidation } from "./types";
 
@@ -26,6 +27,8 @@ export const validateTobaccoIdentityDecision = (decision: TobaccoIdentityDecisio
     if (source.productLineInterpretation === "CONFIRMED" && !present(line)) issues.push(issue(decision, "PRODUCT_LINE_UNCONFIRMED", "CONFIRMED product line requires productLineId."));
     if (source.productLineInterpretation === "CONFIRMED_NONE" && line !== null) issues.push(issue(decision, "PRODUCT_LINE_UNCONFIRMED", "CONFIRMED_NONE requires nullable productLineId without a fictitious line."));
     if (source.productLineInterpretation === "UNKNOWN" || source.productLineInterpretation === "EMBEDDED_IN_MANUFACTURER" || source.productLineInterpretation === "EMBEDDED_IN_PRODUCT_NAME") issues.push(issue(decision, "PRODUCT_LINE_UNCONFIRMED", "Product-line interpretation requires manual confirmation before RESOLVED."));
+    if (decision.decision.canonicalProductId && /[^\x00-\x7F]/.test(decision.decision.canonicalProductId)) issues.push(issue(decision, "CANONICAL_ID_NON_ASCII", "Canonical product ID must contain ASCII characters only."));
+    else if (decision.decision.canonicalProductId && !ASCII_CANONICAL_PRODUCT_ID_PATTERN.test(decision.decision.canonicalProductId)) issues.push(issue(decision, "CANONICAL_ID_INVALID", "Canonical product ID must match the lowercase ASCII slug policy."));
     const expected = present(decision.decision.manufacturerId) && present(decision.decision.canonicalProductName) ? createCanonicalTobaccoProductId(decision.decision.manufacturerId, line, decision.decision.canonicalProductName) : null;
     if (decision.decision.canonicalProductId && decision.decision.canonicalProductId !== expected) issues.push(issue(decision, "CANONICAL_ID_INVALID", `Canonical ID must equal ${expected ?? "a valid deterministic ID"}.`));
   }

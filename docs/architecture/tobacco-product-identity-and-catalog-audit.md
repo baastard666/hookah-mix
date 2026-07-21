@@ -38,7 +38,7 @@ Resolver принимает только `catalogId`, `brand`, `productLine` и 
 
 ## Каноническая идентичность
 
-Успешный результат содержит вычисляемый `productId` вида `<productLineId>-<unicode-safe-product-slug>`. Он детерминирован, не использует дату или случайность и в v0.2.8 не сохраняется в базе.
+Успешный результат содержит вычисляемый `productId` вида `<productLineId>-<ascii-product-slug>`. Начиная с ADR-013 slug создаётся общим deterministic ASCII builder: official English имеет приоритет, иначе используется русская транслитерация без смыслового перевода. ID не использует дату или случайность и в v0.2.8 не сохраняется в базе.
 
 ## Catalog Audit
 

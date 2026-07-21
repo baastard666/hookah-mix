@@ -1,4 +1,5 @@
 import { createTobaccoIdentityDecisionRegistry } from "./decision-registry";
+import { LEGACY_CANONICAL_PRODUCT_ID_ALIASES } from "./legacy-canonical-product-id-aliases";
 import { P0_IDENTITY_DECISIONS_BATCH_1 } from "./p0-decisions-batch-1";
 import { P1_IDENTITY_DECISIONS_BATCH_1 } from "./p1-decisions-batch-1";
 import type { TobaccoIdentityDecision } from "./types";
@@ -8,4 +9,4 @@ export const TOBACCO_IDENTITY_DECISIONS: readonly TobaccoIdentityDecision[] = Ob
   ...P0_IDENTITY_DECISIONS_BATCH_1,
 ]);
 
-export const TOBACCO_IDENTITY_DECISION_REGISTRY = createTobaccoIdentityDecisionRegistry(TOBACCO_IDENTITY_DECISIONS);
+export const TOBACCO_IDENTITY_DECISION_REGISTRY = createTobaccoIdentityDecisionRegistry(TOBACCO_IDENTITY_DECISIONS, LEGACY_CANONICAL_PRODUCT_ID_ALIASES);

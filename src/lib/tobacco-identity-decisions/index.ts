@@ -1,6 +1,7 @@
 export { applyTobaccoIdentityDecisions } from "./decision-applier";
 export { auditTobaccoIdentityDecisionRegistry, auditTobaccoIdentityDecisions } from "./decision-audit";
 export { createTobaccoIdentityDecisionRegistry, getTobaccoIdentityDecision, serializeTobaccoIdentityDecisionRegistry, validateTobaccoIdentityDecisionRegistry } from "./decision-registry";
+export { ASCII_CANONICAL_PRODUCT_ID_PATTERN, createAsciiCanonicalSlug, createAsciiCanonicalTobaccoProductId, selectCanonicalProductSlug, transliterateRussianText } from "./canonical-id";
 export { resolveIdentityWithDecisions } from "./decision-resolver";
 export type { DecisionAwareIdentityResolution } from "./decision-resolver";
 export { validateTobaccoIdentityDecision } from "./decision-validator";
@@ -10,10 +11,11 @@ export { createDecisionFixture, createTobaccoIdentityDecisionFixtures } from "./
 export { P1_IDENTITY_DECISIONS_BATCH_1, P1_IDENTITY_DECISION_REGISTRY_BATCH_1 } from "./p1-decisions-batch-1";
 export { P0_IDENTITY_DECISIONS_BATCH_1 } from "./p0-decisions-batch-1";
 export { TOBACCO_IDENTITY_DECISIONS, TOBACCO_IDENTITY_DECISION_REGISTRY } from "./verified-decisions";
+export { createLegacyCanonicalProductIdAliasRegistry, LEGACY_CANONICAL_PRODUCT_ID_ALIASES, LEGACY_CANONICAL_PRODUCT_ID_ALIAS_REGISTRY, validateLegacyCanonicalProductIdAliases } from "./legacy-canonical-product-id-aliases";
 export { adaptExpertMixImportForIdentityDecisions } from "./import-adapter";
 export { createCanonicalTobaccoProductId, createSourceIdentityKey, normalizeDecisionText } from "./normalization";
 export { auditPublicTobaccoIdentityDecisions, mapTobaccoIdentityDecisionToPublic } from "./public-safe-mapper";
 export { createTobaccoIdentityReviewPlan, parseTobaccoIdentityReviewPlanJson, reviewPlanToCsv, reviewPlanToJson, reviewPlanToMarkdown, reviewRecordToDecision } from "./review-report";
 export { TobaccoIdentityDecisionError } from "./errors";
 export { FICTITIOUS_PRODUCT_LINES, PRODUCT_LINE_INTERPRETATIONS, TOBACCO_IDENTITY_DECISION_STATUSES, TOBACCO_IDENTITY_DECISION_VERSION, TOBACCO_IDENTITY_EVIDENCE_TYPES, TOBACCO_IDENTITY_REVIEW_STATES } from "./constants";
-export type { ApplyTobaccoIdentityDecisionsResult, CanonicalTobaccoProductFilters, DecisionApplicableIdentityRecord, IdentityCoverageCounts, IdentityCoverageScopeComparison, ProductLineInterpretation, PublicTobaccoIdentityDecision, TobaccoIdentityConfidence, TobaccoIdentityCoverageComparison, TobaccoIdentityDecision, TobaccoIdentityDecisionIssue, TobaccoIdentityDecisionIssueCode, TobaccoIdentityDecisionRegistry, TobaccoIdentityDecisionStatus, TobaccoIdentityDecisionValidation, TobaccoIdentityEvidence, TobaccoIdentityEvidenceType, TobaccoIdentityLookup, TobaccoIdentityReviewPlan, TobaccoIdentityReviewRecord, TobaccoIdentityReviewState, TobaccoIdentitySourcePriority } from "./types";
+export type { ApplyTobaccoIdentityDecisionsResult, CanonicalTobaccoProductFilters, DecisionApplicableIdentityRecord, IdentityCoverageCounts, IdentityCoverageScopeComparison, LegacyCanonicalProductIdAlias, LegacyCanonicalProductIdAliasRegistry, LegacyCanonicalProductIdLookup, ProductLineInterpretation, PublicTobaccoIdentityDecision, TobaccoIdentityConfidence, TobaccoIdentityCoverageComparison, TobaccoIdentityDecision, TobaccoIdentityDecisionIssue, TobaccoIdentityDecisionIssueCode, TobaccoIdentityDecisionRegistry, TobaccoIdentityDecisionStatus, TobaccoIdentityDecisionValidation, TobaccoIdentityEvidence, TobaccoIdentityEvidenceType, TobaccoIdentityLookup, TobaccoIdentityReviewPlan, TobaccoIdentityReviewRecord, TobaccoIdentityReviewState, TobaccoIdentitySourcePriority } from "./types";

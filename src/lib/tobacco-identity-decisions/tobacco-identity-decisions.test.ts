@@ -27,7 +27,10 @@ const unresolvedReport = (groups: readonly UnresolvedIdentityGroup[]): Unresolve
 describe("canonical identity decisions", () => {
   it("creates deterministic canonical ID with product line", () => expect(createCanonicalTobaccoProductId("darkside", "darkside-core", "Blueberry")).toBe("darkside-core-blueberry"));
   it("creates deterministic canonical ID without product line", () => expect(createCanonicalTobaccoProductId("BlackBurn", null, "Raspberry  Shock")).toBe("blackburn-raspberry-shock"));
-  it("is Unicode and case safe", () => expect(createCanonicalTobaccoProductId("НАШ", null, "Лаванда")).toBe(createCanonicalTobaccoProductId("наш", null, "  лаванда ")));
+  it("transliterates Unicode deterministically and case-insensitively", () => {
+    expect(createCanonicalTobaccoProductId("НАШ", null, "Лаванда")).toBe("nash-lavanda");
+    expect(createCanonicalTobaccoProductId("НАШ", null, "Лаванда")).toBe(createCanonicalTobaccoProductId("наш", null, "  лаванда "));
+  });
   it("rejects empty canonical input", () => expect(createCanonicalTobaccoProductId("brand", null, "---")).toBeNull());
   it("validates RESOLVED with line", () => expect(validateTobaccoIdentityDecision(fixtures.withLine)).toMatchObject({ valid: true, applicable: true }));
   it("validates RESOLVED without line", () => expect(validateTobaccoIdentityDecision(fixtures.withoutLine)).toMatchObject({ valid: true, applicable: true }));
@@ -59,7 +62,7 @@ describe("immutable registry and resolver", () => {
   it("returns typed NOT_FOUND", () => expect(getTobaccoIdentityDecision(createTobaccoIdentityDecisionRegistry([]), { manufacturer: "none", productName: "none" })).toEqual({ status: "NOT_FOUND" }));
   it("detects duplicate decisions", () => expect(validateTobaccoIdentityDecisionRegistry([fixtures.withoutLine, fixtures.duplicate]).map(item => item.code)).toContain("DECISION_DUPLICATE"));
   it("detects conflicting exact decisions", () => expect(validateTobaccoIdentityDecisionRegistry([fixtures.withoutLine, fixtures.conflict]).map(item => item.code)).toContain("DECISION_CONFLICT"));
-  it("detects canonical ID collision", () => expect(auditTobaccoIdentityDecisions([fixtures.collisionA, fixtures.collisionB]).map(item => item.code)).toContain("CANONICAL_ID_COLLISION"));
+  it("detects canonical ID collision", () => expect(auditTobaccoIdentityDecisions([fixtures.collisionA, fixtures.collisionB]).map(item => item.code)).toContain("CANONICAL_ID_TRANSLITERATION_COLLISION"));
   it("throws on collision", () => expect(() => createTobaccoIdentityDecisionRegistry([fixtures.collisionA, fixtures.collisionB])).toThrow());
   it("keeps НАШ and Dogma separate", () => {
     const registry = createTobaccoIdentityDecisionRegistry([fixtures.nashLavender, fixtures.dogmaLavender]);

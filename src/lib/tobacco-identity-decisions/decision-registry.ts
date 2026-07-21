@@ -1,11 +1,12 @@
 import { TobaccoIdentityDecisionError } from "./errors";
 import { auditTobaccoIdentityDecisions } from "./decision-audit";
+import { createLegacyCanonicalProductIdAliasRegistry } from "./legacy-canonical-product-id-aliases";
 import { createSourceIdentityKey, deepFreezeClone } from "./normalization";
-import type { TobaccoIdentityDecision, TobaccoIdentityDecisionRegistry, TobaccoIdentityDecisionStatus, TobaccoIdentityLookup } from "./types";
+import type { LegacyCanonicalProductIdAlias, TobaccoIdentityDecision, TobaccoIdentityDecisionRegistry, TobaccoIdentityDecisionStatus, TobaccoIdentityLookup } from "./types";
 
 const found = (decision: Readonly<TobaccoIdentityDecision> | undefined): TobaccoIdentityLookup => decision ? { status: "FOUND", decision } : { status: "NOT_FOUND" };
 export const validateTobaccoIdentityDecisionRegistry = (decisions: readonly TobaccoIdentityDecision[]) => auditTobaccoIdentityDecisions(decisions);
-export const createTobaccoIdentityDecisionRegistry = (source: readonly TobaccoIdentityDecision[]): TobaccoIdentityDecisionRegistry => {
+export const createTobaccoIdentityDecisionRegistry = (source: readonly TobaccoIdentityDecision[], legacyAliases: readonly LegacyCanonicalProductIdAlias[] = []): TobaccoIdentityDecisionRegistry => {
   const issues = auditTobaccoIdentityDecisions(source);
   const errors = issues.filter(issue => issue.severity === "ERROR");
   if (errors.length) throw new TobaccoIdentityDecisionError("Identity decision registry is invalid.", errors);
@@ -14,13 +15,19 @@ export const createTobaccoIdentityDecisionRegistry = (source: readonly TobaccoId
   const byGroup = new Map(decisions.map(decision => [decision.sourceIdentity.sourceGroupId, decision]));
   const bySource = new Map(decisions.map(decision => [createSourceIdentityKey(decision.sourceIdentity.manufacturer, decision.sourceIdentity.productLine, decision.sourceIdentity.productName), decision]));
   const byCanonical = new Map(decisions.filter(decision => decision.decision.canonicalProductId).map(decision => [decision.decision.canonicalProductId!, decision]));
+  const legacyRegistry = createLegacyCanonicalProductIdAliasRegistry(legacyAliases);
   const registry: TobaccoIdentityDecisionRegistry = {
     version: "tobacco-identity-decision-registry-v1", size: decisions.length,
     list: () => decisions,
     getById: id => found(byId.get(id)),
     getBySourceGroupId: groupId => found(byGroup.get(groupId)),
     getBySourceIdentity: (manufacturer, productLine, productName) => found(bySource.get(createSourceIdentityKey(manufacturer, productLine, productName))),
-    getByCanonicalProductId: canonicalProductId => found(byCanonical.get(canonicalProductId)),
+    getByCanonicalProductId: canonicalProductId => {
+      const direct = byCanonical.get(canonicalProductId);
+      if (direct) return found(direct);
+      const legacy = legacyRegistry.resolve(canonicalProductId);
+      return found(legacy.status === "FOUND" ? byCanonical.get(legacy.canonicalProductId) : undefined);
+    },
     getByStatus: (status: TobaccoIdentityDecisionStatus) => Object.freeze(decisions.filter(decision => decision.decision.status === status)),
   };
   return Object.freeze(registry);

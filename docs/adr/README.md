@@ -1,5 +1,6 @@
 # ADR index
 
+- [ADR-013](ADR-013-canonical-product-id-ascii-transliteration.md) — ASCII-only canonicalProductId, детерминированная транслитерация и legacy lookup.
 - [ADR-012](ADR-012-canonical-tobacco-identity-decisions.md) — подтверждённые identity decisions, nullable productLine и запрет fuzzy matching.
 
 - [ADR-001](ADR-001-domain-engines-separation.md) — разделение доменных движков.

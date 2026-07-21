@@ -41,7 +41,7 @@ describe("tobacco product identity", () => {
   it("preserves the remaining product name", () => { expect(resolved({ brand: "Darkside", name: "Core Lemon Mint Blast" }).productName).toBe("Lemon Mint Blast"); });
   it("rejects an empty product name after stripping", () => { expect(resolveCatalogTobaccoIdentity({ brand: "Darkside", name: "Core" })).toMatchObject({ status: "INVALID_INPUT", reasonCodes: ["EMPTY_PRODUCT_NAME"] }); });
   it("creates a deterministic product id", () => { const input = { brand: "Darkside", productLine: "Core", name: "Lemon Blast" }; expect(resolved(input).productId).toBe("darkside-core-lemon-blast"); expect(resolved(input)).toEqual(resolved(input)); });
-  it("keeps Cyrillic product identity Unicode-safe", () => { expect(resolved({ brand: "Хулиган", productLine: "Medium", name: "Ягодный микс" }).productId).toBe("hooligan-medium-ягодный-микс"); });
+  it("creates an ASCII product ID for Cyrillic display names", () => { expect(resolved({ brand: "Хулиган", productLine: "Medium", name: "Ягодный микс" }).productId).toBe("hooligan-medium-yagodnyi-miks"); });
   it("normalizes hyphens and multiple spaces", () => { const result = resolved({ brand: "Darkside", productLine: "Core", name: " Lemon — Mint   Blast " }); expect(result.productName).toBe("Lemon-Mint Blast"); expect(result.productId).toBe("darkside-core-lemon-mint-blast"); });
   it("normalizes identity text without deleting words", () => { expect(normalizeTobaccoIdentityText("  Darkside — Core  Lemon ")).toBe("darkside-core lemon"); });
 

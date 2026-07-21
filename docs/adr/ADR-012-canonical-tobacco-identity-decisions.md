@@ -1,5 +1,7 @@
 # ADR-012: Canonical Tobacco Identity Decisions
 
+> Представление `canonicalProductId` уточнено ADR-013: новые ID являются ASCII-only, а прежние Unicode ID поддерживаются только через legacy lookup.
+
 ## Context
 
 Excel audit содержит unresolved и manufacturer-only identity, включая продукты без явной productLine. Exact alias производителя недостаточен для подтверждения продукта, а существующий resolver создаёт RESOLVED только через известную line.

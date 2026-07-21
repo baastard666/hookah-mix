@@ -25,7 +25,9 @@ Decision layer является authoritative только для `CONFIRMED` р
 - с линией: `<manufacturerId>-<line-segment>-<productSlug>`;
 - без линии: `<manufacturerId>-<productSlug>`.
 
-ID строится exact-normalized Unicode-safe функцией, не зависит от display aliases, регистра, пробелов, evidence или source row. Если существующий `productLineId` уже содержит manufacturer prefix (`darkside-core`), prefix не дублируется. Registry выявляет collision, duplicate и conflict и не выбирает победителя.
+ID строится централизованным ASCII-only builder и соответствует `^[a-z0-9]+(?:-[a-z0-9]+)*$`. Для product slug приоритет имеет только подтверждённое официальное английское canonical name; иначе используется детерминированная транслитерация русского canonical display name без смыслового перевода. Display names и aliases не меняются и не переопределяют уже созданный ID. Если `productLineId` уже содержит manufacturer prefix (`darkside-core`), prefix не дублируется. Registry выявляет transliteration collision, duplicate и conflict и не выбирает победителя.
+
+Старые Unicode canonical IDs разрешаются только для lookup/migration через immutable `legacyCanonicalProductIdAliases`; публичный результат всегда содержит новый ASCII ID. Duplicate, conflict, self-reference и cycle в mapping запрещены. Подробное решение зафиксировано в ADR-013.
 
 ## Evidence и review
 

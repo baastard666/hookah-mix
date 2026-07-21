@@ -45,7 +45,7 @@ darkside-core-supernova
 darkside-manufacturer-only-кокос
 ```
 
-Маркер `manufacturer-only` не позволяет line-less ID совпасть с ID подтверждённой линейки. Неизвестный производитель не получает `canonicalProductId`. ID детерминирован и не использует UUID, дату, случайность, fuzzy matching или автоматическую транслитерацию.
+Маркер `manufacturer-only` не позволяет line-less ID совпасть с ID подтверждённой линейки. Неизвестный производитель не получает `canonicalProductId`. ID детерминирован и не использует UUID, дату, случайность или fuzzy matching. Начиная с ADR-013 единый ASCII builder использует фиксированную транслитерацию, если официальное английское canonical name не подтверждено.
 
 ## Состояния и верификация
 

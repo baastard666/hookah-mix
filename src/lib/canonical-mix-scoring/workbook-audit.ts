@@ -3,7 +3,9 @@ import type { FlavorProfile } from "../flavors/types";
 import type { ExpertMixImportResult, NormalizedMixComponentStagingRecord } from "../expert-mix-knowledge-import";
 import { calculateMixAnalysis } from "../mix-analysis";
 import { round } from "./constants";
-import type { CanonicalMixComponentInput, MixComponentResolutionStatus, PredictionConfidenceLabel } from "./types";
+import type { CanonicalMixComponentInput, MixComponentResolutionStatus, MixScoreBreakdown, PredictionConfidenceLabel } from "./types";
+
+export type AuditDistribution = { readonly min: number; readonly max: number; readonly average: number };
 
 export type CanonicalMixScoringAuditReport = {
   readonly version: "canonical-mix-scoring-audit-v1";
@@ -19,6 +21,9 @@ export type CanonicalMixScoringAuditReport = {
   readonly duplicateCanonicalComponentGroups: number;
   readonly mergedDuplicateComponents: number;
   readonly scoreDistribution: { readonly min: number; readonly max: number; readonly average: number };
+  readonly breakdownDistribution: Readonly<Record<keyof MixScoreBreakdown, AuditDistribution>>;
+  readonly fallbackProfileComponents: number;
+  readonly mixesWithRiskFlags: number;
   readonly confidenceDistribution: Readonly<Record<PredictionConfidenceLabel, number>>;
   readonly verifiedSmokeScores: number;
   readonly purelyPredictedScores: number;
@@ -46,17 +51,22 @@ const componentInput = (component: NormalizedMixComponentStagingRecord, percenta
 });
 const emptyResolutionCounts = (): Record<MixComponentResolutionStatus, number> => ({ RESOLVED: 0, MANUFACTURER_ONLY: 0, AMBIGUOUS: 0, UNRESOLVED: 0 });
 const emptyConfidence = (): Record<PredictionConfidenceLabel, number> => ({ "Предварительная": 0, "Средняя": 0, "Высокая": 0, "Подтверждённая": 0 });
+const breakdownKeys: readonly (keyof MixScoreBreakdown)[] = ["compatibility", "proportions", "componentQuality", "balance", "risks", "confirmations"];
+const distribution = (values: readonly number[]): AuditDistribution => ({ min: values.length ? Math.min(...values) : 0, max: values.length ? Math.max(...values) : 0, average: values.length ? round(values.reduce((sum, value) => sum + value, 0) / values.length, 1) : 0 });
 
 export const createCanonicalMixScoringAudit = (imported: ExpertMixImportResult): CanonicalMixScoringAuditReport => {
   const mixes = imported.mixes.filter(mix => mix.status === "VERIFIED").sort((a, b) => a.mixId.localeCompare(b.mixId, "en"));
-  const resolutionCounts = emptyResolutionCounts(); const confidenceDistribution = emptyConfidence(); const scores: number[] = [];
+  const resolutionCounts = emptyResolutionCounts(); const confidenceDistribution = emptyConfidence(); const scores: number[] = []; const breakdownValues = Object.fromEntries(breakdownKeys.map(key => [key, [] as number[]])) as Record<keyof MixScoreBreakdown, number[]>;
   const ambiguous = new Set<string>(); const unresolved = new Set<string>(); const errors: { mixId: string; code: string }[] = [];
-  const sumErrors: string[] = []; const componentErrors: string[] = []; let sourceComponents = 0; let effectiveComponents = 0; let duplicateGroups = 0; let mergedDuplicates = 0; let resolvedWeight = 0; let totalWeight = 0; let full = 0; let partial = 0; let none = 0;
+  const sumErrors: string[] = []; const componentErrors: string[] = []; let sourceComponents = 0; let effectiveComponents = 0; let fallbackProfileComponents = 0; let mixesWithRiskFlags = 0; let duplicateGroups = 0; let mergedDuplicates = 0; let resolvedWeight = 0; let totalWeight = 0; let full = 0; let partial = 0; let none = 0;
   for (const mix of mixes) {
     const source = imported.components.filter(item => item.mixId === mix.mixId).sort((a, b) => a.position - b.position); const shares = percentages(source); sourceComponents += source.length;
     try {
       const analysis = calculateMixAnalysis({ components: source.map((item, index) => componentInput(item, shares[index], Math.abs(shares.reduce((sum, value) => sum + value, 0) - 100) <= 0.0001)), verifiedSmokeScore: null });
       effectiveComponents += analysis.canonicalMix.effectiveComponentCount; duplicateGroups += analysis.canonicalMix.warnings.length; mergedDuplicates += analysis.canonicalMix.rawComponentCount - analysis.canonicalMix.effectiveComponentCount;
+      fallbackProfileComponents += analysis.canonicalMix.components.filter(component => component.effectiveProfile.usedFallback).length;
+      if (analysis.scoring.riskFlags.length > 0) mixesWithRiskFlags += 1;
+      for (const key of breakdownKeys) breakdownValues[key].push(analysis.scoring.scoreBreakdown[key]);
       if (analysis.scoring.componentResolutions.length !== source.length) componentErrors.push(mix.mixId);
       if (Math.abs(analysis.canonicalMix.totalPercentage - 100) > 0.0001) sumErrors.push(mix.mixId);
       let resolvedInMix = 0;
@@ -78,7 +88,7 @@ export const createCanonicalMixScoringAudit = (imported: ExpertMixImportResult):
     version: "canonical-mix-scoring-audit-v1", processedMixes: mixes.length, sourceComponents, effectiveComponents, resolutionCounts,
     resolvedPercentageByCount: sourceComponents ? round(resolutionCounts.RESOLVED / sourceComponents * 100, 1) : 0, resolvedPercentageByWeight: totalWeight ? round(resolvedWeight / totalWeight * 100, 1) : 0,
     fullyResolvedMixes: full, partiallyResolvedMixes: partial, unresolvedMixes: none, duplicateCanonicalComponentGroups: duplicateGroups, mergedDuplicateComponents: mergedDuplicates,
-    scoreDistribution: { min: scores.length ? Math.min(...scores) : 0, max: scores.length ? Math.max(...scores) : 0, average: scores.length ? round(scores.reduce((sum, value) => sum + value, 0) / scores.length, 1) : 0 },
+    scoreDistribution: distribution(scores), breakdownDistribution: Object.fromEntries(breakdownKeys.map(key => [key, distribution(breakdownValues[key])])) as Record<keyof MixScoreBreakdown, AuditDistribution>, fallbackProfileComponents, mixesWithRiskFlags,
     confidenceDistribution, verifiedSmokeScores: 0, purelyPredictedScores: scores.length, mixesWithAmbiguousComponents: [...ambiguous].sort(), mixesWithUnresolvedComponents: [...unresolved].sort(),
     scoringErrors: errors, sumPreservationErrors: sumErrors.sort(), componentPreservationErrors: componentErrors.sort(), privacyViolations,
   };

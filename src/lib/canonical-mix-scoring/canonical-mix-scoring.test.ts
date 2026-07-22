@@ -276,5 +276,25 @@ describe("registry and workbook integration", () => {
     expect(first.sumPreservationErrors).toEqual([]);
     expect(first.componentPreservationErrors).toEqual([]);
     expect(first.privacyViolations).toEqual([]);
+    expect(Object.keys(first.breakdownDistribution)).toEqual(["compatibility", "proportions", "componentQuality", "balance", "risks", "confirmations"]);
+    expect(first.fallbackProfileComponents).toBe(first.effectiveComponents);
+  });
+
+  it("keeps contrasting synthetic scenarios distinguishable without score-range adjustments", () => {
+    const balanced = calculateMixAnalysis({ components: [
+      component("Test A", "Coffee", 45, { profile: profile({ intensity: 7, sweetness: 4, acidity: 4, creaminess: 5 }), sourceProfileAvailable: true }),
+      component("Test B", "Cream", 55, { profile: profile({ intensity: 6, sweetness: 6, acidity: 3, creaminess: 8 }), sourceProfileAvailable: true }),
+    ] });
+    const conflicting = calculateMixAnalysis({ components: [
+      component("Test A", "Bitter", 50, { profile: profile({ intensity: 9, bitterness: 9, acidity: 9, dryness: 9 }), sourceProfileAvailable: true }),
+      component("Test B", "Sour", 50, { profile: profile({ intensity: 9, bitterness: 8, acidity: 10, dryness: 8 }), sourceProfileAvailable: true }),
+    ] });
+    const poorProportions = calculateMixAnalysis({ components: [
+      component("Test A", "Base", 95, { profile: profile({ intensity: 10 }), sourceProfileAvailable: true }),
+      component("Test B", "Trace", 5, { profile: profile({ intensity: 2 }), sourceProfileAvailable: true }),
+    ] });
+    expect(new Set([balanced.scoring.predictedQualityScore, conflicting.scoring.predictedQualityScore, poorProportions.scoring.predictedQualityScore]).size).toBeGreaterThan(1);
+    expect(conflicting.scoring.scoreBreakdown.risks).toBeLessThan(balanced.scoring.scoreBreakdown.risks);
+    expect(poorProportions.scoring.scoreBreakdown.proportions).toBeLessThan(balanced.scoring.scoreBreakdown.proportions);
   });
 });

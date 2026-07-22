@@ -514,3 +514,23 @@ ASCII migration baseline после успешной проверки следу
 - [ ] Никакие identity не подтверждаются без evidence.
 - [ ] Privacy audit проходит.
 - [ ] P2/P3, Prisma, UI, workbook и `main` не изменены без отдельного задания.
+
+## 20. v0.3.3 corrective patch status
+
+В feature-ветке выполнен corrective patch по локальному Mix `39` (`Test Kitchen Cola 80% + Element Мята 20%`). Реализованы раздельные catalog/canonical/profile statuses, фактическая роль компонента, причинная группировка рисков, минимальная корректировка процентов, повторный scoring предложенного варианта, честная precision при preliminary/fallback-профилях и локализованный компактный Result UI.
+
+Фактический результат после patch:
+
+- публичный профиль: «Кола + мята»;
+- current: score `7.2`, confidence `29.5%`, data quality `30%`, risk resistance `8.5`;
+- accepted proposal: Cola `75%`, Мята `25%`, score `7.4`, risk resistance `9.0`;
+- оба товара найдены в Prisma-каталоге, exact canonical resolution отсутствует;
+- оба source profile имеют preliminary status и не выдаются за подтверждённые canonical profiles;
+- связанный риск доминирования отображается один раз;
+- builder принимает текущие или предложенные пропорции из query и не создаёт Mix до явного запуска анализа.
+
+Проверочный Mix `20` содержит RESOLVED `Overdose Coffee`: UI показывает «Точно сопоставлен», не называет профиль fallback и даёт confidence `51.5%`.
+
+Обновлённый baseline: targeted `143/143`; full Vitest `898/898`, 27 files; Prisma validate/generate, lint, typecheck, production build и 12 `verify:*` passed; Registry 96; P0/P1 не менялись; scoring/privacy errors `0/0`; conflicts/collisions/invalid decisions `0/0/0`; HTTP `/`, `/catalog`, `/builder`, `/result/20`, `/result/39` — 200; desktop/mobile без overflow, badges не переносятся; workbook SHA до/после `AFBEB062EF5B23AC0340E8D5F15AD9E20FF41A6892146915E8FC8BB1008E2E8B`.
+
+Ограничения сохранены: Prisma schema/migrations/seed, Registry и identity decisions не менялись; новые табаки не импортировались; v0.3.4 не начиналась; merge в `main` не выполнялся. Локальные `data/hookah_mix_database.xlsx` и `reports/` не должны попадать в Git.

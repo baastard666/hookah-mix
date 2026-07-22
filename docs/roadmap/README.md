@@ -12,14 +12,15 @@
 - v0.3.0 Expert Mix Knowledge Schema Foundation
 - v0.3.1 Excel Knowledge Import & Audit
 - v0.3.2 Canonical Tobacco Catalog Expansion & Identity Decisions
+- v0.3.3 Canonical Mix Scoring Integration
 
 ## In progress
 
-Нет активной итерации после завершения v0.3.2.
+Финальный аудит feature-ветки v0.3.3 перед отдельным решением о merge.
 
 ## Planned directions
-- v0.3.3 Product Flavor Taxonomy Foundation;
-- v0.3.4 Expert Observation Aggregation;
+- Product Flavor Taxonomy Foundation — номер итерации `unknown`;
+- Expert Observation Aggregation — номер итерации `unknown`;
 - v0.3.5 Product Flavor Profile Registry;
 - v0.3.6 Tobacco Compatibility Engine;
 - v0.3.7 Mix Analysis Integration;

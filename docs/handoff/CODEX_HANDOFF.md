@@ -112,6 +112,8 @@ ASCII-представление canonical ID дополнительно зак�
 
 Реальный workbook diagnostic обработал 37 VERIFIED-миксов и 97 компонентов: 87 `RESOLVED`, 1 `MANUFACTURER_ONLY`, 7 `AMBIGUOUS`, 2 `UNRESOLVED`; coverage 89,7% по количеству и 90,5% по весу. Scoring/privacy errors = 0. Подробности: `docs/engine-changelog/v0.3.3-canonical-mix-scoring-integration.md`.
 
+Финальный UI/calibration patch v0.3.3 добавил в `/result/[id]` публичные объяснения score breakdown, confidence, data quality и resolution, централизованную локализацию вкусовых тегов, причины рисков и rule-based дедупликацию рекомендаций. Presentation-слой находится в `src/lib/mix-result-presentation/` и не пересчитывает engine score. Диапазон real-workbook `7.5–7.9` признан следствием одинаковых fallback-профилей (97 из 97), постоянного confirmation score 7.0 и малого числа risk flags, а не ошибкой формулы; веса не изменялись.
+
 ## 5. Архитектура и основные модули
 
 | Модуль | Путь | Назначение |
@@ -125,6 +127,7 @@ ASCII-представление canonical ID дополнительно зак�
 | Unresolved Identity Report | `src/lib/expert-mix-knowledge-import/unresolved-identity-report.ts` | Exact grouping и P0–P3 |
 | Identity Decisions | `src/lib/tobacco-identity-decisions/` | Manual review, immutable decisions, apply/coverage/filter |
 | Canonical Mix Scoring | `src/lib/canonical-mix-scoring/` | Resolution, effective profile, duplicate aggregation, confidence и scoring |
+| Mix Result Presentation | `src/lib/mix-result-presentation/` | Public-safe объяснения score, confidence, качества данных, локализация и риски |
 | Public-safe mapping | `src/lib/expert-mix-knowledge/public-mapper.ts`, `src/lib/tobacco-identity-decisions/public-safe-mapper.ts` | Удаление private/internal полей |
 | Privacy audit | `src/lib/expert-mix-knowledge-import/privacy-auditor.ts`, decision public audit | Проверка утечек |
 
@@ -354,7 +357,7 @@ pnpm verify:tobacco-identity-decisions "data/hookah_mix_database.xlsx"
 - exact-only resolution, profile precedence и duplicate aggregation;
 - predicted score/confidence/data quality/verified score не смешиваются;
 - real-workbook diagnostic и SHA;
-- 838 tests, build, 12 verify scripts и HTTP smoke baseline;
+- 863 tests, build, 12 verify scripts и HTTP smoke baseline;
 - public privacy и отсутствие workbook/reports в Git.
 
 Не менять identity decisions, Prisma schema и workbook без отдельного задания.
@@ -407,7 +410,7 @@ Implementation baseline до ASCII-миграции: 8b727298c9470bda73ba9e0e2b6
 
 Последний подтверждённый baseline v0.3.3:
 
-- 838/838 tests, 24 files; из них 26 новых canonical scoring tests;
+- 863/863 tests, 25 files; canonical scoring — 27 tests, public result presentation — 24 tests;
 - Prisma validate/generate, lint, typecheck и production build: passed;
 - все 12 `verify:*`: passed;
 - HTTP smoke `/`, `/catalog`, `/builder`, `/result/20`: 200;

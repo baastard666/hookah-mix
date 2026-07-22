@@ -1,18 +1,21 @@
 import type { MixAnalysisResult } from "../mix-analysis";
 import type { MixAnalysis } from "../mix-analyzer";
+import { groupCompatibilityRisks } from "../canonical-mix-scoring";
+import type { PreparedCanonicalComponent, PublicProfileStatus } from "../canonical-mix-scoring";
 import type { MixRecommendation, MixRecommendationResult, SuggestedMixVariant } from "../mix-recommendation";
 
 export type BreakdownKey = keyof MixAnalysisResult["scoring"]["scoreBreakdown"];
 export type PublicRiskLevel = "Низкий" | "Средний" | "Высокий";
 export type PublicRisk = { readonly id: string; readonly title: string; readonly level: PublicRiskLevel; readonly reason: string; readonly recommendation: string };
+export type ActualMixRole = "DOMINANT_BASE" | "DOMINANT" | "BASE" | "SUPPORT" | "SUPPORT_COOLING" | "ACCENT" | "ACCENT_COOLING";
 export type PublicRecommendation = Omit<MixRecommendation, "id" | "reasons" | "sourceRuleIds" | "knowledgeClaimIds"> & { readonly reasons: readonly { readonly code: MixRecommendation["reasons"][number]["code"] }[] };
 
 const TASTE_LABELS: Readonly<Record<string, string>> = Object.freeze({
   coffee: "кофе", cream: "сливки", dairy: "сливочные ноты", roasted: "обжаренные ноты", dessert: "десертные ноты",
   banana: "банан", vanilla: "ваниль", chocolate: "шоколад", "dark chocolate": "тёмный шоколад", cocoa: "какао",
-  mint: "мята", cooling: "холод", fresh: "свежесть", freshness: "свежесть", lemon: "лимон", citrus: "цитрус",
+  cola: "кола", mint: "мята", cooling: "холод", fresh: "свежесть", freshness: "свежесть", lemon: "лимон", citrus: "цитрус",
   mango: "манго", coconut: "кокос", berry: "ягоды", fruit: "фрукты", tropical: "тропические фрукты",
-  floral: "цветочные ноты", herbal: "травяные ноты", spice: "специи", smoky: "дымные ноты", tobacco: "табачные ноты",
+  floral: "цветочные ноты", herbal: "травянистые ноты", spice: "специи", smoky: "дымные ноты", tobacco: "табачные ноты",
   sweet: "сладость", sour: "кислые ноты", bakery: "выпечка", candy: "конфеты", nut: "орехи", beverage: "напиток", tea: "чай",
 });
 
@@ -28,7 +31,7 @@ const formatList = (items: readonly string[]): string => {
   if (unique.length < 2) return unique[0] ?? "мягкий смешанный профиль";
   return `${unique.slice(0, -1).join(", ")} и ${unique.at(-1)}`;
 };
-const scoreExplanation = (key: BreakdownKey, value: number): string => {
+const scoreExplanation = (key: BreakdownKey, value: number, riskCount = 0): string => {
   const strong = value >= 8; const weak = value < 6;
   const messages: Record<BreakdownKey, [string, string, string]> = {
     compatibility: ["Вкусовые направления хорошо поддерживают друг друга.", "Сочетание в целом согласовано, но отдельные ноты требуют внимания.", "Между вкусовыми направлениями есть заметное напряжение."],
@@ -38,13 +41,34 @@ const scoreExplanation = (key: BreakdownKey, value: number): string => {
     risks: ["Существенных вкусовых рисков не выявлено.", "Есть контролируемые риски, которые стоит учесть.", "Обнаружены факторы, способные заметно ухудшить результат."],
     confirmations: ["Расчёт опирается на хорошо подтверждённые данные.", "Часть исходных данных подтверждена, часть остаётся предварительной.", "Подтверждений пока недостаточно для высокой уверенности."],
   };
+  if (key === "risks" && riskCount > 0) return value >= 8 ? "Есть отдельные риски, но они не критичны." : value >= 5 ? "В составе присутствуют заметные риски." : "Риски могут существенно ухудшить результат.";
   return messages[key][strong ? 0 : weak ? 2 : 1];
 };
-const breakdownLabels: Record<BreakdownKey, string> = { compatibility: "Совместимость", proportions: "Пропорции", componentQuality: "Качество компонентов", balance: "Баланс", risks: "Риски", confirmations: "Подтверждения" };
+const breakdownLabels: Record<BreakdownKey, string> = { compatibility: "Совместимость", proportions: "Пропорции", componentQuality: "Потенциал компонентов", balance: "Баланс", risks: "Устойчивость к рискам", confirmations: "Подтверждения" };
 
-const statusLabel = (status: MixAnalysisResult["canonicalMix"]["componentResolutions"][number]["resolution"]["status"]): string => ({
-  RESOLVED: "Распознан точно", MANUFACTURER_ONLY: "Распознан только производитель", AMBIGUOUS: "Распознан неоднозначно", UNRESOLVED: "Не распознан",
+const statusLabel = (status: MixAnalysisResult["canonicalMix"]["componentResolutions"][number]["resolution"]["status"], catalogFound: boolean): string => ({
+  RESOLVED: "Точно сопоставлен",
+  MANUFACTURER_ONLY: "Подтверждён производитель, но конкретный продукт не определён",
+  AMBIGUOUS: "Найдено несколько canonical-вариантов; конкретная линейка не выбрана",
+  UNRESOLVED: catalogFound ? "Товар найден в каталоге, но точное canonical-сопоставление пока не подтверждено" : "Точное canonical-сопоставление отсутствует",
 }[status]);
+
+const profileStatusLabel = (status: PublicProfileStatus): string => ({
+  CONFIRMED: "Подтверждённый профиль", HIGH_RELIABILITY: "Высокая надёжность профиля", MEDIUM_RELIABILITY: "Средняя надёжность профиля",
+  PRELIMINARY: "Для расчёта используется предварительный профиль", FALLBACK: "Для расчёта используется предварительный профиль", MISSING: "Вкусовой профиль отсутствует",
+}[status]);
+
+export const actualMixRoleFor = (component: PreparedCanonicalComponent, dominantId: string): ActualMixRole => {
+  const dominant = String(component.flavorId) === dominantId;
+  const cooling = component.profile.cooling >= 7;
+  if (dominant && component.percentage >= 45) return "DOMINANT_BASE";
+  if (dominant) return "DOMINANT";
+  if (component.percentage >= 45) return "BASE";
+  if (component.percentage >= 20) return cooling ? "SUPPORT_COOLING" : "SUPPORT";
+  return cooling ? "ACCENT_COOLING" : "ACCENT";
+};
+const actualRoleLabel = (role: ActualMixRole): string => ({ DOMINANT_BASE: "основа и доминирующий компонент", DOMINANT: "доминирующий компонент", BASE: "основа", SUPPORT: "поддержка", SUPPORT_COOLING: "поддержка и холодящий компонент", ACCENT: "акцент", ACCENT_COOLING: "холодящий акцент" }[role]);
+const recommendedRoleLabel = (role: PreparedCanonicalComponent["effectiveProfile"]["recommendedRole"]): string | null => role ? ({ BASE: "основа", SUPPORT: "поддержка", ACCENT: "акцент", COOLING: "холодящий компонент", ACIDIFIER: "кислотный акцент", SWEETENER: "подсластитель", TEXTURE: "текстура", SPICE: "пряный акцент" }[role]) : null;
 
 const recommendationKey = (item: MixRecommendation): string => {
   const reason = [...new Set(item.reasons.map(entry => entry.code))].sort().join("|");
@@ -82,6 +106,50 @@ const riskRecommendation = (ruleId: string): string => {
   return "Скорректируйте конфликтующее направление небольшим шагом в 5–10%.";
 };
 
+const compatibilityPublicRisks = (analysis: MixAnalysisResult): PublicRisk[] => groupCompatibilityRisks(analysis.compatibility).map(group => {
+  const component = group.componentId ? analysis.canonicalMix.components.find(item => String(item.flavorId) === group.componentId) : undefined;
+  const componentName = component ? `${component.brandName} ${component.flavorName}` : "Компонент";
+  if (group.causeKey.startsWith("DOMINANT_COMPONENT_HIGH_SHARE:")) {
+    const secondary = analysis.mixProfile.secondaryComponents[0];
+    return {
+      id: group.causeKey,
+      title: "Сильное доминирование компонента",
+      level: group.severity === "HIGH" ? "Высокий" : group.severity === "MEDIUM" ? "Средний" : "Низкий",
+      reason: `${componentName} занимает ${component?.percentage ?? 0}% смеси и может подавить ${secondary && localizeTasteTag(secondary.flavorSlug) === "мята" ? "мяту" : "остальные ноты"}.`,
+      recommendation: `Уменьшите долю ${component ? componentName : "доминирующего компонента"}.`,
+    };
+  }
+  const strongest = group.factors[0];
+  return {
+    id: group.causeKey,
+    title: strongest.title,
+    level: group.severity === "HIGH" ? "Высокий" : group.severity === "MEDIUM" ? "Средний" : "Низкий",
+    reason: [...new Set(group.factors.map(item => item.description))].join(" "),
+    recommendation: riskRecommendation(strongest.ruleId),
+  };
+});
+
+const meaningfulProfileNotes = (analysis: MixAnalysisResult): { dominant: string[]; background: string[] } => {
+  const significantComponentNotes = analysis.canonicalMix.components
+    .filter(component => component.percentage >= 15)
+    .map(component => component.notes.filter(note => note.noteType === "DOMINANT").sort((a, b) => b.intensity - a.intensity || a.noteSlug.localeCompare(b.noteSlug, "en"))[0])
+    .filter((note): note is NonNullable<typeof note> => Boolean(note))
+    .map(note => localizeTasteTag(note.noteSlug || note.noteName));
+  const analytical = analysis.mixProfile.dominantNotes.map(note => localizeTasteTag(note.noteSlug || note.noteName));
+  const significant = [...new Set(significantComponentNotes)];
+  const dominant = (significant.length >= 2 ? significant : [...new Set([...significant, ...analytical])]).slice(0, 3);
+  const otherNotes = [...analysis.mixProfile.secondaryNotes, ...analysis.mixProfile.backgroundNotes, ...analysis.mixProfile.dominantNotes]
+    .map(note => localizeTasteTag(note.noteSlug || note.noteName))
+    .filter(note => !dominant.includes(note));
+  return { dominant, background: [...new Set(otherNotes)].slice(0, 5) };
+};
+
+const displayMetric = (value: number, reliability: "LOW" | "MEDIUM" | "HIGH"): string => {
+  if (reliability === "HIGH") return `${value}/10`;
+  if (reliability === "MEDIUM") return `ориентировочно ${Math.round(value * 2) / 2}/10`;
+  return `около ${Math.round(value)}/10`;
+};
+
 export const buildMixResultPresentation = (input: {
   readonly analysis: MixAnalysisResult;
   readonly legacyAnalysis: MixAnalysis;
@@ -100,25 +168,42 @@ export const buildMixResultPresentation = (input: {
   const fallbackShare = analysis.canonicalMix.components.filter(item => item.effectiveProfile.usedFallback).reduce((sum, item) => sum + item.percentage, 0);
   const lowReliabilityShare = analysis.canonicalMix.components.filter(item => item.effectiveProfile.profileReliability === "LOW").reduce((sum, item) => sum + item.percentage, 0);
   const qualityReasons: string[] = [];
+  const preliminaryShare = analysis.canonicalMix.components.filter(item => item.profileStatus === "PRELIMINARY").reduce((sum, item) => sum + item.percentage, 0);
   if (fallbackShare > 0) qualityReasons.push(`Для ${Math.round(fallbackShare)}% смеси использован нейтральный резервный профиль${lowReliabilityShare > 0 ? " с низкой надёжностью" : ""}.`);
+  else if (preliminaryShare > 0) qualityReasons.push(`Для ${Math.round(preliminaryShare)}% смеси используются предварительные вкусовые профили.`);
   else if (lowReliabilityShare > 0) qualityReasons.push(`У ${Math.round(lowReliabilityShare)}% смеси низкая надёжность профильных данных.`);
   if (uncertain) qualityReasons.push("Часть компонентов распознана не полностью или неоднозначно.");
   if (!analysis.scoring.isVerifiedSmokeScore) qualityReasons.push("Оценка реального покура ещё не добавлена.");
   if (!qualityReasons.length) qualityReasons.push("Идентичность и профильные данные компонентов подтверждены.");
 
-  const compatibilityRisks: PublicRisk[] = analysis.compatibility.conflicts.map(item => ({ id: item.ruleId, title: item.title, level: item.severity === "HIGH" ? "Высокий" : item.severity === "MEDIUM" ? "Средний" : "Низкий", reason: item.description, recommendation: riskRecommendation(item.ruleId) }));
-  const warningRisks: PublicRisk[] = analysis.compatibility.warnings.filter(item => item.impact < 0).map(item => ({ id: item.ruleId, title: item.title, level: Math.abs(item.impact) >= 0.7 ? "Высокий" : Math.abs(item.impact) >= 0.5 ? "Средний" : "Низкий", reason: item.description, recommendation: riskRecommendation(item.ruleId) }));
   const heatRisk = buildHeatRisk(legacyAnalysis, preparation, analysis.mixProfile.profile.heatResistance);
-  const risks = [...new Map([...(heatRisk ? [heatRisk] : []), ...compatibilityRisks, ...warningRisks].map(item => [item.id, item])).values()];
-  const dominantNotes = analysis.mixProfile.dominantNotes.map(note => localizeTasteTag(note.noteSlug || note.noteName));
-  const backgroundNotes = analysis.mixProfile.backgroundNotes.map(note => localizeTasteTag(note.noteSlug || note.noteName));
-  const profileSummary = `Ведущее направление — ${formatList(dominantNotes)}. ${analysis.mixProfile.dominantComponent.brandName} ${analysis.mixProfile.dominantComponent.flavorName} задаёт ${analysis.mixProfile.dominanceLevel === "CLEAR" ? "ясную основу" : "заметную основу"} смеси.`;
+  const risks = [...(heatRisk ? [heatRisk] : []), ...compatibilityPublicRisks(analysis)];
+  const profileNotes = meaningfulProfileNotes(analysis);
+  const dominantNotes = profileNotes.dominant;
+  const backgroundNotes = profileNotes.background;
+  const profileTitle = dominantNotes.slice(0, 2).map((note, index) => index === 0 ? note[0].toLocaleUpperCase("ru-RU") + note.slice(1) : note).join(" + ");
+  const profileSummary = `${profileTitle}. ${analysis.mixProfile.dominantComponent.brandName} ${analysis.mixProfile.dominantComponent.flavorName} задаёт ${analysis.mixProfile.dominanceLevel === "CLEAR" ? "ясную основу" : "заметную основу"} смеси.`;
   const strengths = [...new Map(analysis.compatibility.positiveFactors.map(item => [item.category, item.description])).values()].slice(0, 3);
+  const dominantId = String(analysis.mixProfile.dominantComponent.flavorId);
+  const hasPreliminary = analysis.canonicalMix.components.some(component => ["PRELIMINARY", "FALLBACK", "MISSING"].includes(component.profileStatus));
+  const displayReliability: "LOW" | "MEDIUM" | "HIGH" = hasPreliminary ? "LOW" : analysis.canonicalMix.components.some(component => component.effectiveProfile.profileReliability !== "HIGH") ? "MEDIUM" : "HIGH";
+  const acceptedProposal = analysis.proposalComparison?.accepted ? analysis.proposalComparison : undefined;
+  const mainRisk = risks.find(risk => risk.id !== "heat");
+  const proposalChange = acceptedProposal?.variant.components.find(component => component.suggestedPercentage < component.currentPercentage)
+    ?? acceptedProposal?.variant.components.find(component => component.currentPercentage !== component.suggestedPercentage);
+  const proposalComponent = proposalChange ? analysis.canonicalMix.components.find(component => String(component.flavorId) === proposalChange.componentId) : undefined;
+  const summary = mainRisk
+    ? `${hasPreliminary ? "Предварительно рабочее" : "Рабочее"} сочетание, но ${mainRisk.reason}`
+    : `${hasPreliminary ? "Предварительно " : ""}сочетание выглядит рабочим; значимых вкусовых рисков не выявлено.`;
+  const primaryAction = acceptedProposal && proposalChange && proposalComponent
+    ? `Попробуйте уменьшить долю ${proposalComponent.brandName} ${proposalComponent.flavorName} до ${proposalChange.suggestedPercentage}% и перераспределить освободившуюся долю между остальными компонентами.`
+    : "Точные пропорции стоит подтвердить контрольным покуром.";
 
   return {
-    predictedScore: { title: "Прогнозная оценка", value: analysis.scoring.predictedQualityScore, description: "Оценка рассчитана на основе состава, пропорций и известных характеристик табаков." },
+    summary: { text: summary, primaryAction },
+    predictedScore: { title: displayReliability === "LOW" ? "Ориентировочная прогнозная оценка" : "Прогнозная оценка", value: analysis.scoring.predictedQualityScore, description: "Оценка рассчитана на основе состава, пропорций и известных характеристик табаков." },
     verifiedSmoke: analysis.scoring.verifiedSmokeScore === null ? { title: "Реальный покур", value: null, description: "Реальный покур ещё не добавлен." } : { title: "Оценка после покура", value: analysis.scoring.verifiedSmokeScore, description: "Практическая оценка хранится отдельно от прогноза." },
-    breakdown: (Object.keys(breakdownLabels) as BreakdownKey[]).map(key => ({ key, label: breakdownLabels[key], value: analysis.scoring.scoreBreakdown[key], explanation: scoreExplanation(key, analysis.scoring.scoreBreakdown[key]) })),
+    breakdown: (Object.keys(breakdownLabels) as BreakdownKey[]).map(key => ({ key, label: breakdownLabels[key], value: analysis.scoring.scoreBreakdown[key], explanation: scoreExplanation(key, analysis.scoring.scoreBreakdown[key], key === "risks" ? groupCompatibilityRisks(analysis.compatibility).length : 0) })),
     confidence: { label: analysis.scoring.predictionConfidence.finalConfidenceLabel, score: analysis.scoring.predictionConfidence.score, summary: `Уверенность ${analysis.scoring.predictionConfidence.finalConfidenceLabel.toLocaleLowerCase("ru-RU")}: ${confidenceReasons.slice(0, 3).join(" ")}`, reasons: confidenceReasons.slice(0, 3) },
     dataQuality: { value: analysis.scoring.dataQuality, reasons: qualityReasons.slice(0, 3) },
     resolution: {
@@ -129,16 +214,30 @@ export const buildMixResultPresentation = (input: {
         const reliability = effective?.effectiveProfile.profileReliability;
         return {
         name: [item.resolution.canonicalManufacturer ?? item.rawIdentity.manufacturer, item.resolution.canonicalProductLine, item.resolution.canonicalProductName ?? item.rawIdentity.productName].filter(Boolean).join(" ") || "Неизвестный компонент",
-        percentage: item.percentage, status: statusLabel(item.resolution.status), profileReliability: reliability === "HIGH" ? "Высокая надёжность профиля" : reliability === "MEDIUM" ? "Средняя надёжность профиля" : "Низкая надёжность профиля",
+        percentage: item.percentage,
+        catalogStatus: effective?.catalogStatus === "FOUND" ? "Товар найден в каталоге" : "Товар отсутствует в каталоге",
+        status: statusLabel(item.resolution.status, effective?.catalogStatus === "FOUND"),
+        profileStatus: profileStatusLabel(effective?.profileStatus ?? "MISSING"),
+        profileReliability: reliability === "HIGH" ? "Высокая надёжность профиля" : reliability === "MEDIUM" ? "Средняя надёжность профиля" : "Низкая надёжность профиля",
+        actualMixRole: effective ? actualRoleLabel(actualMixRoleFor(effective, dominantId)) : "роль не определена",
+        recommendedCatalogRole: effective ? recommendedRoleLabel(effective.effectiveProfile.recommendedRole) : null,
       }; }),
     },
-    profile: { summary: profileSummary, dominantNotes, backgroundNotes },
+    profile: {
+      title: profileTitle, summary: profileSummary, dominantNotes, backgroundNotes,
+      metrics: (["strength", "sweetness", "acidity", "freshness", "creaminess", "bitterness"] as const).map(key => ({ key, value: analysis.mixProfile.profile[key], displayValue: displayMetric(analysis.mixProfile.profile[key], displayReliability) })),
+    },
     strengths,
     risks,
     actions: deduplicateRecommendations(analysis.recommendations).map(toPublicRecommendation),
     recommendationStatus: analysis.recommendations.status,
-    suggestedVariant: analysis.recommendations.summary.suggestedMixVariant as SuggestedMixVariant | undefined,
-    preparationRecommendations: [...new Set(legacyAnalysis.heatRecommendations)],
+    suggestedVariant: acceptedProposal?.variant as SuggestedMixVariant | undefined,
+    proposalComparison: acceptedProposal ? {
+      current: acceptedProposal.current,
+      proposed: acceptedProposal.proposed,
+      changes: acceptedProposal.variant.components,
+    } : undefined,
+    preparation: { sourceLabel: "Параметры исходного рецепта", recommendations: [...new Set(legacyAnalysis.heatRecommendations)] },
   } as const;
 };
 

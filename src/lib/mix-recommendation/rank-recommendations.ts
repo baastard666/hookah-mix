@@ -4,10 +4,12 @@ import type { MixRecommendation, RecommendationComponentInput, SuggestedMixVaria
 
 const targetFrom = (recommendation: MixRecommendation): { componentId: string; target: number } | undefined => {
   const action = recommendation.action;
-  if (action.type === "DECREASE_COMPONENT" || action.type === "INCREASE_COMPONENT") return { componentId: action.componentId, target: round((action.suggestedPercentageRange.min + action.suggestedPercentageRange.max) / 2, 1) };
+  if (action.type === "DECREASE_COMPONENT") return { componentId: action.componentId, target: round(action.suggestedPercentageRange.max, 1) };
+  if (action.type === "INCREASE_COMPONENT") return { componentId: action.componentId, target: round(action.suggestedPercentageRange.min, 1) };
   if (action.type === "REBALANCE_COMPONENTS" && action.primaryComponentId && action.adjustments.length) {
     const adjustment = action.adjustments.find(item => item.componentId === action.primaryComponentId) ?? action.adjustments[0];
-    return { componentId: adjustment.componentId, target: round((adjustment.suggestedPercentageRange.min + adjustment.suggestedPercentageRange.max) / 2, 1) };
+    const decreasing = adjustment.suggestedPercentageRange.max < adjustment.currentPercentage;
+    return { componentId: adjustment.componentId, target: round(decreasing ? adjustment.suggestedPercentageRange.max : adjustment.suggestedPercentageRange.min, 1) };
   }
   return undefined;
 };

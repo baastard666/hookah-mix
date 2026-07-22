@@ -6,6 +6,8 @@ export type MixComponentResolutionStatus = "RESOLVED" | "MANUFACTURER_ONLY" | "A
 export type MixComponentMatchMethod = "EXACT_SOURCE_IDENTITY" | "EXACT_ALIAS" | "CANONICAL_ID" | "MANUFACTURER_ONLY" | "NONE";
 export type MixComponentResolutionConfidence = "LOW" | "MEDIUM" | "HIGH";
 export type EffectiveProfileReliability = "LOW" | "MEDIUM" | "HIGH";
+export type CatalogStatus = "FOUND" | "NOT_FOUND";
+export type PublicProfileStatus = "CONFIRMED" | "HIGH_RELIABILITY" | "MEDIUM_RELIABILITY" | "PRELIMINARY" | "FALLBACK" | "MISSING";
 export type PredictionConfidenceLabel = "Предварительная" | "Средняя" | "Высокая" | "Подтверждённая";
 export type EffectiveProfileSource =
   | "USER_SMOKE"
@@ -45,6 +47,8 @@ export type MixComponentIdentityInput = {
 };
 
 export type CanonicalMixComponentInput = RecommendationComponentInput & {
+  readonly catalogStatus?: CatalogStatus;
+  readonly sourceProfileStatus?: string | null;
   readonly identity?: MixComponentIdentityInput;
   readonly profileCandidates?: readonly EffectiveProfileCandidate[];
   readonly sourceProfileAvailable?: boolean;
@@ -90,6 +94,8 @@ export type EffectiveTobaccoProfile = {
 };
 
 export type PreparedCanonicalComponent = RecommendationComponentInput & {
+  readonly catalogStatus: CatalogStatus;
+  readonly profileStatus: PublicProfileStatus;
   readonly sourceComponentIds: readonly string[];
   readonly resolution: MixComponentResolution["resolution"];
   readonly effectiveProfile: EffectiveTobaccoProfile;

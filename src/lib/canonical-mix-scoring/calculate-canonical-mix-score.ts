@@ -1,6 +1,7 @@
 import type { MixCompatibilityResult } from "../mix-compatibility";
 import { CANONICAL_MIX_SCORING_VERSION, clamp, MIX_SCORE_WEIGHTS, round } from "./constants";
 import { calculateMixConfidence } from "./calculate-mix-confidence";
+import { groupCompatibilityRisks } from "./risk-groups";
 import type { CanonicalMixScoringResult, MixScoreBreakdown, PreparedCanonicalMix } from "./types";
 
 const weighted = (mix: PreparedCanonicalMix, selector: (index: number) => number): number => {
@@ -12,9 +13,8 @@ const componentQuality = (mix: PreparedCanonicalMix): number => weighted(mix, in
   return (profile.naturalness + profile.persistence + profile.heatResistance + profile.juiciness + (10 - Math.abs(profile.intensity - 7))) / 5;
 });
 const riskScore = (compatibility: MixCompatibilityResult): number => {
-  const severityPenalty = compatibility.conflicts.reduce((sum, item) => sum + (item.severity === "HIGH" ? 1.5 : item.severity === "MEDIUM" ? 1 : 0.5), 0);
-  const warningPenalty = compatibility.warnings.filter(item => item.impact < 0).reduce((sum, item) => sum + Math.min(0.5, Math.abs(item.impact) / 2), 0);
-  return clamp(10 - severityPenalty - warningPenalty, 0, 10);
+  const penalty = groupCompatibilityRisks(compatibility).reduce((sum, group) => sum + (group.severity === "HIGH" ? 1.5 : group.severity === "MEDIUM" ? 1 : 0.5), 0);
+  return clamp(10 - penalty, 0, 10);
 };
 const confirmationScore = (mix: PreparedCanonicalMix): number => weighted(mix, index => {
   const component = mix.components[index];
@@ -36,7 +36,7 @@ export const calculateCanonicalMixScore = (input: { readonly preparedMix: Prepar
   const predictedQualityScore = round(Object.entries(MIX_SCORE_WEIGHTS).reduce((sum, [key, weight]) => sum + scoreBreakdown[key as keyof MixScoreBreakdown] * weight, 0), 1);
   const verifiedSmokeScore = input.verifiedSmokeScore === undefined || input.verifiedSmokeScore === null ? null : round(clamp(input.verifiedSmokeScore, 0, 10), 1);
   const riskFlags = [...new Set([...compatibility.conflicts.map(item => item.ruleId), ...compatibility.warnings.filter(item => item.impact < 0).map(item => item.ruleId)])].sort();
-  const confidence = calculateMixConfidence(preparedMix, { verifiedSmokeScore, knownRiskCount: riskFlags.length });
+  const confidence = calculateMixConfidence(preparedMix, { verifiedSmokeScore, knownRiskCount: groupCompatibilityRisks(compatibility).length });
   const unresolvedNotes = preparedMix.componentResolutions.filter(item => item.resolution.status !== "RESOLVED").sort((a, b) => b.percentage - a.percentage || a.sourceComponentId.localeCompare(b.sourceComponentId, "en")).map(item => `${item.normalizedIdentity.manufacturer || "не указан"} / ${item.normalizedIdentity.productName || "не указан"}: ${item.resolution.status}, ${round(item.percentage, 1)}%`);
   return {
     version: CANONICAL_MIX_SCORING_VERSION, predictedQualityScore, predictionConfidence: confidence, verifiedSmokeScore, isVerifiedSmokeScore: verifiedSmokeScore !== null,

@@ -3,6 +3,15 @@ import { buildEffectiveTobaccoProfile } from "./build-effective-tobacco-profile"
 import { resolveMixComponentIdentity } from "./resolve-mix-component-identity";
 import type { CanonicalMixComponentInput, CanonicalMixWarning, PreparedCanonicalComponent, PreparedCanonicalMix } from "./types";
 
+const profileStatusFor = (input: CanonicalMixComponentInput, effective: ReturnType<typeof buildEffectiveTobaccoProfile>): PreparedCanonicalComponent["profileStatus"] => {
+  if (effective.usedFallback) return "FALLBACK";
+  if (input.sourceProfileStatus === "VERIFIED") return "CONFIRMED";
+  if (input.sourceProfileStatus === "DRAFT") return "PRELIMINARY";
+  if (effective.profileReliability === "HIGH") return "HIGH_RELIABILITY";
+  if (effective.profileReliability === "MEDIUM") return "MEDIUM_RELIABILITY";
+  return effective.profileSource ? "PRELIMINARY" : "MISSING";
+};
+
 type PreparedRaw = { readonly component: PreparedCanonicalComponent; readonly identity: ReturnType<typeof resolveMixComponentIdentity>; readonly index: number };
 const groupKey = (item: PreparedRaw): string => item.component.resolution.status === "RESOLVED" && item.component.resolution.canonicalProductId
   ? `canonical:${item.component.resolution.canonicalProductId}` : `raw:${item.component.sourceComponentIds[0]}`;
@@ -17,6 +26,7 @@ export const prepareCanonicalMix = (components: readonly CanonicalMixComponentIn
     const component: PreparedCanonicalComponent = {
       flavorId, brandName, flavorName, flavorSlug: resolved && identity.resolution.canonicalProductId ? identity.resolution.canonicalProductId : input.flavorSlug,
       percentage: input.percentage, profile: structuredClone(effective.profile), notes: effective.notes.map(note => ({ ...note })), dataConfidenceScore: effective.profileReliabilityScore,
+      catalogStatus: input.catalogStatus ?? (input.identity?.sourceType === "PRISMA_FLAVOR" ? "FOUND" : "NOT_FOUND"), profileStatus: profileStatusFor(input, effective),
       sourceComponentIds: [identity.sourceComponentId], resolution: identity.resolution, effectiveProfile: effective,
       proportionConfirmed: input.proportionConfirmed ?? false, independentEvidenceCount: Math.max(0, Math.floor(input.independentEvidenceCount ?? 0)),
     };

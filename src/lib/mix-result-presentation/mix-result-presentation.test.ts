@@ -33,7 +33,7 @@ describe("mix result public presentation", () => {
   it("8. reports a fully resolved composition", () => expect(present().resolution).toMatchObject({ total: 2, resolved: 2, ambiguous: 0, unresolved: 0 }));
   it("9. reports an ambiguous component without guessing it", () => {
     const result = present([component("Sebero", "Vanilla", 50), resolved()[0]]);
-    expect(result.resolution.ambiguous).toBe(1); expect(result.resolution.components.some(item => item.status === "Распознан неоднозначно")).toBe(true);
+    expect(result.resolution.ambiguous).toBe(1); expect(result.resolution.components.some(item => item.status.includes("несколько canonical-вариантов"))).toBe(true);
   });
   it("10. reports an unresolved component", () => {
     const result = present([component("не указан", "Освежающий мохито", 50), resolved()[0]]);
@@ -72,4 +72,36 @@ describe("mix result public presentation", () => {
     const result = present([component("BlackBurn", "Tic Tac", 50, { note: "coffee", category: "COFFEE" }), component("MustHave", "Клубничный сорбет", 50, { note: "cream", category: "DAIRY" })]);
     expect(result.profile.dominantNotes).toEqual(expect.arrayContaining(["кофе", "сливки"])); expect(JSON.stringify(result.profile)).not.toMatch(/\b(coffee|cream)\b/);
   });
+});
+
+const colaMint = (): CanonicalMixComponentInput[] => {
+  const cola = component("Test Kitchen", "Cola", 80, { note: "cola", category: "DRINK", profile: profile({ intensity: 8, sweetness: 8, spiceLevel: 5, freshness: 4 }) });
+  const mint = component("Element", "Мята", 20, { note: "mint", category: "COOLING", profile: profile({ intensity: 8, cooling: 9, freshness: 10, herbalLevel: 7 }) });
+  return [
+    { ...cola, catalogStatus: "FOUND", sourceProfileStatus: "DRAFT", profileCandidates: [{ type: "PRELIMINARY_PROFILE", profile: {}, reliabilityScore: 30, recommendedRole: "SUPPORT" }], notes: [...cola.notes, { noteId: "spice", noteName: "spice", noteSlug: "spice", category: "SPICE", intensity: 6, noteType: "SECONDARY" }] },
+    { ...mint, catalogStatus: "FOUND", sourceProfileStatus: "DRAFT", notes: [...mint.notes, { noteId: "herbal", noteName: "herbal", noteSlug: "herbal", category: "HERBAL", intensity: 5, noteType: "SECONDARY" }] },
+  ];
+};
+
+describe("v0.3.3 corrective public presentation", () => {
+  const corrective = () => present(colaMint(), null, { overheatingRisk: "низкий", heatRecommendations: [] });
+  it("22. distinguishes catalog presence from canonical resolution", () => expect(corrective().resolution.components[0]).toMatchObject({ catalogStatus: "Товар найден в каталоге", status: expect.stringContaining("canonical-сопоставление") }));
+  it("23. shows preliminary profile separately", () => expect(corrective().resolution.components.every(item => item.profileStatus.includes("предварительный профиль"))).toBe(true));
+  it("24. preserves cola and mint in the public profile", () => expect(corrective().profile.dominantNotes).toEqual(["кола", "мята"]));
+  it("25. does not replace mint with spice", () => { const result = corrective(); expect(result.profile.summary).toContain("Кола + мята"); expect(result.profile.dominantNotes).not.toContain("специи"); });
+  it("26. exposes an actual dominant/base role for the 80% component", () => expect(corrective().resolution.components[0].actualMixRole).toBe("основа и доминирующий компонент"));
+  it("27. exposes mint as cooling support", () => expect(corrective().resolution.components[1].actualMixRole).toBe("поддержка и холодящий компонент"));
+  it("27a. keeps the catalog role separate from the actual role", () => expect(corrective().resolution.components[0]).toMatchObject({ actualMixRole: "основа и доминирующий компонент", recommendedCatalogRole: "поддержка" }));
+  it("28. labels the risk score as resistance", () => expect(corrective().breakdown.find(item => item.key === "risks")?.label).toBe("Устойчивость к рискам"));
+  it("29. does not deny risks when a high flag exists", () => expect(corrective().breakdown.find(item => item.key === "risks")?.explanation).not.toContain("не выявлено"));
+  it("30. groups dominance warnings into one public risk", () => expect(corrective().risks.filter(item => item.title.includes("доминирование"))).toHaveLength(1));
+  it("31. accepted proposal is the minimal 80 to 75 change", () => expect(corrective().suggestedVariant?.components).toEqual(expect.arrayContaining([expect.objectContaining({ currentPercentage: 80, suggestedPercentage: 75 })])));
+  it("32. accepted proposal has a deterministic rescore", () => { const result = corrective(); expect(result.proposalComparison?.proposed.predictedQualityScore).toBeGreaterThanOrEqual(result.proposalComparison?.current.predictedQualityScore ?? 10); expect(result).toEqual(corrective()); });
+  it("33. low reliability uses honest precision", () => expect(corrective().profile.metrics.every(metric => metric.displayValue.startsWith("около"))).toBe(true));
+  it("34. renames componentQuality", () => expect(corrective().breakdown.find(item => item.key === "componentQuality")?.label).toBe("Потенциал компонентов"));
+  it("35. labels stored preparation parameters", () => expect(corrective().preparation.sourceLabel).toBe("Параметры исходного рецепта"));
+  it("36. contains no raw internal taste tags", () => expect(JSON.stringify(corrective().profile)).not.toMatch(/\b(cola|mint|spice|herbal|cooling)\b/));
+  it("37. builds a concise deterministic summary", () => { const result = corrective(); expect(result.summary.text).toContain("Test Kitchen Cola"); expect(result.summary.primaryAction).toContain("75%"); });
+  it("38. keeps public output private", () => expect(JSON.stringify(corrective())).not.toMatch(/decisionId|sourceRow|debugReasons|sourceUrl|evidenceUrl|author|C:\\/));
+  it("39. labels a real neutral fallback separately", () => { const fallback = component("Unknown", "Mystery", 50, { sourceProfileAvailable: false }); const result = present([fallback, resolved()[0]]); expect(result.resolution.components.some(item => item.profileStatus.includes("предварительный профиль"))).toBe(true); });
 });

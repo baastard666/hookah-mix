@@ -13,6 +13,7 @@ const analyze = (components: RecommendationComponentInput[]) => calculateMixAnal
 const berryLavender = (berry: number, lavender: number) => [component("berry", berry, "blueberry", "BERRY", { intensity: 6 }), component("lavender", lavender, "lavender", "FLORAL", { intensity: 10, floralLevel: 10 })];
 const coffeeCream = () => [component("coffee", 60, "coffee", "COFFEE", { intensity: 6, bitterness: 4 }), component("cream", 40, "cream", "DAIRY", { intensity: 5, creaminess: 9, dessertLevel: 8 })];
 const coffeeCitrus = () => [component("coffee", 50, "coffee", "COFFEE", { intensity: 7 }), component("citrus", 50, "lemon", "CITRUS", { intensity: 7, acidity: 7, freshness: 7 })];
+const colaMint = () => [component("cola", 80, "cola", "DRINK", { intensity: 8, sweetness: 8, spiceLevel: 5 }), component("mint", 20, "mint", "COOLING", { intensity: 8, cooling: 9, freshness: 10, herbalLevel: 7 })];
 
 describe("Mix Analysis Service", () => {
   it("1. builds the complete pipeline", () => expect(analyze(coffeeCream())).toMatchObject({ mixProfile: { metadata: { calculationVersion: "mix-profile-v1" } }, compatibility: { metadata: { calculationVersion: "mix-compatibility-v1" } }, recommendations: { version: "mix-recommendation-v1" } }));
@@ -29,4 +30,10 @@ describe("Mix Analysis Service", () => {
   it("12. suggested variant totals 100", () => expect(analyze(berryLavender(60, 40)).recommendations.summary.suggestedMixVariant?.components.reduce((sum, item) => sum + item.suggestedPercentage, 0)).toBe(100));
   it("13. recommendation limit remains five", () => expect(analyze(berryLavender(60, 40)).recommendations.recommendations.length).toBeLessThanOrEqual(5));
   it("14. summary mirrors Recommendation Engine", () => { const result = analyze(coffeeCitrus()); expect(result.summary.recommendationCount).toBe(result.recommendations.recommendations.length); expect(result.summary.status).toBe(result.recommendations.status); });
+  it("15. rescoring evaluates a proposed mix", () => expect(analyze(colaMint()).proposalComparison).toBeDefined());
+  it("16. accepted proposal reduces the target risk", () => expect(analyze(colaMint()).proposalComparison).toMatchObject({ accepted: true, targetRiskReduced: true }));
+  it("17. accepted proposal totals 100", () => expect(analyze(colaMint()).proposalComparison?.variant.components.reduce((sum, item) => sum + item.suggestedPercentage, 0)).toBe(100));
+  it("18. proposal uses the same input confidence", () => { const result = analyze(colaMint()); expect(result.proposalComparison?.proposed.predictionConfidenceScore).toBe(result.proposalComparison?.current.predictionConfidenceScore); });
+  it("19. proposal comparison is deterministic", () => expect(analyze(colaMint()).proposalComparison).toEqual(analyze(colaMint()).proposalComparison));
+  it("20. rejected proposals carry a reason", () => { const result = analyze(berryLavender(60, 40)); if (result.proposalComparison && !result.proposalComparison.accepted) expect(result.proposalComparison.rejectionReasons.length).toBeGreaterThan(0); else expect(result.proposalComparison).toBeDefined(); });
 });

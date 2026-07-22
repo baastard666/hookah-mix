@@ -157,4 +157,8 @@ describe("Recommendation validation and invariants", () => {
   });
   it("41. Knowledge Registry remains valid", () => expect(validateKnowledgeRegistry(FLAVOR_KNOWLEDGE_REGISTRY).success).toBe(true));
   it("42. result exposes stable version", () => expect(calculate(coffeeCream()).version).toBe("mix-recommendation-v1"));
+  it("43. chooses the nearest decrease boundary instead of the midpoint", () => {
+    const result = calculate([component("cola", 80, [note("cola", "DRINK")], { intensity: 8 }), component("mint", 20, [note("mint", "COOLING")], { intensity: 8, cooling: 9 })]);
+    expect(result.summary.suggestedMixVariant?.components).toEqual(expect.arrayContaining([expect.objectContaining({ componentId: "cola", currentPercentage: 80, suggestedPercentage: 75 })]));
+  });
 });

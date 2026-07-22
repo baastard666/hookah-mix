@@ -21,11 +21,15 @@
 - добавлен финальный P0 batch 6: `Sebero / Черника` сохранён как `AMBIGUOUS` из-за подтверждённых кандидатов Classic/Bilberry и Limited Edition/Blueberry; все 76 исходных P0-групп теперь имеют versioned outcome;
 - финальный интеграционный аудит v0.3.2 зафиксирован в `docs/engine-changelog/v0.3.2-canonical-tobacco-catalog-expansion-release-summary.md`;
 - canonicalProductId стандартизирован как ASCII-only: 12 authoritative Unicode ID мигрированы, а immutable legacy registry содержит 18 compatibility mappings;
-- decision infrastructure не подключена к UI и не сохраняется в PostgreSQL.
+- v0.3.3 подключает authoritative decision Registry к `calculateMixAnalysis`, API создания микса и Result UI;
+- predicted quality, confidence, data quality и verified smoke score теперь разделены;
+- decision Registry по-прежнему не сохраняется как отдельная PostgreSQL-модель; Prisma schema не менялась.
 
 ## 2. Git baseline
 
 - Репозиторий: `https://github.com/baastard666/hookah-mix`.
+- Текущая feature-ветка: `feature/v0.3.3-canonical-mix-scoring-integration`.
+- Начальный HEAD v0.3.3: `4186ae8ef1e7b994ed25f62885f4043969f6b192` (`main`).
 - Release source branch: `feature/v0.3.2-canonical-tobacco-catalog-expansion`; после интеграции рабочей веткой становится `main`.
 - Baseline перед ASCII-стандартизацией: `8b727298c9470bda73ba9e0e2b6133dc2434e675`.
 - Фактический HEAD после получения репозитория: commit, содержащий этот файл; проверить командой `git rev-parse HEAD`. Хеш handoff-коммита нельзя самоссылочно зафиксировать внутри его содержимого.
@@ -100,7 +104,13 @@ v0.3.2 уже реализована в `src/lib/tobacco-identity-decisions/` и
 
 ASCII-представление canonical ID дополнительно закреплено ADR-013. Все новые ID соответствуют `^[a-z0-9]+(?:-[a-z0-9]+)*$`; official English canonical name имеет приоритет, иначе применяется фиксированная русская транслитерация без смыслового перевода. Старые Unicode ID разрешаются только immutable legacy mapping, public-safe output возвращает новый ASCII ID.
 
-Первый operational batch P1 завершён в `src/lib/tobacco-identity-decisions/p1-decisions-batch-1.ts`: рассмотрены все 20 P1 group IDs, 19 продуктов получили canonical identity, а `MustHave / Ананас` сохранён как `MANUFACTURER_ONLY` без guessed alias к отдельному `Pineapple Rings`. P0 batches 1–6 хранятся в одноимённых versioned файлах. Batch 1 содержит 15 resolved identities, batch 2 — 12 resolved и 3 ambiguous, batch 3 — 15 resolved, batch 4 — 13 resolved и 2 ambiguous, batch 5 — 12 resolved, 1 ambiguous и 2 unresolved/deferred, batch 6 — 1 ambiguous. Authoritative aggregate объединяет P1 и все шесть P0 batch; все 76 P0-групп рассмотрены. P2/P3 по-прежнему не применять. Следующая продуктовая итерация в roadmap — v0.3.3 Product Flavor Taxonomy Foundation.
+Первый operational batch P1 завершён в `src/lib/tobacco-identity-decisions/p1-decisions-batch-1.ts`: рассмотрены все 20 P1 group IDs, 19 продуктов получили canonical identity, а `MustHave / Ананас` сохранён как `MANUFACTURER_ONLY` без guessed alias к отдельному `Pineapple Rings`. P0 batches 1–6 хранятся в одноимённых versioned файлах. Batch 1 содержит 15 resolved identities, batch 2 — 12 resolved и 3 ambiguous, batch 3 — 15 resolved, batch 4 — 13 resolved и 2 ambiguous, batch 5 — 12 resolved, 1 ambiguous и 2 unresolved/deferred, batch 6 — 1 ambiguous. Authoritative aggregate объединяет P1 и все шесть P0 batch; все 76 P0-групп рассмотрены. P2/P3 по-прежнему не применять. Следующая продуктовая итерация после v0.3.3 — `unknown`.
+
+### v0.3.3 — Canonical Mix Scoring Integration
+
+Фактическая v0.3.3 использована для интеграции canonical identity в действующий расчёт, а прежнее направление Product Flavor Taxonomy перенесено без номера (`unknown`). Новый слой находится в `src/lib/canonical-mix-scoring/` и выполняется перед Mix Profile, Compatibility и Recommendation Engine. Он сохраняет `AMBIGUOUS`/`UNRESOLVED`, строит effective profile с provenance, объединяет только одинаковый `RESOLVED canonicalProductId` и разделяет predicted score/confidence/data quality/verified score.
+
+Реальный workbook diagnostic обработал 37 VERIFIED-миксов и 97 компонентов: 87 `RESOLVED`, 1 `MANUFACTURER_ONLY`, 7 `AMBIGUOUS`, 2 `UNRESOLVED`; coverage 89,7% по количеству и 90,5% по весу. Scoring/privacy errors = 0. Подробности: `docs/engine-changelog/v0.3.3-canonical-mix-scoring-integration.md`.
 
 ## 5. Архитектура и основные модули
 
@@ -114,6 +124,7 @@ ASCII-представление canonical ID дополнительно зак�
 | Excel Knowledge Import | `src/lib/expert-mix-knowledge-import/` | Read-only XLSX → staging → audit |
 | Unresolved Identity Report | `src/lib/expert-mix-knowledge-import/unresolved-identity-report.ts` | Exact grouping и P0–P3 |
 | Identity Decisions | `src/lib/tobacco-identity-decisions/` | Manual review, immutable decisions, apply/coverage/filter |
+| Canonical Mix Scoring | `src/lib/canonical-mix-scoring/` | Resolution, effective profile, duplicate aggregation, confidence и scoring |
 | Public-safe mapping | `src/lib/expert-mix-knowledge/public-mapper.ts`, `src/lib/tobacco-identity-decisions/public-safe-mapper.ts` | Удаление private/internal полей |
 | Privacy audit | `src/lib/expert-mix-knowledge-import/privacy-auditor.ts`, decision public audit | Проверка утечек |
 
@@ -150,7 +161,20 @@ unresolved report
   -> coverage comparison + domain filters
 ```
 
-Фактический decision layer содержит P1 batch 1 и P0 batches 1–6. После применения aggregate к real-workbook: 206 resolved, 58 manufacturer-only и 233 unresolved записей суммарно; components — 88/2/23, VERIFIED components — 87/1/9. Девять ambiguous/unresolved решений P0 batches 2, 4, 5 и 6 остаются неприменимыми. Import остаётся неизменным; решения применяются поверх staging по exact source identity. Planned: v0.3.3 Product Flavor Taxonomy Foundation, persistence решениями и UI-интеграция. Конкретная итерация persistence/UI — `unknown`.
+Фактический decision layer содержит P1 batch 1 и P0 batches 1–6. После применения aggregate к real-workbook: 206 resolved, 58 manufacturer-only и 233 unresolved записей суммарно; components — 88/2/23, VERIFIED components — 87/1/9. Девять ambiguous/unresolved решений P0 batches 2, 4, 5 и 6 остаются неприменимыми. Import остаётся неизменным; решения применяются поверх staging по exact source identity. Canonical scoring integration выполнена в v0.3.3; номер следующей persistence/taxonomy итерации — `unknown`.
+
+Действующий runtime pipeline v0.3.3:
+
+```text
+Prisma Flavor / workbook component
+  -> exact authoritative identity resolution
+  -> effective profile + provenance
+  -> duplicate canonical aggregation
+  -> Mix Profile -> Compatibility -> Recommendations
+  -> predicted quality + confidence + data quality
+```
+
+Decision layer подключён к анализу и Result UI, но не записывается отдельными строками в PostgreSQL. Product sensory registry пока отсутствует; source profile/fallback остаётся основным числовым источником.
 
 ## 7. Workbook
 
@@ -273,6 +297,7 @@ Public output не должен содержать:
 - `reports/tobacco-identity-review-p0-p1.md`;
 - `reports/tobacco-identity-review-p0-p1.json`;
 - `reports/tobacco-identity-review-p0-p1.csv`;
+- `reports/v0.3.3-canonical-mix-scoring-audit.json`;
 - будущие review/audit reports;
 - `.env` — только приватно, содержимое не публиковать.
 
@@ -284,7 +309,7 @@ Public output не должен содержать:
 git clone https://github.com/baastard666/hookah-mix.git
 cd hookah-mix
 git fetch --all
-git switch feature/v0.3.2-canonical-tobacco-catalog-expansion
+git switch feature/v0.3.3-canonical-mix-scoring-integration
 git pull --ff-only
 git rev-parse HEAD
 git status
@@ -314,6 +339,30 @@ pnpm verify:tobacco-identity-decisions "data/hookah_mix_database.xlsx"
 Если `node`, `pnpm` или Docker отсутствуют, окружение нового аккаунта/машины — `unknown`; настроить их отдельно, не добавляя runtime paths в репозиторий.
 
 ## 14. Next Task — готовый блок
+
+Актуальный блок:
+
+```text
+Проект: hookah-mix
+Ветка: feature/v0.3.3-canonical-mix-scoring-integration
+Начальный HEAD: 4186ae8ef1e7b994ed25f62885f4043969f6b192
+
+Задача: провести отдельный финальный review v0.3.3 и решить, готова ли feature-ветка к merge.
+
+Проверить:
+- authoritative Registry остался 96 решений со статусами 86/1/7/2;
+- exact-only resolution, profile precedence и duplicate aggregation;
+- predicted score/confidence/data quality/verified score не смешиваются;
+- real-workbook diagnostic и SHA;
+- 838 tests, build, 12 verify scripts и HTTP smoke baseline;
+- public privacy и отсутствие workbook/reports в Git.
+
+Не менять identity decisions, Prisma schema и workbook без отдельного задания.
+Не выполнять merge в main без явного подтверждения владельца.
+Следующая продуктовая итерация после review: unknown.
+```
+
+Исторический блок v0.3.2 ниже оставлен только для трассировки и не является текущим заданием:
 
 ```text
 Проект: hookah-mix
@@ -356,6 +405,17 @@ Implementation baseline до ASCII-миграции: 8b727298c9470bda73ba9e0e2b6
 
 ## 15. Validation baseline
 
+Последний подтверждённый baseline v0.3.3:
+
+- 838/838 tests, 24 files; из них 26 новых canonical scoring tests;
+- Prisma validate/generate, lint, typecheck и production build: passed;
+- все 12 `verify:*`: passed;
+- HTTP smoke `/`, `/catalog`, `/builder`, `/result/20`: 200;
+- Registry/collision/exact alias/ASCII/transliteration/legacy/privacy audits: passed;
+- conflicts/collisions/invalid decisions/Unicode IDs/transliteration collisions: 0;
+- real-workbook scoring: 37 mixes, 97 components, scoring/privacy errors 0;
+- workbook SHA до/после совпал: `AFBEB062EF5B23AC0340E8D5F15AD9E20FF41A6892146915E8FC8BB1008E2E8B`.
+
 Последний подтверждённый baseline текущей ветки v0.3.2 после P0 batch 6:
 
 - 812 tests passed, 23 test files;
@@ -395,17 +455,18 @@ ASCII migration baseline после успешной проверки следу
 - Есть contradictory source weights (`WEIGHT_SUM_MISMATCH`).
 - Точные количества части warning codes: `unknown` без нового audit run.
 - Workbook и reports существуют только локально.
-- Decision/backend infrastructure не подключена к UI и PostgreSQL persistence.
+- Decision layer подключён к scoring/API/Result UI, но отдельная persistence-модель Registry отсутствует.
+- Canonical product sensory registry пуст; для многих входов используется source profile или нейтральный fallback.
+- В 37 VERIFIED workbook-миксах отсутствуют verified smoke scores; все 37 оценок diagnostic являются predicted-only.
 - Runtime environment нового аккаунта и его локальные credentials: `unknown`.
 
 ## 17. Non-goals без отдельного задания
 
 - Prisma schema и migrations;
 - PostgreSQL structure и seed;
-- UI, страницы и конструктор;
-- Recommendation Engine;
-- Compatibility Engine;
-- Mix Analysis scoring;
+- полный редизайн UI или конструктора;
+- переписывание Recommendation/Compatibility Engine;
+- изменение identity decisions ради score distribution;
 - изменение workbook;
 - fuzzy resolution;
 - выдумывание sensory characteristics;

@@ -1,5 +1,6 @@
 # Engine changelog
 
+- [v0.3.3 Canonical Mix Scoring Integration](v0.3.3-canonical-mix-scoring-integration.md)
 - [v0.3.2 ASCII Canonical Product IDs](v0.3.2-ascii-canonical-product-ids.md)
 - [v0.3.2 Canonical Tobacco Catalog Expansion & Identity Decisions](v0.3.2-canonical-tobacco-catalog-expansion.md)
 - [v0.3.2 P1 Tobacco Identity Decisions — batch 1](v0.3.2-p1-identity-decisions-batch-1.md)

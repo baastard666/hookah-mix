@@ -33,7 +33,7 @@ describe("mix result public presentation", () => {
   it("8. reports a fully resolved composition", () => expect(present().resolution).toMatchObject({ total: 2, resolved: 2, ambiguous: 0, unresolved: 0 }));
   it("9. reports an ambiguous component without guessing it", () => {
     const result = present([component("Sebero", "Vanilla", 50), resolved()[0]]);
-    expect(result.resolution.ambiguous).toBe(1); expect(result.resolution.components.some(item => item.status.includes("несколько canonical-вариантов"))).toBe(true);
+    expect(result.resolution.ambiguous).toBe(1); expect(result.resolution.components.some(item => item.status.includes("несколько вариантов сопоставления"))).toBe(true);
   });
   it("10. reports an unresolved component", () => {
     const result = present([component("не указан", "Освежающий мохито", 50), resolved()[0]]);
@@ -85,13 +85,13 @@ const colaMint = (): CanonicalMixComponentInput[] => {
 
 describe("v0.3.3 corrective public presentation", () => {
   const corrective = () => present(colaMint(), null, { overheatingRisk: "низкий", heatRecommendations: [] });
-  it("22. distinguishes catalog presence from canonical resolution", () => expect(corrective().resolution.components[0]).toMatchObject({ catalogStatus: "Товар найден в каталоге", status: expect.stringContaining("canonical-сопоставление") }));
+  it("22. distinguishes catalog presence from product matching", () => expect(corrective().resolution.components[0]).toMatchObject({ catalogStatus: "Товар найден в каталоге", status: expect.stringContaining("сопоставление с базой продуктов") }));
   it("23. shows preliminary profile separately", () => expect(corrective().resolution.components.every(item => item.profileStatus.includes("предварительный профиль"))).toBe(true));
   it("24. preserves cola and mint in the public profile", () => expect(corrective().profile.dominantNotes).toEqual(["кола", "мята"]));
   it("25. does not replace mint with spice", () => { const result = corrective(); expect(result.profile.summary).toContain("Кола + мята"); expect(result.profile.dominantNotes).not.toContain("специи"); });
   it("26. exposes an actual dominant/base role for the 80% component", () => expect(corrective().resolution.components[0].actualMixRole).toBe("основа и доминирующий компонент"));
   it("27. exposes mint as cooling support", () => expect(corrective().resolution.components[1].actualMixRole).toBe("поддержка и холодящий компонент"));
-  it("27a. keeps the catalog role separate from the actual role", () => expect(corrective().resolution.components[0]).toMatchObject({ actualMixRole: "основа и доминирующий компонент", recommendedCatalogRole: "поддержка" }));
+  it("27a. hides a preliminary catalog role instead of replacing the actual role", () => expect(corrective().resolution.components[0]).toMatchObject({ actualMixRole: "основа и доминирующий компонент", recommendedCatalogRole: null }));
   it("28. labels the risk score as resistance", () => expect(corrective().breakdown.find(item => item.key === "risks")?.label).toBe("Устойчивость к рискам"));
   it("29. does not deny risks when a high flag exists", () => expect(corrective().breakdown.find(item => item.key === "risks")?.explanation).not.toContain("не выявлено"));
   it("30. groups dominance warnings into one public risk", () => expect(corrective().risks.filter(item => item.title.includes("доминирование"))).toHaveLength(1));
@@ -104,4 +104,44 @@ describe("v0.3.3 corrective public presentation", () => {
   it("37. builds a concise deterministic summary", () => { const result = corrective(); expect(result.summary.text).toContain("Test Kitchen Cola"); expect(result.summary.primaryAction).toContain("75%"); });
   it("38. keeps public output private", () => expect(JSON.stringify(corrective())).not.toMatch(/decisionId|sourceRow|debugReasons|sourceUrl|evidenceUrl|author|C:\\/));
   it("39. labels a real neutral fallback separately", () => { const fallback = component("Unknown", "Mystery", 50, { sourceProfileAvailable: false }); const result = present([fallback, resolved()[0]]); expect(result.resolution.components.some(item => item.profileStatus.includes("предварительный профиль"))).toBe(true); });
+  it("40. recalculates the actual role for the proposed composition", () => {
+    const action = corrective().actions.find(item => item.componentIds.includes("Test Kitchen:Cola"));
+    expect(action?.proposedActualMixRole).toBe("основа и доминирующий компонент");
+    expect(JSON.stringify(action)).not.toContain("Целевая роль");
+  });
+  it("41. never presents the 75% component as support", () => {
+    const result = corrective();
+    const changed = result.suggestedVariant?.components.find(item => item.suggestedPercentage === 75);
+    const action = result.actions.find(item => changed && item.componentIds.includes(changed.componentId));
+    expect(action?.proposedActualMixRole).not.toBe("поддержка");
+  });
+  it("42. builds recommendation directions from the proposed effective profile", () => {
+    expect(corrective().actions[0].directionLabels).toEqual(["Напиток", "Мята", "Холод"]);
+  });
+  it("43. does not let an insignificant spice fallback replace mint", () => {
+    const directions = corrective().actions.flatMap(item => item.directionLabels);
+    expect(directions).toContain("Мята");
+    expect(directions).not.toContain("Специи");
+  });
+  it("44. marks ranges from preliminary profiles", () => {
+    const ranged = corrective().actions.filter(item => item.rangeLabel);
+    expect(ranged.length).toBeGreaterThan(0);
+    expect(ranged.every(item => item.rangeLabel === "Предварительный диапазон")).toBe(true);
+  });
+  it("45. does not expose internal product matching terminology", () => {
+    expect(JSON.stringify(corrective())).not.toMatch(/canonical|canonicalProductId|decisionId|sourceRow/i);
+  });
+  it("46. names both exact changes for a two-component proposal", () => {
+    expect(corrective().summary.primaryAction).toBe("Уменьшите долю Test Kitchen Cola до 75%, а долю Element Мята увеличьте до 25%.");
+  });
+  it("47. applies the same role, direction and range rules to unrelated products", () => {
+    const unrelated = present([
+      component("Alpha", "Лимонад", 80, { note: "lemon", category: "DRINK", profile: profile({ intensity: 8, sweetness: 8 }) }),
+      component("Beta", "Базилик", 20, { note: "herbal", category: "HERBAL", profile: profile({ intensity: 8, cooling: 9 }) }),
+    ]);
+    const changed = unrelated.suggestedVariant?.components.find(item => item.suggestedPercentage === 75);
+    const action = unrelated.actions.find(item => changed && item.componentIds.includes(changed.componentId));
+    expect(action).toMatchObject({ proposedActualMixRole: "основа и доминирующий компонент", rangeLabel: "Предварительный диапазон" });
+    expect(action?.directionLabels).toEqual(expect.arrayContaining(["Напиток", "Травы", "Холод"]));
+  });
 });

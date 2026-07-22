@@ -3,12 +3,18 @@ import type { MixAnalysis } from "../mix-analyzer";
 import { groupCompatibilityRisks } from "../canonical-mix-scoring";
 import type { PreparedCanonicalComponent, PublicProfileStatus } from "../canonical-mix-scoring";
 import type { MixRecommendation, MixRecommendationResult, SuggestedMixVariant } from "../mix-recommendation";
+import { calculateMixProfile } from "../mix-profile";
 
 export type BreakdownKey = keyof MixAnalysisResult["scoring"]["scoreBreakdown"];
 export type PublicRiskLevel = "Низкий" | "Средний" | "Высокий";
 export type PublicRisk = { readonly id: string; readonly title: string; readonly level: PublicRiskLevel; readonly reason: string; readonly recommendation: string };
 export type ActualMixRole = "DOMINANT_BASE" | "DOMINANT" | "BASE" | "SUPPORT" | "SUPPORT_COOLING" | "ACCENT" | "ACCENT_COOLING";
-export type PublicRecommendation = Omit<MixRecommendation, "id" | "reasons" | "sourceRuleIds" | "knowledgeClaimIds"> & { readonly reasons: readonly { readonly code: MixRecommendation["reasons"][number]["code"] }[] };
+export type PublicRecommendation = Omit<MixRecommendation, "id" | "reasons" | "sourceRuleIds" | "knowledgeClaimIds" | "categoryIds"> & {
+  readonly reasons: readonly { readonly code: MixRecommendation["reasons"][number]["code"] }[];
+  readonly directionLabels: readonly string[];
+  readonly rangeLabel: "Рабочий диапазон" | "Предварительный диапазон" | null;
+  readonly proposedActualMixRole: string | null;
+};
 
 const TASTE_LABELS: Readonly<Record<string, string>> = Object.freeze({
   coffee: "кофе", cream: "сливки", dairy: "сливочные ноты", roasted: "обжаренные ноты", dessert: "десертные ноты",
@@ -49,8 +55,8 @@ const breakdownLabels: Record<BreakdownKey, string> = { compatibility: "Совм
 const statusLabel = (status: MixAnalysisResult["canonicalMix"]["componentResolutions"][number]["resolution"]["status"], catalogFound: boolean): string => ({
   RESOLVED: "Точно сопоставлен",
   MANUFACTURER_ONLY: "Подтверждён производитель, но конкретный продукт не определён",
-  AMBIGUOUS: "Найдено несколько canonical-вариантов; конкретная линейка не выбрана",
-  UNRESOLVED: catalogFound ? "Товар найден в каталоге, но точное canonical-сопоставление пока не подтверждено" : "Точное canonical-сопоставление отсутствует",
+  AMBIGUOUS: "Найдено несколько вариантов сопоставления; конкретная линейка не выбрана",
+  UNRESOLVED: catalogFound ? "Товар найден в каталоге, но точное сопоставление с базой продуктов пока не подтверждено" : "Точное сопоставление с базой продуктов отсутствует",
 }[status]);
 
 const profileStatusLabel = (status: PublicProfileStatus): string => ({
@@ -81,11 +87,57 @@ export const deduplicateRecommendations = (result: MixRecommendationResult): rea
   const visible = result.recommendations.filter(item => !["PRESERVE_CURRENT_MIX", "INSUFFICIENT_DATA"].includes(item.type));
   return [...new Map(visible.map(item => [recommendationKey(item), item])).values()];
 };
-const toPublicRecommendation = (item: MixRecommendation): PublicRecommendation => ({
-  type: item.type, priority: item.priority, confidenceScore: item.confidenceScore, impactScore: item.impactScore,
-  componentIds: item.componentIds, characteristicKeys: item.characteristicKeys, noteIds: item.noteIds, categoryIds: item.categoryIds,
-  action: item.action, reasons: [...new Map(item.reasons.map(reason => [reason.code, { code: reason.code }])).values()],
-});
+type EffectivePresentationMix = Pick<MixAnalysisResult, "canonicalMix" | "mixProfile">;
+
+const directionLabelFor = (noteLabel: string, category: string): string => {
+  if (["DRINK", "BEVERAGE"].includes(category)) return "Напиток";
+  if (category === "MINT") return noteLabel[0]?.toLocaleUpperCase("ru-RU") + noteLabel.slice(1);
+  if (category === "COOLING" && !["холод", "свежесть"].includes(noteLabel)) return noteLabel[0]?.toLocaleUpperCase("ru-RU") + noteLabel.slice(1);
+  const labels: Readonly<Record<string, string>> = {
+    BERRY: "Ягоды", FRUIT: "Фрукты", CITRUS: "Цитрус", TROPICAL: "Тропики", FLORAL: "Цветы", HERBAL: "Травы",
+    MINT: "Мята", COOLING: "Холод", SPICE: "Специи", DESSERT: "Десерт", DAIRY: "Сливочность", CREAMY: "Сливочность",
+    VANILLA: "Ваниль", TEA: "Чай", COFFEE: "Кофе", NUT: "Орех", BAKERY: "Выпечка", CANDY: "Конфеты",
+    CHOCOLATE: "Шоколад", ALCOHOL: "Алкогольное направление", WOODY: "Древесность", SMOKY: "Дымность", TOBACCO: "Табачность",
+    SOUR: "Кислое направление", FRESH: "Свежесть",
+  };
+  return labels[category] ?? (noteLabel[0]?.toLocaleUpperCase("ru-RU") + noteLabel.slice(1));
+};
+
+const effectiveDirectionLabels = (mix: EffectivePresentationMix): readonly string[] => {
+  const meaningful = meaningfulProfileNotes(mix);
+  const directions = meaningful.dominant.map(noteLabel => {
+    const source = mix.canonicalMix.components.flatMap(component => component.notes)
+      .find(note => localizeTasteTag(note.noteSlug || note.noteName) === noteLabel);
+    return directionLabelFor(noteLabel, source?.category ?? "OTHER");
+  });
+  const hasCoolingDirection = mix.mixProfile.profile.cooling >= 2
+    || mix.canonicalMix.components.some(component => component.percentage >= 15 && component.profile.cooling >= 7);
+  if (hasCoolingDirection) directions.push("Холод");
+  return [...new Set(directions)].slice(0, 4);
+};
+
+const actionComponentId = (item: MixRecommendation): string | null => {
+  if (item.action.type === "DECREASE_COMPONENT" || item.action.type === "INCREASE_COMPONENT" || item.action.type === "REMOVE_COMPONENT") return item.action.componentId;
+  if (item.action.type === "REBALANCE_COMPONENTS") return item.action.primaryComponentId ?? item.action.adjustments[0]?.componentId ?? null;
+  return item.componentIds[0] ?? null;
+};
+
+const actionHasRange = (item: MixRecommendation): boolean => ["DECREASE_COMPONENT", "INCREASE_COMPONENT"].includes(item.action.type)
+  || (item.action.type === "REBALANCE_COMPONENTS" && item.action.adjustments.length > 0);
+
+const toPublicRecommendation = (item: MixRecommendation, mix: EffectivePresentationMix, proposed: boolean): PublicRecommendation => {
+  const componentId = actionComponentId(item);
+  const component = componentId ? mix.canonicalMix.components.find(entry => String(entry.flavorId) === componentId) : undefined;
+  const dominantId = String(mix.mixProfile.dominantComponent.flavorId);
+  return {
+    type: item.type, priority: item.priority, confidenceScore: item.confidenceScore, impactScore: item.impactScore,
+    componentIds: item.componentIds, characteristicKeys: item.characteristicKeys, noteIds: item.noteIds,
+    action: item.action, reasons: [...new Map(item.reasons.map(reason => [reason.code, { code: reason.code }])).values()],
+    directionLabels: effectiveDirectionLabels(mix),
+    rangeLabel: actionHasRange(item) ? (component?.profileStatus === "CONFIRMED" ? "Рабочий диапазон" : "Предварительный диапазон") : null,
+    proposedActualMixRole: proposed && component ? actualRoleLabel(actualMixRoleFor(component, dominantId)) : null,
+  };
+};
 
 const buildHeatRisk = (legacy: MixAnalysis, options: { bowlType: string; coalCount: number; warmupMinutes: number }, heatResistance: number): PublicRisk | null => {
   if (legacy.overheatingRisk === "низкий") return null;
@@ -110,12 +162,11 @@ const compatibilityPublicRisks = (analysis: MixAnalysisResult): PublicRisk[] => 
   const component = group.componentId ? analysis.canonicalMix.components.find(item => String(item.flavorId) === group.componentId) : undefined;
   const componentName = component ? `${component.brandName} ${component.flavorName}` : "Компонент";
   if (group.causeKey.startsWith("DOMINANT_COMPONENT_HIGH_SHARE:")) {
-    const secondary = analysis.mixProfile.secondaryComponents[0];
     return {
       id: group.causeKey,
       title: "Сильное доминирование компонента",
       level: group.severity === "HIGH" ? "Высокий" : group.severity === "MEDIUM" ? "Средний" : "Низкий",
-      reason: `${componentName} занимает ${component?.percentage ?? 0}% смеси и может подавить ${secondary && localizeTasteTag(secondary.flavorSlug) === "мята" ? "мяту" : "остальные ноты"}.`,
+      reason: `${componentName} занимает ${component?.percentage ?? 0}% смеси и может подавить остальные ноты.`,
       recommendation: `Уменьшите долю ${component ? componentName : "доминирующего компонента"}.`,
     };
   }
@@ -129,7 +180,7 @@ const compatibilityPublicRisks = (analysis: MixAnalysisResult): PublicRisk[] => 
   };
 });
 
-const meaningfulProfileNotes = (analysis: MixAnalysisResult): { dominant: string[]; background: string[] } => {
+const meaningfulProfileNotes = (analysis: EffectivePresentationMix): { dominant: string[]; background: string[] } => {
   const significantComponentNotes = analysis.canonicalMix.components
     .filter(component => component.percentage >= 15)
     .map(component => component.notes.filter(note => note.noteType === "DOMINANT").sort((a, b) => b.intensity - a.intensity || a.noteSlug.localeCompare(b.noteSlug, "en"))[0])
@@ -188,6 +239,15 @@ export const buildMixResultPresentation = (input: {
   const hasPreliminary = analysis.canonicalMix.components.some(component => ["PRELIMINARY", "FALLBACK", "MISSING"].includes(component.profileStatus));
   const displayReliability: "LOW" | "MEDIUM" | "HIGH" = hasPreliminary ? "LOW" : analysis.canonicalMix.components.some(component => component.effectiveProfile.profileReliability !== "HIGH") ? "MEDIUM" : "HIGH";
   const acceptedProposal = analysis.proposalComparison?.accepted ? analysis.proposalComparison : undefined;
+  const proposedPercentages = new Map(acceptedProposal?.variant.components.map(component => [component.componentId, component.suggestedPercentage]) ?? []);
+  const proposedComponents = analysis.canonicalMix.components.map(component => ({
+    ...component,
+    percentage: proposedPercentages.get(String(component.flavorId)) ?? component.percentage,
+  }));
+  const proposedEffectiveMix: EffectivePresentationMix | undefined = acceptedProposal ? {
+    canonicalMix: { ...analysis.canonicalMix, components: proposedComponents },
+    mixProfile: calculateMixProfile(proposedComponents),
+  } : undefined;
   const mainRisk = risks.find(risk => risk.id !== "heat");
   const proposalChange = acceptedProposal?.variant.components.find(component => component.suggestedPercentage < component.currentPercentage)
     ?? acceptedProposal?.variant.components.find(component => component.currentPercentage !== component.suggestedPercentage);
@@ -195,7 +255,17 @@ export const buildMixResultPresentation = (input: {
   const summary = mainRisk
     ? `${hasPreliminary ? "Предварительно рабочее" : "Рабочее"} сочетание, но ${mainRisk.reason}`
     : `${hasPreliminary ? "Предварительно " : ""}сочетание выглядит рабочим; значимых вкусовых рисков не выявлено.`;
-  const primaryAction = acceptedProposal && proposalChange && proposalComponent
+  const changedProposalComponents = acceptedProposal?.variant.components.filter(component => component.currentPercentage !== component.suggestedPercentage) ?? [];
+  const decreased = changedProposalComponents.find(change => change.suggestedPercentage < change.currentPercentage);
+  const increased = changedProposalComponents.find(change => change.suggestedPercentage > change.currentPercentage);
+  const decreasedComponent = decreased ? analysis.canonicalMix.components.find(item => String(item.flavorId) === decreased.componentId) : undefined;
+  const increasedComponent = increased ? analysis.canonicalMix.components.find(item => String(item.flavorId) === increased.componentId) : undefined;
+  const exactTwoComponentAction = acceptedProposal?.variant.components.length === 2 && decreased && increased && decreasedComponent && increasedComponent
+    ? `Уменьшите долю ${decreasedComponent.brandName} ${decreasedComponent.flavorName} до ${decreased.suggestedPercentage}%, а долю ${increasedComponent.brandName} ${increasedComponent.flavorName} увеличьте до ${increased.suggestedPercentage}%.`
+    : null;
+  const primaryAction = exactTwoComponentAction
+    ? exactTwoComponentAction
+    : acceptedProposal && proposalChange && proposalComponent
     ? `Попробуйте уменьшить долю ${proposalComponent.brandName} ${proposalComponent.flavorName} до ${proposalChange.suggestedPercentage}% и перераспределить освободившуюся долю между остальными компонентами.`
     : "Точные пропорции стоит подтвердить контрольным покуром.";
 
@@ -220,7 +290,7 @@ export const buildMixResultPresentation = (input: {
         profileStatus: profileStatusLabel(effective?.profileStatus ?? "MISSING"),
         profileReliability: reliability === "HIGH" ? "Высокая надёжность профиля" : reliability === "MEDIUM" ? "Средняя надёжность профиля" : "Низкая надёжность профиля",
         actualMixRole: effective ? actualRoleLabel(actualMixRoleFor(effective, dominantId)) : "роль не определена",
-        recommendedCatalogRole: effective ? recommendedRoleLabel(effective.effectiveProfile.recommendedRole) : null,
+        recommendedCatalogRole: effective?.profileStatus === "CONFIRMED" ? recommendedRoleLabel(effective.effectiveProfile.recommendedRole) : null,
       }; }),
     },
     profile: {
@@ -229,7 +299,11 @@ export const buildMixResultPresentation = (input: {
     },
     strengths,
     risks,
-    actions: deduplicateRecommendations(analysis.recommendations).map(toPublicRecommendation),
+    actions: deduplicateRecommendations(analysis.recommendations).map(item => toPublicRecommendation(
+      item,
+      proposedEffectiveMix ?? analysis,
+      Boolean(acceptedProposal),
+    )),
     recommendationStatus: analysis.recommendations.status,
     suggestedVariant: acceptedProposal?.variant as SuggestedMixVariant | undefined,
     proposalComparison: acceptedProposal ? {

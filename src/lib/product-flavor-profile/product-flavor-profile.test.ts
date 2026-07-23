@@ -294,4 +294,35 @@ describe("mapProductFlavorProfileToPublic", () => {
     expect(publicProfile.overallConfidence).toBe(profile.overallConfidence);
     expect(Object.keys(publicProfile.dimensions).sort()).toEqual(Object.keys(profile.dimensions).sort());
   });
+
+  // ADR-016: dataCompleteness is a separate axis from overallConfidence, computed at mapping time.
+  it("computes dataCompleteness (ADR-016) from the number of filled dimensions, independent of overallConfidence", () => {
+    const profile = PRODUCT_FLAVOR_PROFILE_REGISTRY.find(item => item.canonicalProductId === "urban-soul-pineapple")!;
+    expect(Object.keys(profile.dimensions)).toHaveLength(2);
+    expect(publicApi.mapProductFlavorProfileToPublic(profile).dataCompleteness).toBe("BASIC");
+  });
+});
+
+describe("calculateDataCompleteness (ADR-016)", () => {
+  it.each([
+    [0, "MINIMAL"], [1, "MINIMAL"],
+    [2, "BASIC"], [3, "BASIC"],
+    [4, "GOOD"], [5, "GOOD"],
+    [6, "DETAILED"], [7, "DETAILED"],
+  ] as const)("маппит %i заполненных измерений на %s", (filledCount, expected) => {
+    const dimensions = Object.fromEntries(["sweetness", "sourness", "freshness", "intensity", "strength", "heatResistance", "juiciness"].slice(0, filledCount).map(field => [field, { value: 5, confidence: "MEDIUM", evidence: [] }]));
+    expect(publicApi.calculateDataCompleteness({ dimensions })).toBe(expected);
+  });
+
+  it("не смешивается с overallConfidence - оба факта видны раздельно", () => {
+    const lowCompletenessButConfident = { dimensions: { strength: { value: 5, confidence: "MEDIUM" as const, evidence: [] } }, canonicalProductId: "x", dominantNoteIds: [] as const, overallConfidence: "MEDIUM" as const };
+    expect(publicApi.calculateDataCompleteness(lowCompletenessButConfident)).toBe("MINIMAL");
+    expect(lowCompletenessButConfident.overallConfidence).toBe("MEDIUM");
+  });
+
+  it("реальное распределение по всем 86 продуктам соответствует ADR-016 (DETAILED 4, GOOD 28, BASIC 47, MINIMAL 7)", () => {
+    const counts = { DETAILED: 0, GOOD: 0, BASIC: 0, MINIMAL: 0 };
+    PRODUCT_FLAVOR_PROFILE_REGISTRY.forEach(profile => { counts[publicApi.calculateDataCompleteness(profile)] += 1; });
+    expect(counts).toEqual({ DETAILED: 4, GOOD: 28, BASIC: 47, MINIMAL: 7 });
+  });
 });

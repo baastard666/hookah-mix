@@ -1,5 +1,6 @@
 # ADR index
 
+- [ADR-016](ADR-016-catalog-import-and-demo-reconciliation-policy.md) — политика импорта Product Flavor Profile Registry: без порога отсечения (`dataCompleteness` отдельной осью), evidence всегда побеждает demo-данные, `Test Kitchen` скрыт из публичной выдачи, почти-дубли — в review-список.
 - [ADR-015](ADR-015-flavor-profile-nullable-secondary-dimensions.md) — nullable для 11 вторичных полей `FlavorProfile`, явная политика «null ≠ 0» для всех потребляющих модулей.
 - [ADR-014](ADR-014-product-flavor-profile-dimension-scope.md) — целевая модель из 7 измерений Product Flavor Profile Registry, явное исключение остальных 11 Prisma-полей.
 - [ADR-013](ADR-013-canonical-product-id-ascii-transliteration.md) — ASCII-only canonicalProductId, детерминированная транслитерация и legacy lookup.

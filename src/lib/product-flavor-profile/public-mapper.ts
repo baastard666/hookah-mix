@@ -1,3 +1,4 @@
+import { calculateDataCompleteness } from "./data-completeness";
 import type { FlavorDimensionId, ProductFlavorProfile, PublicFlavorDimensionValue, PublicProductFlavorProfile } from "./types";
 
 const toPublicDimensionValue = (value: ProductFlavorProfile["dimensions"][FlavorDimensionId]): PublicFlavorDimensionValue | undefined =>
@@ -12,4 +13,5 @@ export const mapProductFlavorProfileToPublic = (profile: ProductFlavorProfile): 
   ) as PublicProductFlavorProfile["dimensions"],
   dominantNoteIds: profile.dominantNoteIds,
   overallConfidence: profile.overallConfidence,
+  dataCompleteness: calculateDataCompleteness(profile),
 });

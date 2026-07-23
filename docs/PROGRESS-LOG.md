@@ -137,3 +137,18 @@
 **Тесты:** Vitest **999/999 passed, 30 файлов** (было 962/29, +37 новых тестов на null-случаи во всех затронутых модулях); `tsc --noEmit` — чисто; `eslint .` — чисто; `npx prisma validate` — схема валидна; миграция применена к локальному Postgres в Docker (`npx prisma migrate deploy` + `npx prisma generate`) в момент реализации — на момент финальной проверки Docker Desktop оказался недоступен на машине (не связано с изменениями кода).
 
 **Осталось:** объём импорта 86 продуктов Product Flavor Profile Registry в Postgres и политика реконсиляции для `overdose-coffee`/`daily-hookah-slivochnyi-krem` — по-прежнему отдельное будущее решение, вне рамок ADR-015.
+
+## 2026-07-23 — ADR-016: политика импорта registry в Prisma и реконсиляции с demo-данными
+
+**Сделано:** оформлена **ADR-016**, закрывающая 4 явных вопроса, оставленных открытыми в ADR-015: (1) порог заполненности данных не вводится — импортируются все 86 продуктов независимо от того, сколько из 7 измерений заполнено (0–6, ни одного с 7/7); вместо порога — отдельная, независимая от `overallConfidence` ось `dataCompleteness` (`DETAILED`/`GOOD`/`BASIC`/`MINIMAL` по числу заполненных измерений: 6–7/4–5/2–3/0–1); (2) при коллизии с demo-строкой Prisma evidence-backed значение registry всегда перезаписывает поле при апсерте — demo-данные без evidence не являются равноправным источником; (3) `catalogEntryType: TEST` (`Test Kitchen`, 8 строк) исключается из публичной выдачи `/catalog` и `/builder` явным фильтром, но остаётся в базе для `verify-seed.ts` и тестов; (4) смысловые почти-дубли (совпадающие по смыслу, но разные по `slug`/названию) не объединяются автоматически — уходят в отдельный review-список по аналогии с P0/P1-процессом Tobacco Identity Decision Registry.
+
+По явному ограничению задачи сам импорт-скрипт и миграция под возможную будущую колонку `Flavor.dataCompleteness` не реализованы — выполнены только декларативные части, безопасные для немедленного применения независимо от того, когда состоится сам импорт.
+
+**Файлы:**
+- создано: `docs/adr/ADR-016-catalog-import-and-demo-reconciliation-policy.md`, `docs/architecture/product-flavor-profile-demo-near-duplicates.md` (review-список — на сегодня 1 подтверждённая пара: `daily-hookah-slivochnyi-krem` ↔ demo `Daily Hookah/Сливки`, плюс 4 явно проверенных и отклонённых бренда), `src/lib/product-flavor-profile/data-completeness.ts` (`calculateDataCompleteness`, `countFilledDimensions`);
+- изменено: `docs/adr/README.md` (ADR-016 в индексе), `src/lib/product-flavor-profile/{types,constants,public-mapper,index,product-flavor-profile.test}.ts` (`DataCompletenessLevel` в `PublicProductFlavorProfile`, вычисляется в `mapProductFlavorProfileToPublic`, не хранится), `src/app/catalog/page.tsx` и `src/app/builder/page.tsx` (явный фильтр `catalogEntryType: { not: "TEST" }` в публичных запросах);
+- не изменено: сам импортёр (не существует и не создан в этой сессии), `prisma/schema.prisma`/миграции (никакая новая колонка не добавлена — `dataCompleteness` только вычисляемый), `prisma/seed.ts`.
+
+**Тесты:** Vitest **1010/1010 passed, 30 файлов** (было 999/30, +11 новых — покрытие всех 8 границ `calculateDataCompleteness`, проверка независимости от `overallConfidence`, сверка реального распределения по всем 86 продуктам с цифрами, заявленными в самой ADR — `DETAILED: 4, GOOD: 28, BASIC: 47, MINIMAL: 7`, совпало в точности); `tsc --noEmit` — чисто; `eslint .` — чисто.
+
+**Осталось:** сам импортёр (upsert 86 продуктов в `Flavor`, реализация п. 2 «evidence всегда побеждает» и п. 4 «почти-дубли не объединяются») — отдельная будущая задача; возможное превращение `dataCompleteness` в хранимую Prisma-колонку — отдельная будущая миграция, если возникнет такая потребность.

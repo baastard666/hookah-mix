@@ -9,6 +9,11 @@ export type EvidenceOrigin = "MANUFACTURER_CLAIM" | "REVIEW_AGGREGATE" | "EDITOR
 
 export type ConfidenceLevel = "LOW" | "MEDIUM" | "HIGH";
 
+// ADR-016: how much of the 7-dimension target model is filled in, independent of overallConfidence
+// (how reliable what IS filled is). A product can be MEDIUM confidence + MINIMAL completeness at once -
+// these are two orthogonal facts and must never be collapsed into a single score.
+export type DataCompletenessLevel = "DETAILED" | "GOOD" | "BASIC" | "MINIMAL";
+
 export type FlavorEvidence = {
   readonly type: EvidenceOrigin;
   readonly title: string;
@@ -65,4 +70,6 @@ export type PublicProductFlavorProfile = {
   readonly dimensions: Partial<Record<FlavorDimensionId, PublicFlavorDimensionValue>>;
   readonly dominantNoteIds: readonly FlavorNoteCategory[];
   readonly overallConfidence: ConfidenceLevel;
+  // ADR-016: computed from `dimensions` at mapping time, never stored - see calculateDataCompleteness.
+  readonly dataCompleteness: DataCompletenessLevel;
 };

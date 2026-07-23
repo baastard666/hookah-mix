@@ -5,6 +5,7 @@ import { PRODUCT_FLAVOR_PROFILES_BATCH_1 } from "./batch-1";
 import { PRODUCT_FLAVOR_PROFILES_BATCH_2 } from "./batch-2";
 import { PRODUCT_FLAVOR_PROFILES_BATCH_3 } from "./batch-3";
 import { PRODUCT_FLAVOR_PROFILES_BATCH_4 } from "./batch-4";
+import { PRODUCT_FLAVOR_PROFILES_BATCH_5 } from "./batch-5";
 import { PRODUCT_FLAVOR_PROFILE_REGISTRY } from "./registry";
 import { validateProductFlavorProfile, validateProductFlavorProfiles } from "./validation";
 import type { ProductFlavorProfile } from "./types";
@@ -38,6 +39,13 @@ const BATCH_4_CANONICAL_PRODUCT_IDS = [
   "fake-holod",
 ] as const;
 
+const BATCH_5_CANONICAL_PRODUCT_IDS = [
+  "fake-mumbai-tea", "hook-granatovyi", "hook-inzhirnyi", "jam-granatovyi-sok", "jam-konfety-s-ananasom",
+  "jam-krasnaya-smorodina", "mattpear-ginger-feel", "nash-black-line-arbuz", "peter-ralf-dolce-de-lechee",
+  "sarma-360-ogurechnyi-limonad", "sarma-classic-bananovoe-sufle", "severnyi-krepkii-oreshek",
+  "severnyi-sekvoiya", "smoke-angels-firestarter", "take-pineapple",
+] as const;
+
 const validProfile: ProductFlavorProfile = {
   canonicalProductId: "musthave-sorbetto",
   dimensions: { sweetness: { value: 7, confidence: "MEDIUM", evidence: [{ type: "MANUFACTURER_CLAIM", title: "test", checkedAt: "2026-07-23" }] } },
@@ -66,8 +74,13 @@ describe("product flavor profile registry", () => {
     expect(PRODUCT_FLAVOR_PROFILES_BATCH_4).toHaveLength(15);
   });
 
+  it("batch 5 contains exactly its 15 deterministic canonical product IDs", () => {
+    expect(PRODUCT_FLAVOR_PROFILES_BATCH_5.map(profile => profile.canonicalProductId).sort()).toEqual([...BATCH_5_CANONICAL_PRODUCT_IDS].sort());
+    expect(PRODUCT_FLAVOR_PROFILES_BATCH_5).toHaveLength(15);
+  });
+
   it("no batch repeats a canonicalProductId already covered by an earlier batch", () => {
-    const batches = [BATCH_1_CANONICAL_PRODUCT_IDS, BATCH_2_CANONICAL_PRODUCT_IDS, BATCH_3_CANONICAL_PRODUCT_IDS, BATCH_4_CANONICAL_PRODUCT_IDS];
+    const batches = [BATCH_1_CANONICAL_PRODUCT_IDS, BATCH_2_CANONICAL_PRODUCT_IDS, BATCH_3_CANONICAL_PRODUCT_IDS, BATCH_4_CANONICAL_PRODUCT_IDS, BATCH_5_CANONICAL_PRODUCT_IDS];
     for (let later = 1; later < batches.length; later += 1) {
       for (let earlier = 0; earlier < later; earlier += 1) {
         const overlap = batches[later]!.filter(id => (batches[earlier] as readonly string[]).includes(id));
@@ -76,10 +89,10 @@ describe("product flavor profile registry", () => {
     }
   });
 
-  it("contains exactly the deterministic batch 1 + batch 2 + batch 3 + batch 4 canonical product IDs", () => {
-    const expected = [...BATCH_1_CANONICAL_PRODUCT_IDS, ...BATCH_2_CANONICAL_PRODUCT_IDS, ...BATCH_3_CANONICAL_PRODUCT_IDS, ...BATCH_4_CANONICAL_PRODUCT_IDS].sort();
+  it("contains exactly the deterministic batch 1 + batch 2 + batch 3 + batch 4 + batch 5 canonical product IDs", () => {
+    const expected = [...BATCH_1_CANONICAL_PRODUCT_IDS, ...BATCH_2_CANONICAL_PRODUCT_IDS, ...BATCH_3_CANONICAL_PRODUCT_IDS, ...BATCH_4_CANONICAL_PRODUCT_IDS, ...BATCH_5_CANONICAL_PRODUCT_IDS].sort();
     expect(PRODUCT_FLAVOR_PROFILE_REGISTRY.map(profile => profile.canonicalProductId).sort()).toEqual(expected);
-    expect(PRODUCT_FLAVOR_PROFILE_REGISTRY).toHaveLength(60);
+    expect(PRODUCT_FLAVOR_PROFILE_REGISTRY).toHaveLength(75);
   });
 
   it("references only RESOLVED canonicalProductId values from the Tobacco Identity Decision Registry", () => {
@@ -149,6 +162,7 @@ describe("product flavor profile registry", () => {
     ["jam-spelaya-marakuiya", ["heatResistance", "strength"]],
     ["blackburn-almond-pear", ["heatResistance", "strength"]],
     ["husky-kiwano", ["strength"]],
+    ["take-pineapple", ["strength"]],
   ] as const)("leaves %s without invented dimensions beyond %s when no independent flavor description was found for the rest", (canonicalProductId, expectedKeys) => {
     const sparse = PRODUCT_FLAVOR_PROFILE_REGISTRY.find(profile => profile.canonicalProductId === canonicalProductId);
     expect(Object.keys(sparse?.dimensions ?? {}).sort()).toEqual([...expectedKeys].sort());
@@ -226,7 +240,7 @@ describe("public query API", () => {
   it("lists all profiles sorted by canonicalProductId", () => {
     const ids = publicApi.listProductFlavorProfiles().map(profile => profile.canonicalProductId);
     expect(ids).toEqual([...ids].sort((a, b) => a.localeCompare(b, "en")));
-    expect(ids).toHaveLength(60);
+    expect(ids).toHaveLength(75);
   });
 
   it("returns copies rather than the internal registry objects", () => {

@@ -78,3 +78,16 @@
 **Тесты:** Vitest 959/959 (29 файлов, было 957/29, +2 — новая проверка состава batch 4 и sparse-тест `dozaj-mint`); `tsc --noEmit` — чисто; `eslint .` — чисто; `verify:product-flavor-profile` — 60 продуктов, 208 заполненных измерений (было 166), 420 evidence (было 336), confidence LOW/MEDIUM/HIGH = 39/21/0 (было 32/13/0), HIGH не использован ни разу.
 
 **Осталось:** batch 5 начинается с ранга 16 очереди (`hook-granatovyi`, Tier 3) — оставшиеся 26 из 86 `RESOLVED` продуктов; для линейки Husky по-прежнему нет данных по `heatResistance` ни для одного продукта; подключение registry к `calculateMixAnalysis`/scoring/UI — отдельная будущая итерация; локальный коммит batch 4 ещё предстоит.
+
+## 2026-07-23 — v0.3.5 Product Flavor Profile Registry (пятый батч)
+
+**Сделано:** заполнен пятый приоритетный батч — ещё 15 продуктов (ранги 1–15 среди 26 оставшихся `RESOLVED`), покрытие выросло с 60 до 75 из 86. Весь батч состоит из Tier 3 — среди оставшихся продуктов не осталось производителей Tier 1/2 с той же primary-метрикой `1/1/2`; 4 формально Tier 1-продукта (`MustHave`, `Sapphire Crown`) остались за пределами batch 5 из-за более низкого `occurrenceCount`. При подготовке очереди обнаружена и исправлена ошибка в служебном скрипте вычисления очереди (сопоставление с отчётом шло по несуществующему полю `sourceGroupId` вместо `groupId`) — на состав и порядок продуктов уже отгруженных батчей 3–4 это не повлияло, но справочная фраза «ранг 16 = `hook-granatovyi`» в changelog batch 4 была неверной; исправлена на `fake-mumbai-tea`. Дважды применено правило кросс-брендового исключения (evidence для `fake-mumbai-tea` не спутано с одноимённым вкусом бренда Chabacco). Для `take-pineapple` не найдено ни одного независимого описания вкуса — заполнен только `strength` на уровне бренда, с обоснованным отступлением от стандартного правила `LOW` для brand-level reuse (источник явно утверждает единую крепость по всей линейке).
+
+**Файлы:**
+- создано: `src/lib/product-flavor-profile/batch-5.ts`, `docs/engine-changelog/v0.3.5-product-flavor-profile-registry-batch-5.md`;
+- изменено: `src/lib/product-flavor-profile/{registry,index,product-flavor-profile.test}.ts`, `scripts/verify-product-flavor-profile.ts`, `docs/architecture/product-flavor-profile-registry.md`, `docs/roadmap/README.md`, `docs/engine-changelog/v0.3.5-product-flavor-profile-registry-batch-4.md` (исправление ошибочной справочной фразы про ранг 16);
+- не изменено: Prisma schema/миграции, batch 1–4, существующие engines, `TobaccoIdentityDecision`-записи.
+
+**Тесты:** Vitest 961/961 (29 файлов, было 959/29, +2 — новая проверка состава batch 5 и sparse-тест `take-pineapple`); `tsc --noEmit` — чисто; `eslint .` — чисто; `verify:product-flavor-profile` — 75 продуктов, 243 заполненных измерения (было 208), 490 evidence (было 420), confidence LOW/MEDIUM/HIGH = 45/30/0 (было 39/21/0), HIGH не использован ни разу — все числа сверены вручную по каждому из 15 новых продуктов и совпали в точности.
+
+**Осталось:** batch 6 (последний) начинается с ранга 16 очереди (`urban-soul-strawberry`, Tier 3) — оставшиеся 11 из 86 `RESOLVED` продуктов; для линейки Husky по-прежнему нет данных по `heatResistance` ни для одного продукта; подключение registry к `calculateMixAnalysis`/scoring/UI — отдельная будущая итерация; локальный коммит batch 5 ещё предстоит.

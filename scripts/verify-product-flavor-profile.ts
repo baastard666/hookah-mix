@@ -6,7 +6,7 @@ import { TOBACCO_IDENTITY_DECISION_REGISTRY } from "../src/lib/tobacco-identity-
 const registryBefore = JSON.stringify(listProductFlavorProfiles());
 
 assert.equal(validateProductFlavorProfiles(PRODUCT_FLAVOR_PROFILE_REGISTRY).length, 0, "shipped registry must have zero validation issues");
-assert.equal(PRODUCT_FLAVOR_PROFILE_REGISTRY.length, 60, "batches 1-4 must cover exactly 60 canonical products");
+assert.equal(PRODUCT_FLAVOR_PROFILE_REGISTRY.length, 75, "batches 1-5 must cover exactly 75 canonical products");
 
 const confidenceCounts = { LOW: 0, MEDIUM: 0, HIGH: 0 };
 let filledDimensionCount = 0;

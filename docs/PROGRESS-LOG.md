@@ -65,3 +65,16 @@
 **Тесты:** Vitest 957/957 (29 файлов, было 956/29, +1 — новая проверка состава batch 3); `tsc --noEmit` — чисто; `eslint .` — чисто; `verify:product-flavor-profile` — 45 продуктов, 166 заполненных измерений (было 113), 336 evidence (было 230), confidence LOW/MEDIUM/HIGH = 32/13/0 (было 22/8/0), HIGH не использован ни разу.
 
 **Осталось:** batch 4 начинается с ранга 16 очереди (`sapphire-crown-mejumi`, Tier 1) — оставшиеся 41 из 86 `RESOLVED` продуктов; подключение registry к `calculateMixAnalysis`/scoring/UI — отдельная будущая итерация; локальный коммит batch 3 ещё предстоит.
+
+## 2026-07-23 — Batch 4 (45→60 из 86 RESOLVED), первый батч, пересекающий границу Tier 1/2/3
+
+**Сделано:** посчитан фактический порядок очереди по всем 41 оставшимся `RESOLVED`-продуктам. Batch 4 содержит последний оставшийся продукт Tier 1 (`sapphire-crown-mejumi`), весь Tier 2 (`Brusko`, `Husky` ×4, `Overdose` ×2) и начало Tier 3 (`Banger`, `Dozaj`, `Duft` ×2, `Endorphin` ×2, `FAKE`). Заполнены 7 измерений той же методологией. Дважды явно исключены чужие evidence при риске ложной атрибуции: для `husky-passion-fruit` не использованы описания вкуса «Passion Fruit» других марок (Fumari, Serbetli, Spectrum, Bonche), встретившиеся в том же поиске; для `dozaj-mint` не использованы материалы о вкусе «Mint» другого бренда (Rave Tobacco) — итог для Dozaj остался без единого заполненного измерения. Один явный конфликт источников (`brusko-medium-tsitrusovyi-chai`: общее позиционирование бренда «средняя крепость» против спецификации позиции «лёгкая крепость») сохранён раздельно с LOW confidence.
+
+**Файлы:**
+- создано: `src/lib/product-flavor-profile/batch-4.ts`, `docs/engine-changelog/v0.3.5-product-flavor-profile-registry-batch-4.md`;
+- изменено: `src/lib/product-flavor-profile/{registry,index,product-flavor-profile.test}.ts` (проверка отсутствия пересечений обобщена на все батчи, новый sparse-тест для `dozaj-mint`), `scripts/verify-product-flavor-profile.ts` (порог 45 → 60), `docs/architecture/product-flavor-profile-registry.md`, `docs/roadmap/README.md` (60/86 вместо 45/86);
+- не изменено: Prisma schema/миграции, batch 1–3, существующие engines, `TobaccoIdentityDecision`-записи.
+
+**Тесты:** Vitest 959/959 (29 файлов, было 957/29, +2 — новая проверка состава batch 4 и sparse-тест `dozaj-mint`); `tsc --noEmit` — чисто; `eslint .` — чисто; `verify:product-flavor-profile` — 60 продуктов, 208 заполненных измерений (было 166), 420 evidence (было 336), confidence LOW/MEDIUM/HIGH = 39/21/0 (было 32/13/0), HIGH не использован ни разу.
+
+**Осталось:** batch 5 начинается с ранга 16 очереди (`hook-granatovyi`, Tier 3) — оставшиеся 26 из 86 `RESOLVED` продуктов; для линейки Husky по-прежнему нет данных по `heatResistance` ни для одного продукта; подключение registry к `calculateMixAnalysis`/scoring/UI — отдельная будущая итерация; локальный коммит batch 4 ещё предстоит.

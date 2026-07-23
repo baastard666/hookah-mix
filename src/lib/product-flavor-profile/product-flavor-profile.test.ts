@@ -96,15 +96,23 @@ describe("product flavor profile registry", () => {
   });
 
   it("allows partial dimension coverage without inventing missing values", () => {
-    const sparse = PRODUCT_FLAVOR_PROFILE_REGISTRY.find(profile => profile.canonicalProductId === "urban-soul-pineapple");
-    expect(sparse?.dimensions).toEqual({});
-    expect(sparse?.overallConfidence).toBe("LOW");
+    const sparse = PRODUCT_FLAVOR_PROFILE_REGISTRY.find(profile => profile.canonicalProductId === "husky-kiwano");
+    expect(Object.keys(sparse?.dimensions ?? {})).toEqual(["strength"]);
+    expect(sparse?.dimensions.sweetness).toBeUndefined();
+    expect(sparse?.dimensions.sourness).toBeUndefined();
+    expect(sparse?.dimensions.freshness).toBeUndefined();
+    expect(sparse?.dimensions.intensity).toBeUndefined();
+    expect(sparse?.dimensions.heatResistance).toBeUndefined();
+    expect(sparse?.dimensions.juiciness).toBeUndefined();
   });
 
-  it.each(["jam-spelaya-marakuiya", "blackburn-almond-pear", "husky-kiwano"])("leaves %s without invented dimensions when no independent flavor description was found", canonicalProductId => {
+  it.each([
+    ["jam-spelaya-marakuiya", ["heatResistance", "strength"]],
+    ["blackburn-almond-pear", ["heatResistance", "strength"]],
+    ["husky-kiwano", ["strength"]],
+  ] as const)("leaves %s without invented dimensions beyond %s when no independent flavor description was found for the rest", (canonicalProductId, expectedKeys) => {
     const sparse = PRODUCT_FLAVOR_PROFILE_REGISTRY.find(profile => profile.canonicalProductId === canonicalProductId);
-    expect(sparse?.dimensions).toEqual({});
-    expect(sparse?.overallConfidence).toBe("LOW");
+    expect(Object.keys(sparse?.dimensions ?? {}).sort()).toEqual([...expectedKeys].sort());
     expect(sparse?.dominantNoteIds.length).toBeGreaterThan(0);
   });
 
@@ -213,9 +221,12 @@ describe("mapProductFlavorProfileToPublic", () => {
     });
   });
 
-  it("preserves canonicalProductId, dominantNoteIds and overallConfidence", () => {
+  it("preserves canonicalProductId, dominantNoteIds, overallConfidence and the same dimension keys", () => {
     const profile = PRODUCT_FLAVOR_PROFILE_REGISTRY.find(item => item.canonicalProductId === "urban-soul-pineapple")!;
     const publicProfile = publicApi.mapProductFlavorProfileToPublic(profile);
-    expect(publicProfile).toEqual({ canonicalProductId: "urban-soul-pineapple", dimensions: {}, dominantNoteIds: ["FRUIT", "TROPICAL"], overallConfidence: "LOW" });
+    expect(publicProfile.canonicalProductId).toBe("urban-soul-pineapple");
+    expect(publicProfile.dominantNoteIds).toEqual(["FRUIT", "TROPICAL"]);
+    expect(publicProfile.overallConfidence).toBe(profile.overallConfidence);
+    expect(Object.keys(publicProfile.dimensions).sort()).toEqual(Object.keys(profile.dimensions).sort());
   });
 });

@@ -40,3 +40,15 @@
 **Тесты:** Vitest 956/956 без изменения количества (переименование ключа, не новые тесты); `tsc --noEmit` — чисто; `eslint .` — чисто; `verify:product-flavor-profile` — те же 30/50/103/{15,15,0}, что и до переименования (подтверждает: значения не пересчитывались).
 
 **Осталось:** следующий исследовательский проход должен сначала добрать `strength`/`heatResistance`/`juiciness` для уже покрытых 30 продуктов batch 1–2, и только затем расширять на batch 3 (продукты 31+) по очереди с manufacturer-tier tie-break; вопрос фактической персистентности в Postgres остаётся отдельным будущим решением вне ADR-014.
+
+## 2026-07-23 — Добор strength/heatResistance/juiciness для batch 1–2 (без начала batch 3)
+
+**Сделано:** по прямому запросу добраны три новых измерения ADR-014 (`strength`, `heatResistance`, `juiciness`) для всех 30 уже покрытых продуктов batch 1–2, той же методологией evidence/confidence. Введено явное разделение по уровню атрибуции: per-SKU данные (HTReviews «официальная/пользовательская крепость», прямые цитаты про конкретный вкус) — `MEDIUM`; бренд-уровневые данные, перенесённые на конкретный продукт без отдельного подтверждения — `LOW` для `strength` (может отличаться между вкусами бренда) и `MEDIUM` для `heatResistance` (свойство обработки листа, обычно единое для линейки). Для BlackBurn/MustHave переиспользованы уже провалидированные evidence из `tobacco-profile`. `juiciness` заполнен только при прямом слове «сочный»/«juicy» — 5 из 30 продуктов. Для Hook и Husky `heatResistance` не найден и оставлен пустым (не выдуман). Batch 3 не начинался.
+
+**Файлы:**
+- изменено: `src/lib/product-flavor-profile/{batch-1,batch-2,product-flavor-profile.test}.ts` (новые dim-записи; обновлены sparse-тесты под уже не пустые `jam-spelaya-marakuiya`/`blackburn-almond-pear`/`husky-kiwano`/`urban-soul-pineapple`), `docs/architecture/product-flavor-profile-registry.md`, создан `docs/engine-changelog/v0.3.5-product-flavor-profile-registry-dimension-backfill.md`;
+- не изменено: Prisma schema/миграции, состав batch (те же 30 `canonicalProductId`), `sweetness`/`sourness`/`freshness`/`intensity` — значения этих измерений не пересчитывались, только добавлены новые.
+
+**Тесты:** Vitest 956/956 (без изменения количества — обновлены существующие проверки, новых тестовых файлов не добавлено); `tsc --noEmit` — чисто; `eslint .` — чисто; `verify:product-flavor-profile` — 30 продуктов, 113 заполненных измерений (было 50), 230 evidence (было 103), confidence LOW/MEDIUM/HIGH = 22/8/0 (было 15/15/0 — часть продуктов понижена с MEDIUM до LOW из-за новых низкоуверенных бренд-уровневых значений, `urban-soul-pineapple` и `husky-kiwano` наоборот повышены с LOW до MEDIUM, так как их первые измерения оказались MEDIUM-уверенными).
+
+**Осталось:** batch 3 (продукты 31+) ещё не начат — следующий шаг по очереди с manufacturer-tier tie-break; локальный коммит этого добора ещё предстоит.

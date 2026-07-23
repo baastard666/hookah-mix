@@ -52,3 +52,16 @@
 **Тесты:** Vitest 956/956 (без изменения количества — обновлены существующие проверки, новых тестовых файлов не добавлено); `tsc --noEmit` — чисто; `eslint .` — чисто; `verify:product-flavor-profile` — 30 продуктов, 113 заполненных измерений (было 50), 230 evidence (было 103), confidence LOW/MEDIUM/HIGH = 22/8/0 (было 15/15/0 — часть продуктов понижена с MEDIUM до LOW из-за новых низкоуверенных бренд-уровневых значений, `urban-soul-pineapple` и `husky-kiwano` наоборот повышены с LOW до MEDIUM, так как их первые измерения оказались MEDIUM-уверенными).
 
 **Осталось:** batch 3 (продукты 31+) ещё не начат — следующий шаг по очереди с manufacturer-tier tie-break; локальный коммит этого добора ещё предстоит.
+
+## 2026-07-23 — Batch 3 (30→45 из 86 RESOLVED), первый батч с manufacturer-tier tie-break
+
+**Сделано:** посчитан фактический порядок очереди реальным кодом (`sortByPriorityQueue`/`comparePriorityQueueCandidates`) по всем 56 оставшимся `RESOLVED`-продуктам: 46 из 56 имели одинаковые primary-метрики `1/1/2`, и manufacturer-tier tie-break разрешил эту ничью в пользу Tier 1 (`Chabacco`, `Element`, `MustHave`, `Sapphire Crown`) целиком — все 15 позиций batch 3 оказались Tier 1. Заполнены 7 измерений по той же методологии для всех 15 продуктов. Учтена специфика линеек Chabacco Medium (крепость средне-лёгкая/жаростойкость высокая) vs Chabacco Mix (крепость лёгкая/жаростойкость низкая) — не усреднялись. Один явный конфликт источников (`chabacco-mix-fruktovyi-led`, розничное «средняя» против спецификации линейки «лёгкая») сохранён раздельно с LOW confidence и пометкой расхождения.
+
+**Файлы:**
+- создано: `src/lib/product-flavor-profile/batch-3.ts`, `docs/engine-changelog/v0.3.5-product-flavor-profile-registry-batch-3.md`;
+- изменено: `src/lib/product-flavor-profile/{registry,index,product-flavor-profile.test}.ts`, `scripts/verify-product-flavor-profile.ts` (порог 30 → 45), `docs/architecture/product-flavor-profile-registry.md`, `docs/roadmap/README.md` (45/86 вместо 30/86);
+- не изменено: Prisma schema/миграции, batch 1–2, существующие engines, `TobaccoIdentityDecision`-записи.
+
+**Тесты:** Vitest 957/957 (29 файлов, было 956/29, +1 — новая проверка состава batch 3); `tsc --noEmit` — чисто; `eslint .` — чисто; `verify:product-flavor-profile` — 45 продуктов, 166 заполненных измерений (было 113), 336 evidence (было 230), confidence LOW/MEDIUM/HIGH = 32/13/0 (было 22/8/0), HIGH не использован ни разу.
+
+**Осталось:** batch 4 начинается с ранга 16 очереди (`sapphire-crown-mejumi`, Tier 1) — оставшиеся 41 из 86 `RESOLVED` продуктов; подключение registry к `calculateMixAnalysis`/scoring/UI — отдельная будущая итерация; локальный коммит batch 3 ещё предстоит.

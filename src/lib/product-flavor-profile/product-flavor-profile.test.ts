@@ -3,6 +3,7 @@ import { TOBACCO_IDENTITY_DECISION_REGISTRY } from "../tobacco-identity-decision
 import * as publicApi from "./index";
 import { PRODUCT_FLAVOR_PROFILES_BATCH_1 } from "./batch-1";
 import { PRODUCT_FLAVOR_PROFILES_BATCH_2 } from "./batch-2";
+import { PRODUCT_FLAVOR_PROFILES_BATCH_3 } from "./batch-3";
 import { PRODUCT_FLAVOR_PROFILE_REGISTRY } from "./registry";
 import { validateProductFlavorProfile, validateProductFlavorProfiles } from "./validation";
 import type { ProductFlavorProfile } from "./types";
@@ -19,6 +20,14 @@ const BATCH_2_CANONICAL_PRODUCT_IDS = [
   "blackburn-shock-raspberry", "overdose-jelly-grape", "blackburn-green-tea", "jam-arbuznyi-rondo",
   "jam-spelaya-marakuiya", "hook-limon-laim", "blackburn-almond-pear", "overdose-samarkand-melon",
   "husky-kiwano", "overdose-apple-juicy", "sapphire-crown-bitter-cherry",
+] as const;
+
+const BATCH_3_CANONICAL_PRODUCT_IDS = [
+  "chabacco-medium-belgian-cider", "chabacco-mix-apelsin-slivki", "chabacco-mix-bananovyi-milksheik",
+  "chabacco-mix-fruktovyi-led", "chabacco-mix-grenadin-drops", "chabacco-moroznaya-myata",
+  "element-air-milky-mouse", "musthave-maple-pecan", "musthave-pineapple-rings", "musthave-vanilla-cream",
+  "sapphire-crown-apple-strudel", "sapphire-crown-blueberry-granola", "sapphire-crown-fragrant-blackcurrant",
+  "sapphire-crown-kiwi-fruit", "sapphire-crown-lemon-lime",
 ] as const;
 
 const validProfile: ProductFlavorProfile = {
@@ -39,15 +48,24 @@ describe("product flavor profile registry", () => {
     expect(PRODUCT_FLAVOR_PROFILES_BATCH_2).toHaveLength(15);
   });
 
-  it("batch 2 does not repeat any canonicalProductId already covered by batch 1", () => {
-    const overlap = BATCH_2_CANONICAL_PRODUCT_IDS.filter(id => (BATCH_1_CANONICAL_PRODUCT_IDS as readonly string[]).includes(id));
-    expect(overlap).toEqual([]);
+  it("batch 3 contains exactly its 15 deterministic canonical product IDs", () => {
+    expect(PRODUCT_FLAVOR_PROFILES_BATCH_3.map(profile => profile.canonicalProductId).sort()).toEqual([...BATCH_3_CANONICAL_PRODUCT_IDS].sort());
+    expect(PRODUCT_FLAVOR_PROFILES_BATCH_3).toHaveLength(15);
   });
 
-  it("contains exactly the deterministic batch 1 + batch 2 canonical product IDs", () => {
-    const expected = [...BATCH_1_CANONICAL_PRODUCT_IDS, ...BATCH_2_CANONICAL_PRODUCT_IDS].sort();
+  it("no batch repeats a canonicalProductId already covered by an earlier batch", () => {
+    const overlap12 = BATCH_2_CANONICAL_PRODUCT_IDS.filter(id => (BATCH_1_CANONICAL_PRODUCT_IDS as readonly string[]).includes(id));
+    const overlap13 = BATCH_3_CANONICAL_PRODUCT_IDS.filter(id => (BATCH_1_CANONICAL_PRODUCT_IDS as readonly string[]).includes(id));
+    const overlap23 = BATCH_3_CANONICAL_PRODUCT_IDS.filter(id => (BATCH_2_CANONICAL_PRODUCT_IDS as readonly string[]).includes(id));
+    expect(overlap12).toEqual([]);
+    expect(overlap13).toEqual([]);
+    expect(overlap23).toEqual([]);
+  });
+
+  it("contains exactly the deterministic batch 1 + batch 2 + batch 3 canonical product IDs", () => {
+    const expected = [...BATCH_1_CANONICAL_PRODUCT_IDS, ...BATCH_2_CANONICAL_PRODUCT_IDS, ...BATCH_3_CANONICAL_PRODUCT_IDS].sort();
     expect(PRODUCT_FLAVOR_PROFILE_REGISTRY.map(profile => profile.canonicalProductId).sort()).toEqual(expected);
-    expect(PRODUCT_FLAVOR_PROFILE_REGISTRY).toHaveLength(30);
+    expect(PRODUCT_FLAVOR_PROFILE_REGISTRY).toHaveLength(45);
   });
 
   it("references only RESOLVED canonicalProductId values from the Tobacco Identity Decision Registry", () => {
@@ -187,7 +205,7 @@ describe("public query API", () => {
   it("lists all profiles sorted by canonicalProductId", () => {
     const ids = publicApi.listProductFlavorProfiles().map(profile => profile.canonicalProductId);
     expect(ids).toEqual([...ids].sort((a, b) => a.localeCompare(b, "en")));
-    expect(ids).toHaveLength(30);
+    expect(ids).toHaveLength(45);
   });
 
   it("returns copies rather than the internal registry objects", () => {

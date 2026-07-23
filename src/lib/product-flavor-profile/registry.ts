@@ -1,5 +1,6 @@
 import { PRODUCT_FLAVOR_PROFILES_BATCH_1 } from "./batch-1";
 import { PRODUCT_FLAVOR_PROFILES_BATCH_2 } from "./batch-2";
+import { PRODUCT_FLAVOR_PROFILES_BATCH_3 } from "./batch-3";
 import { ProductFlavorProfileError } from "./errors";
 import { validateProductFlavorProfiles } from "./validation";
 import type { ProductFlavorProfile } from "./types";
@@ -7,6 +8,7 @@ import type { ProductFlavorProfile } from "./types";
 const profiles: readonly ProductFlavorProfile[] = [
   ...PRODUCT_FLAVOR_PROFILES_BATCH_1,
   ...PRODUCT_FLAVOR_PROFILES_BATCH_2,
+  ...PRODUCT_FLAVOR_PROFILES_BATCH_3,
 ];
 
 const issues = validateProductFlavorProfiles(profiles);

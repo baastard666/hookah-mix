@@ -13,7 +13,7 @@
 - v0.3.1 Excel Knowledge Import & Audit
 - v0.3.2 Canonical Tobacco Catalog Expansion & Identity Decisions
 - v0.3.3 Canonical Mix Scoring Integration
-- v0.3.5 Product Flavor Profile Registry (батчи 1–2 — 30 из 86 `RESOLVED` продуктов, не подключён к scoring/UI)
+- v0.3.5 Product Flavor Profile Registry (батчи 1–3 — 45 из 86 `RESOLVED` продуктов, не подключён к scoring/UI)
 
 ## In progress
 
@@ -22,7 +22,7 @@
 ## Planned directions
 - Product Flavor Taxonomy Foundation — номер итерации `unknown`;
 - Expert Observation Aggregation — номер итерации `unknown`;
-- Product Flavor Profile Registry — оставшиеся батчи (56 из 86 `RESOLVED` продуктов);
+- Product Flavor Profile Registry — оставшиеся батчи (41 из 86 `RESOLVED` продуктов);
 - v0.3.6 Tobacco Compatibility Engine;
 - v0.3.7 Mix Analysis Integration;
 - v0.3.8 UI Analysis Breakdown;

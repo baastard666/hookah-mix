@@ -80,19 +80,19 @@ model Flavor {
   intensity            Float
   sweetness            Float
   acidity              Float
-  cooling              Float
-  creaminess           Float
-  bitterness           Float
-  dryness              Float
+  cooling              Float?
+  creaminess           Float?
+  bitterness           Float?
+  dryness              Float?
   juiciness            Float
   freshness            Float
-  dessertLevel         Float
-  spiceLevel           Float
-  floralLevel          Float
-  herbalLevel          Float
-  smokyLevel           Float
-  naturalness          Float
-  persistence          Float
+  dessertLevel         Float?
+  spiceLevel           Float?
+  floralLevel          Float?
+  herbalLevel          Float?
+  smokyLevel           Float?
+  naturalness          Float?
+  persistence          Float?
   profileStatus        ProfileStatus
   profileSource        ProfileSource
   manufacturerId       String?

@@ -39,8 +39,15 @@ export const claimsForRelation = (candidate: FlavorNoteCategory, current: readon
   return getClaimsForSubject(candidate).filter(claim => claim.subjectType === "CATEGORY_RELATION" && claim.subjectIds.some(id => currentSet.has(id as FlavorNoteCategory))).map(claim => claim.id).sort();
 };
 
-export const sourceComponentForCharacteristic = (components: readonly RecommendationComponentInput[], key: FlavorProfileField): RecommendationComponentInput =>
-  [...components].sort((a, b) => b.profile[key] * b.percentage - a.profile[key] * a.percentage || b.percentage - a.percentage || componentId(a.flavorId).localeCompare(componentId(b.flavorId), "en"))[0];
+// ADR-015: `key` may be a secondary field that is null ("not measured") for some components. Those
+// components are excluded from the ranking rather than treated as contributing 0 - only when nothing
+// in the mix has a measured value for this characteristic do we fall back to a percentage-based pick.
+export const sourceComponentForCharacteristic = (components: readonly RecommendationComponentInput[], key: FlavorProfileField): RecommendationComponentInput => {
+  const measured = components.filter(component => component.profile[key] !== null);
+  const pool = measured.length ? measured : components;
+  const scoreFor = (component: RecommendationComponentInput): number => { const value = component.profile[key]; return value === null ? 0 : value * component.percentage; };
+  return [...pool].sort((a, b) => scoreFor(b) - scoreFor(a) || b.percentage - a.percentage || componentId(a.flavorId).localeCompare(componentId(b.flavorId), "en"))[0];
+};
 
 export const knowledgeCategoryForLegacy = (category: LegacyFlavorNoteCategory): FlavorNoteCategory | undefined => toKnowledgeCategory(category);
 

@@ -4,6 +4,7 @@ import { validateKnowledgeRegistry, FLAVOR_KNOWLEDGE_REGISTRY } from "../flavor-
 import { calculateMixCompatibility } from "../mix-compatibility";
 import { calculateMixProfile, type MixProfileNoteInput } from "../mix-profile";
 import { calculateMixRecommendations, MixRecommendationInputError } from ".";
+import { sourceComponentForCharacteristic } from "./helpers";
 import type { MixRecommendationInput, RecommendationComponentInput } from ".";
 
 const profile = (values: Partial<FlavorProfile> = {}): FlavorProfile => ({ sweetness: 5, acidity: 3, bitterness: 2, creaminess: 3, cooling: 0, strength: 5, intensity: 6, heatResistance: 7, dryness: 3, juiciness: 5, freshness: 5, dessertLevel: 3, spiceLevel: 0, floralLevel: 0, herbalLevel: 0, smokyLevel: 0, naturalness: 6, persistence: 6, ...values });
@@ -116,6 +117,24 @@ describe("Recommendation Engine core scenarios", () => {
   });
 });
 
+describe("sourceComponentForCharacteristic (ADR-015 null handling)", () => {
+  it("выбирает измеренный компонент, а не null, даже если у измеренного значение ровно 0", () => {
+    const measuredZero = component("measured-zero", 50, [note("a", "FRUIT")], { bitterness: 0 });
+    const unmeasured = component("unmeasured", 50, [note("b", "FRUIT")], { bitterness: null });
+    expect(sourceComponentForCharacteristic([measuredZero, unmeasured], "bitterness").flavorId).toBe("measured-zero");
+  });
+  it("выбирает компонент с реально высоким значением, а не null", () => {
+    const high = component("high", 30, [note("a", "FRUIT")], { cooling: 9 });
+    const unmeasured = component("unmeasured", 70, [note("b", "FRUIT")], { cooling: null });
+    expect(sourceComponentForCharacteristic([high, unmeasured], "cooling").flavorId).toBe("high");
+  });
+  it("откатывается к выбору по доле, если характеристика не измерена вообще ни у одного компонента", () => {
+    const a = component("a", 40, [note("a", "FRUIT")], { cooling: null });
+    const b = component("b", 60, [note("b", "FRUIT")], { cooling: null });
+    expect(sourceComponentForCharacteristic([a, b], "cooling").flavorId).toBe("b");
+  });
+});
+
 describe("Recommendation validation and invariants", () => {
   it("27. empty input is controlled", () => expect(() => calculateMixRecommendations({ components: [], mixProfile: {} as MixRecommendationInput["mixProfile"], compatibility: {} as MixRecommendationInput["compatibility"] })).toThrow(MixRecommendationInputError));
   it("28. one component is rejected", () => {
@@ -130,6 +149,11 @@ describe("Recommendation validation and invariants", () => {
   it("31. suggested variant has no negative percentage", () => expect(calculate(berryLavender(60, 40)).summary.suggestedMixVariant?.components.every(item => item.suggestedPercentage > 0)).toBe(true));
   it("32. maximum five recommendations", () => {
     const result = calculate([component("extreme", 60, [note("coffee", "COFFEE")], { sweetness: 10, acidity: 8, bitterness: 9, cooling: 10, dryness: 9, freshness: 1, intensity: 10 }), component("citrus", 40, [note("lemon", "CITRUS")], { sweetness: 9, acidity: 8, bitterness: 8, cooling: 10, dryness: 8, freshness: 1, intensity: 9 })]); expect(result.recommendations.length).toBeLessThanOrEqual(5);
+  });
+  it("REDUCE_PROFILE_OVERLOAD never lists a null (unmeasured) field as an extreme characteristic (ADR-015)", () => {
+    const result = calculate([component("extreme", 60, [note("coffee", "COFFEE")], { sweetness: 10, acidity: 8, bitterness: null, cooling: 10, dryness: 9, freshness: 1, intensity: 10 }), component("citrus", 40, [note("lemon", "CITRUS")], { sweetness: 9, acidity: 8, bitterness: null, cooling: 10, dryness: 8, freshness: 1, intensity: 9 })]);
+    const overload = result.recommendations.find(item => item.type === "REDUCE_PROFILE_OVERLOAD");
+    if (overload) expect(overload.characteristicKeys).not.toContain("bitterness");
   });
   it("33. recommendation IDs are unique", () => {
     const result = calculate(berryLavender(60, 40)); expect(new Set(result.recommendations.map(item => item.id)).size).toBe(result.recommendations.length);

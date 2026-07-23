@@ -8,9 +8,13 @@ const weighted = (mix: PreparedCanonicalMix, selector: (index: number) => number
   const total = mix.components.reduce((sum, item) => sum + item.percentage, 0);
   return total > 0 ? mix.components.reduce((sum, item, index) => sum + selector(index) * item.percentage, 0) / total : 0;
 };
+// ADR-015: naturalness/persistence are secondary fields and may be null ("not measured"). They are
+// excluded from the average rather than treated as 0 - the divisor reflects only the terms actually present.
 const componentQuality = (mix: PreparedCanonicalMix): number => weighted(mix, index => {
   const profile = mix.components[index].profile;
-  return (profile.naturalness + profile.persistence + profile.heatResistance + profile.juiciness + (10 - Math.abs(profile.intensity - 7))) / 5;
+  const terms = [profile.heatResistance, profile.juiciness, 10 - Math.abs(profile.intensity - 7), profile.naturalness, profile.persistence]
+    .filter((value): value is number => value !== null);
+  return terms.length ? terms.reduce((sum, value) => sum + value, 0) / terms.length : 0;
 });
 const riskScore = (compatibility: MixCompatibilityResult): number => {
   const penalty = groupCompatibilityRisks(compatibility).reduce((sum, group) => sum + (group.severity === "HIGH" ? 1.5 : group.severity === "MEDIUM" ? 1 : 0.5), 0);

@@ -4,9 +4,14 @@ export const BOWL_TYPES = ["Cosmo Bowl Turkish", "классическая ту�
 export type BowlType = (typeof BOWL_TYPES)[number];
 export type AnalysisOptions = { bowlType: BowlType; coalCount: 2 | 3 | 4; warmupMinutes: number };
 export type ValidationResult = { valid: boolean; errors: string[]; total: number };
-export type MixAnalysis = { compatibilityScore: number; strength: number; sweetness: number; acidity: number; freshness: number; creaminess: number; bitterness: number; dominantFlavor: string; dominantNotes: string[]; backgroundNotes: string[]; conflicts: string[]; overheatingRisk: "низкий" | "средний" | "высокий"; description: string; proportionRecommendations: string[]; heatRecommendations: string[] };
+// ADR-015: freshness/creaminess/bitterness here are weighted averages of secondary Prisma fields
+// (cooling/creaminess/bitterness - see the `weighted` call sites below) and may be null when no
+// component in the mix has that field measured.
+export type MixAnalysis = { compatibilityScore: number; strength: number; sweetness: number; acidity: number; freshness: number | null; creaminess: number | null; bitterness: number | null; dominantFlavor: string; dominantNotes: string[]; backgroundNotes: string[]; conflicts: string[]; overheatingRisk: "низкий" | "средний" | "высокий"; description: string; proportionRecommendations: string[]; heatRecommendations: string[] };
 
-const round = (n: number) => Math.round(n * 10) / 10;
+function round(n: number): number;
+function round(n: number | null): number | null;
+function round(n: number | null): number | null { return n === null ? null : Math.round(n * 10) / 10; }
 export function validateMix(components: MixInput[]): ValidationResult {
   const total = components.reduce((sum, item) => sum + item.percentage, 0);
   const errors: string[] = [];
@@ -17,24 +22,35 @@ export function validateMix(components: MixInput[]): ValidationResult {
   return { valid: errors.length === 0, errors, total };
 }
 
-const weighted = (items: MixInput[], key: keyof Pick<MixInput["flavor"], "strength"|"heatResistance"|"intensity"|"sweetness"|"acidity"|"cooling"|"creaminess"|"bitterness">) => items.reduce((sum, item) => sum + item.flavor[key] * item.percentage / 100, 0);
+const weightedCore = (items: MixInput[], key: keyof Pick<MixInput["flavor"], "strength"|"heatResistance"|"intensity"|"sweetness"|"acidity">): number =>
+  items.reduce((sum, item) => sum + item.flavor[key] * item.percentage / 100, 0);
+// ADR-015: cooling/creaminess/bitterness are secondary fields and may be null ("not measured") per component.
+// Excluded from both the numerator and denominator (partial average over measured components), never treated as 0.
+// If no component measured this field at all, the mix-level value is null too.
+const weightedSecondary = (items: MixInput[], key: keyof Pick<MixInput["flavor"], "cooling"|"creaminess"|"bitterness">): number | null => {
+  const measured = items.filter(item => item.flavor[key] !== null);
+  const measuredPercentage = measured.reduce((sum, item) => sum + item.percentage, 0);
+  if (!measured.length || measuredPercentage <= 0) return null;
+  return measured.reduce((sum, item) => sum + item.flavor[key]! * item.percentage, 0) / measuredPercentage;
+};
 const hasNote = (items: MixInput[], note: string) => items.some((item) => item.flavor.notes.some((n) => n.name.toLowerCase() === note));
 const pair = (items: MixInput[], a: string, b: string) => hasNote(items, a) && hasNote(items, b);
 
 export function analyzeMix(components: MixInput[], options: AnalysisOptions): MixAnalysis {
   const validation = validateMix(components);
   if (!validation.valid) throw new Error(validation.errors.join("; "));
-  const strength = weighted(components, "strength"), sweetness = weighted(components, "sweetness"), acidity = weighted(components, "acidity"), freshness = weighted(components, "cooling"), creaminess = weighted(components, "creaminess"), bitterness = weighted(components, "bitterness"), heatResistance = weighted(components, "heatResistance");
+  const strength = weightedCore(components, "strength"), sweetness = weightedCore(components, "sweetness"), acidity = weightedCore(components, "acidity"), freshness = weightedSecondary(components, "cooling"), creaminess = weightedSecondary(components, "creaminess"), bitterness = weightedSecondary(components, "bitterness"), heatResistance = weightedCore(components, "heatResistance");
   let score = 6.5;
   const goodPairs = [["coffee","cream"],["coffee","vanilla"],["coffee","banana"],["coffee","dark chocolate"],["coffee","chocolate"],["banana","cream"],["banana","vanilla"],["mango","citrus"],["lemon","mint"],["coconut","cream"],["coconut","chocolate"]];
   score += Math.min(2.5, goodPairs.filter(([a,b]) => pair(components,a,b)).length * 0.7);
   const conflicts: string[] = [];
-  const hasStrongCooling = components.some(c => c.flavor.cooling >= 8);
-  const hasStrongCream = components.some(c => c.flavor.creaminess >= 8 || c.flavor.notes.some(n => n.name === "cream" && n.intensity >= 7));
+  // ADR-015: cooling/creaminess/bitterness may be null ("not measured") - an unmeasured component/mix never satisfies these thresholds.
+  const hasStrongCooling = components.some(c => c.flavor.cooling !== null && c.flavor.cooling >= 8);
+  const hasStrongCream = components.some(c => (c.flavor.creaminess !== null && c.flavor.creaminess >= 8) || c.flavor.notes.some(n => n.name === "cream" && n.intensity >= 7));
   if (hasStrongCooling && hasStrongCream) { score -= 1.5; conflicts.push("Сильный холод может приглушить сливочный профиль"); }
   if (hasStrongCooling && hasNote(components,"coffee")) { score -= 1.3; conflicts.push("Сильный холод конфликтует с кофейной основой"); }
-  if (acidity >= 6 && creaminess >= 6) { score -= 1.4; conflicts.push("Высокая кислотность может спорить со сливочными нотами"); }
-  if (bitterness >= 6 && acidity >= 6) { score -= 1.2; conflicts.push("Горечь и кислотность одновременно делают профиль резким"); }
+  if (acidity >= 6 && creaminess !== null && creaminess >= 6) { score -= 1.4; conflicts.push("Высокая кислотность может спорить со сливочными нотами"); }
+  if (bitterness !== null && bitterness >= 6 && acidity >= 6) { score -= 1.2; conflicts.push("Горечь и кислотность одновременно делают профиль резким"); }
   const intense = components.filter((c) => c.flavor.intensity >= 8);
   if (intense.length >= 2 && Math.max(...intense.map(c=>c.percentage))-Math.min(...intense.map(c=>c.percentage)) <= 10) { score -= 1.2; conflicts.push("Несколько интенсивных вкусов конкурируют в равных долях"); }
   const noteScores = new Map<string, number>();
@@ -45,7 +61,7 @@ export function analyzeMix(components: MixInput[], options: AnalysisOptions): Mi
   if (options.coalCount === 4) heatRisk += 3;
   if (options.warmupMinutes > 6) heatRisk += 2;
   if (heatResistance < 7) heatRisk += 2;
-  if (bitterness >= 5) heatRisk += 1;
+  if (bitterness !== null && bitterness >= 5) heatRisk += 1;
   if (options.bowlType === "классическая турка" || options.bowlType === "Cosmo Bowl Turkish") heatRisk += 1;
   const overheatingRisk = heatRisk >= 6 ? "высокий" : heatRisk >= 3 ? "средний" : "низкий";
   const profile = pair(components,"coffee","banana") && (hasNote(components,"cream") || hasNote(components,"vanilla")) ? "банановый латте" : notes.slice(0,3).map(n=>n[0]).join(", ");

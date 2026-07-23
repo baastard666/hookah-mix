@@ -66,7 +66,8 @@ const profileStatusLabel = (status: PublicProfileStatus): string => ({
 
 export const actualMixRoleFor = (component: PreparedCanonicalComponent, dominantId: string): ActualMixRole => {
   const dominant = String(component.flavorId) === dominantId;
-  const cooling = component.profile.cooling >= 7;
+  // ADR-015: cooling is a secondary field and may be null ("not measured") - an unmeasured component is never treated as cooling.
+  const cooling = component.profile.cooling !== null && component.profile.cooling >= 7;
   if (dominant && component.percentage >= 45) return "DOMINANT_BASE";
   if (dominant) return "DOMINANT";
   if (component.percentage >= 45) return "BASE";
@@ -110,8 +111,8 @@ const effectiveDirectionLabels = (mix: EffectivePresentationMix): readonly strin
       .find(note => localizeTasteTag(note.noteSlug || note.noteName) === noteLabel);
     return directionLabelFor(noteLabel, source?.category ?? "OTHER");
   });
-  const hasCoolingDirection = mix.mixProfile.profile.cooling >= 2
-    || mix.canonicalMix.components.some(component => component.percentage >= 15 && component.profile.cooling >= 7);
+  const hasCoolingDirection = (mix.mixProfile.profile.cooling !== null && mix.mixProfile.profile.cooling >= 2)
+    || mix.canonicalMix.components.some(component => component.percentage >= 15 && component.profile.cooling !== null && component.profile.cooling >= 7);
   if (hasCoolingDirection) directions.push("Холод");
   return [...new Set(directions)].slice(0, 4);
 };
@@ -195,7 +196,10 @@ const meaningfulProfileNotes = (analysis: EffectivePresentationMix): { dominant:
   return { dominant, background: [...new Set(otherNotes)].slice(0, 5) };
 };
 
-const displayMetric = (value: number, reliability: "LOW" | "MEDIUM" | "HIGH"): string => {
+// ADR-015: creaminess/bitterness may be null ("not measured") for the aggregated mix profile - render an
+// explicit "нет данных" state instead of computing a number from null (which would look like a real 0/10 reading).
+const displayMetric = (value: number | null, reliability: "LOW" | "MEDIUM" | "HIGH"): string => {
+  if (value === null) return "нет данных";
   if (reliability === "HIGH") return `${value}/10`;
   if (reliability === "MEDIUM") return `ориентировочно ${Math.round(value * 2) / 2}/10`;
   return `около ${Math.round(value)}/10`;

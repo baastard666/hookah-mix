@@ -1,4 +1,4 @@
-import { FLAVOR_NOTE_CATEGORIES, FLAVOR_NOTE_TYPES, FLAVOR_PROFILE_FIELDS, PROFILE_SOURCES, PROFILE_STATUSES, type FlavorProfileInput } from "./types";
+import { FLAVOR_NOTE_CATEGORIES, FLAVOR_NOTE_TYPES, FLAVOR_PROFILE_CORE_FIELDS, FLAVOR_PROFILE_SECONDARY_FIELDS, PROFILE_SOURCES, PROFILE_STATUSES, type FlavorProfileInput } from "./types";
 import { normalizeSlug } from "./slug";
 
 export type FlavorValidationResult = { success: boolean; errors: string[]; normalizedValue?: FlavorProfileInput };
@@ -10,7 +10,9 @@ export function validateFlavor(value: FlavorProfileInput): FlavorValidationResul
   if (!name) errors.push("Flavor name не должен быть пустым");
   if (!value.slug.trim()) errors.push("Flavor slug не должен быть пустым");
   else if (value.slug !== slug) errors.push("Flavor slug должен быть нормализован");
-  for (const field of FLAVOR_PROFILE_FIELDS) if (!Number.isFinite(value[field]) || value[field] < 0 || value[field] > 10) errors.push(`${field} должен быть числом от 0 до 10`);
+  for (const field of FLAVOR_PROFILE_CORE_FIELDS) if (!Number.isFinite(value[field]) || value[field] < 0 || value[field] > 10) errors.push(`${field} должен быть числом от 0 до 10`);
+  // ADR-015: null is a legitimate "not measured" state for secondary fields, distinct from an invalid value - only reject non-null values outside the valid range.
+  for (const field of FLAVOR_PROFILE_SECONDARY_FIELDS) { const secondaryValue = value[field]; if (secondaryValue !== null && (!Number.isFinite(secondaryValue) || secondaryValue < 0 || secondaryValue > 10)) errors.push(`${field} должен быть null или числом от 0 до 10`); }
   if (!PROFILE_STATUSES.includes(value.profileStatus as typeof PROFILE_STATUSES[number])) errors.push("Некорректный profileStatus");
   if (!PROFILE_SOURCES.includes(value.profileSource as typeof PROFILE_SOURCES[number])) errors.push("Некорректный profileSource");
   if (!value.notes.some(note => note.noteType === "DOMINANT")) errors.push("Flavor должен иметь минимум одну DOMINANT-ноту");

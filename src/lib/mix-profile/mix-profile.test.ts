@@ -32,6 +32,11 @@ describe("валидация входа mix-profile",()=>{
  it("15. отклоняет некорректную intensity ноты",()=>expectInvalid([component(1,40,{notes:[note("bad",0)]}),component(2,60)]));
  it("16. отклоняет некорректный noteType",()=>expectInvalid([component(1,40,{notes:[{...note("bad"),noteType:"WRONG"}]}),component(2,60)]));
  it("возвращает типизированную ошибку из основной функции",()=>expect(()=>calculateMixProfile([component(1,100)])).toThrow(MixProfileValidationError));
+
+ // ADR-015: null - легитимное состояние "не измерено" для второстепенных полей.
+ it("принимает null для второстепенного поля (creaminess)",()=>expect(validateMixProfileInput([component(1,40,{profile:profile({creaminess:null})}),component(2,60)]).success).toBe(true));
+ it("отклоняет null для core-поля (sweetness)",()=>expectInvalid([component(1,40,{profile:profile({sweetness:null as unknown as number})}),component(2,60)]));
+ it("отклоняет некорректное значение второстепенного поля, даже когда null разрешён",()=>expectInvalid([component(1,40,{profile:profile({creaminess:11})}),component(2,60)]));
 });
 
 describe("средневзвешенный профиль",()=>{
@@ -39,6 +44,18 @@ describe("средневзвешенный профиль",()=>{
  it("18. рассчитывает все 18 характеристик",()=>expect(Object.keys(calculateMixProfile(two()).profile).sort()).toEqual([...FLAVOR_PROFILE_FIELDS].sort()));
  it("19. округляет результат до одного знака",()=>expect(calculateMixProfile([component(1,33.3333,{profile:profile({acidity:1})}),component(2,66.6667,{profile:profile({acidity:2})})]).profile.acidity).toBe(1.7));
  it("оставляет все значения в диапазоне 0–10",()=>Object.values(calculateMixProfile(two()).profile).forEach(value=>{expect(value).toBeGreaterThanOrEqual(0);expect(value).toBeLessThanOrEqual(10)}));
+
+ // ADR-015: null означает "не измерено" и не подставляется как 0 в средневзвешенное значение.
+ it("возвращает null для второстепенного поля, если оно не измерено ни у одного компонента",()=>expect(calculateMixProfile([component(1,40,{profile:profile({creaminess:null})}),component(2,60,{profile:profile({creaminess:null})})]).profile.creaminess).toBeNull());
+ it("исключает компоненты с null из среднего по второстепенному полю, а не подставляет 0",()=>{
+   const withNull=calculateMixProfile([component(1,40,{profile:profile({creaminess:null})}),component(2,60,{profile:profile({creaminess:8})})]).profile.creaminess;
+   expect(withNull).toBe(8);
+ });
+ it("частично измеренное второстепенное поле усредняется только по измеренным компонентам",()=>{
+   const result=calculateMixProfile([component(1,20,{profile:profile({creaminess:null})}),component(2,30,{profile:profile({creaminess:4})}),component(3,50,{profile:profile({creaminess:8})})]).profile.creaminess;
+   expect(result).toBeCloseTo((4*30+8*50)/80,1);
+ });
+ it("core-поля усредняются как обычно независимо от null в второстепенных полях",()=>expect(calculateMixProfile([component(1,40,{profile:profile({sweetness:3,creaminess:null})}),component(2,60,{profile:profile({sweetness:8,creaminess:null})})]).profile.sweetness).toBe(6));
 });
 
 describe("влияние компонентов",()=>{

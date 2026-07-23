@@ -50,6 +50,15 @@ describe("баланс профиля",()=>{
  it("21. поощряет сочный свежий профиль",()=>hasRule(altered({freshness:7,juiciness:8,dryness:3}),"profile.fresh-juicy"));
  it("22. определяет сильный cold",()=>hasRule(altered({cooling:9},[note("coffee","COFFEE")]),"profile.strong-cooling"));
  it("23. определяет плоский профиль",()=>hasRule(altered({sweetness:2,acidity:2,bitterness:2,creaminess:2,cooling:2,freshness:2,juiciness:2}),"profile.flat"));
+
+ // ADR-015: bitterness/dryness/creaminess/cooling/dessertLevel/spiceLevel/floralLevel/herbalLevel/smokyLevel
+ // are secondary fields and may be null ("не измерено"). null must never silently satisfy or fail a rule.
+ it("не определяет сухую горечь, если bitterness не измерен (null), даже при высокой dryness",()=>expect(rules(altered({bitterness:null,dryness:8}))).not.toContain("profile.dry-bitterness"));
+ it("не начисляет десертный баланс, если bitterness не измерен - <=6 не должно молча выполняться для null",()=>expect(rules(altered({dessertLevel:6,creaminess:5,bitterness:null}))).not.toContain("profile.dessert-balance"));
+ it("начисляет десертный баланс как обычно, когда bitterness измерен и подходит",()=>expect(rules(altered({dessertLevel:6,creaminess:5,bitterness:4}))).toContain("profile.dessert-balance"));
+ it("не поощряет сочный свежий профиль, если dryness не измерен - <= не должно молча выполняться для null",()=>expect(rules(altered({freshness:7,juiciness:8,dryness:null}))).not.toContain("profile.fresh-juicy"));
+ it("не определяет плоский профиль только из-за null - реальные высокие значения по-прежнему перевешивают",()=>expect(rules(altered({sweetness:9,acidity:2,bitterness:null,creaminess:null,cooling:null,freshness:2,juiciness:2}))).not.toContain("profile.flat"));
+ it("не бросает исключение и не путает null с 0 при большом числе неизмеренных вторичных полей",()=>expect(()=>altered({bitterness:null,creaminess:null,cooling:null,dessertLevel:null,spiceLevel:null,floralLevel:null,herbalLevel:null,smokyLevel:null,dryness:null,naturalness:null,persistence:null})).not.toThrow());
 });
 
 describe("баланс интенсивности и пропорций",()=>{
@@ -72,6 +81,10 @@ describe("итог, конфликты и теги",()=>{
  it("37. summaryTags не превышают 6",()=>expect(normal().summaryTags.length).toBeLessThanOrEqual(6));
  it("38. summaryTags детерминированы",()=>expect(normal().summaryTags).toEqual(normal().summaryTags));
  it("39. calculationVersion равна mix-compatibility-v1",()=>expect(normal().metadata.calculationVersion).toBe("mix-compatibility-v1"));
+
+ // ADR-015: creaminess/cooling/dessertLevel/spiceLevel/herbalLevel/floralLevel/smokyLevel may be null.
+ it("не присваивает тег CREAMY, если creaminess не измерен (null)",()=>expect(analyze([component(1,50,[note("one")],{creaminess:null}),component(2,50,[note("two")],{creaminess:null})]).summaryTags).not.toContain("CREAMY"));
+ it("присваивает тег CREAMY как обычно, когда creaminess измерен и высок",()=>expect(analyze([component(1,50,[note("one")],{creaminess:8}),component(2,50,[note("two")],{creaminess:8})]).summaryTags).toContain("CREAMY"));
 });
 
 describe("обязательные миксы",()=>{

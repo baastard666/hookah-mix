@@ -3,3 +3,35 @@ const flavor=(name:string,p:Partial<FlavorData>={},notes:string[]=[]):FlavorData
 const c=(f:FlavorData,percentage:number):MixInput=>({flavor:f,percentage}); const opts:AnalysisOptions={bowlType:"фанел",coalCount:3,warmupMinutes:5};
 describe("validateMix",()=>{it("отклоняет сумму меньше 100%",()=>expect(validateMix([c(flavor("a"),40),c(flavor("b"),50)]).valid).toBe(false));it("отклоняет сумму больше 100%",()=>expect(validateMix([c(flavor("a"),60),c(flavor("b"),50)]).valid).toBe(false));it("отклоняет один компонент",()=>expect(validateMix([c(flavor("a"),100)]).errors[0]).toContain("минимум"));it("отклоняет больше пяти компонентов",()=>expect(validateMix([1,2,3,4,5,6].map(n=>c(flavor(String(n)),n===6?50:10))).errors.join()).toContain("пяти"));it("принимает корректный микс",()=>expect(validateMix([c(flavor("a"),40),c(flavor("b"),60)]).valid).toBe(true))});
 describe("analyzeMix",()=>{it("определяет доминирующий компонент с учетом доли и интенсивности",()=>{const r=analyzeMix([c(flavor("Тихий",{intensity:3}),70),c(flavor("Яркий",{intensity:10}),30)],opts);expect(r.dominantFlavor).toContain("Яркий")});it("считает средневзвешенную крепость",()=>{const r=analyzeMix([c(flavor("a",{strength:8}),40),c(flavor("b",{strength:5}),60)],opts);expect(r.strength).toBe(6.2)});it("обнаруживает конфликт холода и сливочности",()=>{const r=analyzeMix([c(flavor("mint",{cooling:10},["mint"]),60),c(flavor("cream",{creaminess:10},["cream"]),40)],opts);expect(r.conflicts.join()).toContain("холод")});it("повышает риск перегрева",()=>{const a=flavor("hot",{heatResistance:4,bitterness:8});const r=analyzeMix([c(a,50),c({...a,id:2,name:"hot2"},50)],{bowlType:"классическая турка",coalCount:4,warmupMinutes:8});expect(r.overheatingRisk).toBe("высокий")});it("анализирует Coffee 40% + Banana Shake 60%",()=>{const coffee=flavor("Coffee",{brand:{name:"Overdose"},strength:8,heatResistance:7,intensity:9,sweetness:3,bitterness:7,creaminess:2},["coffee","roasted","dark chocolate","dessert"]);const banana=flavor("Banana Shake",{brand:{name:"HIT"},strength:5,heatResistance:6,intensity:6,sweetness:8,creaminess:8},["banana","cream","vanilla","dessert"]);const r=analyzeMix([c(coffee,40),c(banana,60)],{bowlType:"Cosmo Bowl Turkish",coalCount:4,warmupMinutes:6});expect(r.compatibilityScore).toBeGreaterThanOrEqual(8);expect(r.description).toContain("банановый латте");expect(r.description).toContain("выраженную основу");expect(r.strength).toBe(6.2);expect(r.overheatingRisk).not.toBe("низкий");expect(r.heatRecommendations.join()).toContain("три угля")})});
+
+describe("analyzeMix - ADR-015 (null secondary fields)",()=>{
+  it("возвращает null для freshness/creaminess/bitterness, если ни у одного компонента поле не измерено",()=>{
+    const r=analyzeMix([c(flavor("a",{cooling:null,creaminess:null,bitterness:null}),40),c(flavor("b",{cooling:null,creaminess:null,bitterness:null}),60)],opts);
+    expect(r.freshness).toBeNull();expect(r.creaminess).toBeNull();expect(r.bitterness).toBeNull();
+  });
+  it("исключает null-компонент из среднего вместо подстановки 0",()=>{
+    const r=analyzeMix([c(flavor("a",{creaminess:null}),40),c(flavor("b",{creaminess:8}),60)],opts);
+    expect(r.creaminess).toBe(8);
+  });
+  it("не считает холод сильным, если cooling не измерен, даже с нотой mint",()=>{
+    const r=analyzeMix([c(flavor("mint",{cooling:null},["mint"]),60),c(flavor("cream",{creaminess:10},["cream"]),40)],opts);
+    expect(r.conflicts.join()).not.toContain("холод");
+  });
+  it("не повышает риск перегрева из-за null bitterness",()=>{
+    // heatResistance(4)<7 даёт +2 (остальные бонусы options выключены) -> "низкий" (порог "средний" начинается с 3);
+    // при реально измеренном bitterness>=5 добавился бы +1 и получился бы "средний" - null не должен давать тот же +1.
+    const a=flavor("hot",{heatResistance:4,bitterness:null});
+    const r=analyzeMix([c(a,50),c({...a,id:2,name:"hot2"},50)],opts);
+    expect(r.overheatingRisk).toBe("низкий");
+  });
+  it("повышает риск перегрева, когда bitterness реально измерен и высок (контрольный случай)",()=>{
+    const a=flavor("hot",{heatResistance:4,bitterness:8});
+    const r=analyzeMix([c(a,50),c({...a,id:2,name:"hot2"},50)],opts);
+    expect(r.overheatingRisk).toBe("средний");
+  });
+  it("не бросает исключение и не даёт NaN при null во всех вторичных полях сразу",()=>{
+    const r=analyzeMix([c(flavor("a",{cooling:null,creaminess:null,bitterness:null}),50),c(flavor("b",{cooling:null,creaminess:null,bitterness:null}),50)],opts);
+    expect(Number.isNaN(r.strength)).toBe(false);
+    expect(JSON.stringify(r)).not.toMatch(/NaN/);
+  });
+});

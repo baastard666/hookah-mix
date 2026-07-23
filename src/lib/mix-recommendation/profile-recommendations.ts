@@ -12,7 +12,8 @@ const decreaseSource = (input: MixRecommendationInput, key: "sweetness" | "cooli
     confidenceScore: confidenceFor(dataConfidence, sourceRules, [], true), impactScore: impact,
     componentIds: [id], characteristicKeys: [key], noteIds: source.notes.map(note => note.noteSlug).sort(), categoryIds: categories,
     action: { type: "DECREASE_COMPONENT", componentId: id, currentPercentage: source.percentage, suggestedPercentageRange: decreaseRange(source), suggestedRole: source.percentage >= 45 ? "SUPPORT" : "ACCENT" },
-    reasons: [makeReason(reasonCode, sourceRules, [id], [key], source.notes.map(note => note.noteSlug), categories, { weightedContribution: source.profile[key] * source.percentage / 100 })], sourceRuleIds: [...sourceRules], knowledgeClaimIds: [],
+    // ADR-015: `key` may be a secondary field that is null ("not measured") for the chosen source component - report that honestly instead of coercing it to 0.
+    reasons: [makeReason(reasonCode, sourceRules, [id], [key], source.notes.map(note => note.noteSlug), categories, { weightedContribution: source.profile[key] === null ? null : source.profile[key] * source.percentage / 100 })], sourceRuleIds: [...sourceRules], knowledgeClaimIds: [],
   };
 };
 
@@ -35,7 +36,10 @@ export const calculateProfileRecommendations = (input: MixRecommendationInput): 
   if (bitterSourRules.length) {
     const bitterness = sourceComponentForCharacteristic(input.components, "bitterness");
     const acidity = sourceComponentForCharacteristic(input.components, "acidity");
-    const key = bitterness.profile.bitterness * bitterness.percentage >= acidity.profile.acidity * acidity.percentage ? "bitterness" : "acidity";
+    // ADR-015: bitterness is a secondary field and may be null ("not measured") for the chosen component;
+    // acidity is core and always known. When bitterness is unmeasured we cannot claim it dominates, so the
+    // comparison conservatively favors the known quantity (acidity) rather than guessing a bitterness value.
+    const key = (bitterness.profile.bitterness ?? 0) * bitterness.percentage >= acidity.profile.acidity * acidity.percentage ? "bitterness" : "acidity";
     result.push(decreaseSource(input, key, "BITTER_SOUR_CONFLICT", bitterSourRules, 85));
     const direction = createNoteDirectionRecommendation(input, ["VANILLA", "CREAMY"], "ADD_SOFTENING_DIRECTION", bitterSourRules, ["bitterness", "acidity"], 55);
     if (direction) result.push(direction);
@@ -68,8 +72,9 @@ export const calculateProfileRecommendations = (input: MixRecommendationInput): 
   if (hasRule(warningRuleIds, "profile.many-extremes")) {
     result.push({
       id: "recommendation.reduce-profile-overload", type: "REDUCE_PROFILE_OVERLOAD", priority: "MEDIUM", confidenceScore: 70, impactScore: 45,
-      componentIds: [], characteristicKeys: Object.entries(input.mixProfile.profile).filter(([, value]) => value >= 8).map(([key]) => key as keyof typeof input.mixProfile.profile).sort(), noteIds: [], categoryIds: allCategories(input.components),
-      action: { type: "REDUCE_PROFILE_OVERLOAD", characteristicKeys: Object.entries(input.mixProfile.profile).filter(([, value]) => value >= 8).map(([key]) => key as keyof typeof input.mixProfile.profile).sort() },
+      // ADR-015: unmeasured (null) secondary fields cannot be "extreme" - excluded before the >=8 check.
+      componentIds: [], characteristicKeys: Object.entries(input.mixProfile.profile).filter(([, value]) => value !== null && value >= 8).map(([key]) => key as keyof typeof input.mixProfile.profile).sort(), noteIds: [], categoryIds: allCategories(input.components),
+      action: { type: "REDUCE_PROFILE_OVERLOAD", characteristicKeys: Object.entries(input.mixProfile.profile).filter(([, value]) => value !== null && value >= 8).map(([key]) => key as keyof typeof input.mixProfile.profile).sort() },
       reasons: [makeReason("MULTIPLE_PROFILE_EXTREMES", ["profile.many-extremes"], [], [], [], allCategories(input.components))], sourceRuleIds: ["profile.many-extremes"], knowledgeClaimIds: [],
     });
   }

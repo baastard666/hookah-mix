@@ -8,7 +8,9 @@ Product Flavor Profile Registry — независимый read-only справ�
 
 Профиль создаётся только для `canonicalProductId`, у которого решение в Tobacco Identity Decision Registry имеет статус `RESOLVED`. Для `AMBIGUOUS`, `MANUFACTURER_ONLY` и `UNRESOLVED` профиль отсутствует по определению — по ним нет уверенности, что это тот же физический товар. Ссылки на `canonicalProductId` только точные; fuzzy matching, Levenshtein и сопоставление по похожести названий отсутствуют.
 
-Первый батч (15 продуктов) выбран той же очередью приоритизации, что использовалась для P0/P1 identity decisions: сортировка по `verifiedMixCount` → `componentOccurrenceCount` → `occurrenceCount`, по убыванию; при полном совпадении всех трёх метрик — по возрастанию `sourceGroupId` для детерминированности.
+Продукты выбираются той же очередью приоритизации, что использовалась для P0/P1 identity decisions: сортировка по `verifiedMixCount` → `componentOccurrenceCount` → `occurrenceCount`, по убыванию. Эта тройка остаётся неизменным первичным критерием во всех батчах.
+
+Батч 1 (15 продуктов) при полном совпадении всех трёх метрик использовал tie-break по возрастанию `sourceGroupId`/`canonicalProductId`. Начиная с батча 3 вторичный tie-break явно кодифицирован в `src/lib/product-flavor-profile/priority-queue.ts` (`comparePriorityQueueCandidates`): при равенстве primary-метрик предпочтение отдаётся производителям с более богатыми официальными источниками — Tier 1 (`Darkside`, `Chabacco`, `MustHave`, `Sapphire Crown`, `Element`), затем Tier 2 (`Sebero`, `Overdose`, `Husky`, `Brusko`, `BlackBurn`), затем Tier 3 (все остальные, не исключаются); финальный tie-break — по возрастанию `canonicalProductId`. Сопоставление manufacturer → tier — точное нормализованное совпадение без fuzzy matching. Батчи 1–2 предшествуют этому правилу и не пересчитываются задним числом.
 
 ## Модель данных
 
@@ -50,7 +52,7 @@ ProductFlavorProfile
 
 ## Границы v0.3.5
 
-- Покрыты только 15 из 86-87 `RESOLVED` продуктов (первый приоритетный батч); остальные — предмет будущих итераций.
+- Покрыты 30 из 86-87 `RESOLVED` продуктов (батчи 1–2 по 15); остальные — предмет будущих итераций.
 - Registry не подключён к Mix Profile, Compatibility, Recommendation, Canonical Mix Scoring или UI — это отдельная будущая интеграция.
 - Flavor Knowledge Layer не расширен новыми категориями; `dominantNoteIds` используют только существующий список.
 - Prisma schema, миграции и Tobacco Identity Decision Registry не изменены.

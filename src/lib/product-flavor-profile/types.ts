@@ -1,6 +1,9 @@
 import type { FlavorNoteCategory } from "../flavor-knowledge";
 
-export type FlavorDimensionId = "sweetness" | "sourness" | "freshness" | "richness";
+// Target model fixed by ADR-014: 7 dimensions with a real evidence class (manufacturer
+// pages, HTReviews, independent reviews). The other 11 Prisma Flavor sensory fields are
+// intentionally excluded, not just unused - see ADR-014 before adding any of them back.
+export type FlavorDimensionId = "sweetness" | "sourness" | "freshness" | "intensity" | "strength" | "heatResistance" | "juiciness";
 
 export type EvidenceOrigin = "MANUFACTURER_CLAIM" | "REVIEW_AGGREGATE" | "EDITORIAL_ASSESSMENT";
 

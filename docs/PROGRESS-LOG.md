@@ -27,3 +27,16 @@
 **Тесты:** Vitest 956/956 (29 файлов, было 933/28); прирост +23 теста и +1 файл: `product-flavor-profile.test.ts` вырос с 27 до 33 тестов (+6, проверки состава batch 2/отсутствия пересечений/трёх новых sparse-кейсов), плюс новый файл `priority-queue.test.ts` (+17); `tsc --noEmit` — чисто; `eslint .` — чисто; `verify:product-flavor-profile` — 30 продуктов, 50 заполненных измерений, 103 evidence, confidence LOW/MEDIUM/HIGH = 15/15/0, HIGH не использован ни разу.
 
 **Осталось:** заполнить оставшиеся 56 из 86 `RESOLVED` продуктов (batch 3 и далее, с новым manufacturer-tier tie-break); подключение registry к `calculateMixAnalysis`/scoring/UI — отдельная будущая итерация; локальный коммит batch 2 на ветке `feature/v0.3.5-product-flavor-profile-registry` ещё предстоит.
+
+## 2026-07-23 — ADR-014: целевая модель из 7 измерений (по итогам анализа гипотетического Prisma-импорта)
+
+**Сделано:** по запросу пользователя проведена (без кода) оценка гипотетического шага «создать записи `Flavor` в Postgres из decision registry», затем — оценка собираемости evidence по каждому из 18 сенсорных полей Prisma `Flavor`. По итогам оформлен `ADR-014`: целевая модель Product Flavor Profile Registry зафиксирована как 7 измерений (`sweetness`, `sourness`, `freshness`, `intensity`, `strength`, `heatResistance`, `juiciness`) вместо 18; остальные 11 полей (`cooling`, `creaminess`, `bitterness`, `dessertLevel`, `spiceLevel`, `floralLevel`, `herbalLevel`, `smokyLevel`, `dryness`, `naturalness`, `persistence`) явно исключены из типа `FlavorDimensionId`, а не отложены как nullable-опция. Дублирующее измерение `richness` переименовано в `intensity` (тот же концепт «насыщенность вкуса») — переименован только ключ в batch-1.ts/batch-2.ts, значения и evidence не пересчитывались. Prisma schema не менялась. Анализ кода/сравнения миксов в этой сессии не выполнялся — только ADR и типы registry.
+
+**Файлы:**
+- создано: `docs/adr/ADR-014-product-flavor-profile-dimension-scope.md`;
+- изменено: `src/lib/product-flavor-profile/{types,constants,batch-1,batch-2}.ts` (`richness` → `intensity`, добавлены `strength`/`heatResistance`/`juiciness` в `FlavorDimensionId`/`FLAVOR_DIMENSION_IDS`), `docs/adr/README.md` (индекс), `docs/architecture/product-flavor-profile-registry.md` (ссылка на ADR-014, обновлённая модель данных);
+- не изменено: Prisma schema/миграции, значения/evidence уже заполненных измерений batch 1–2, `TobaccoIdentityDecision`-записи.
+
+**Тесты:** Vitest 956/956 без изменения количества (переименование ключа, не новые тесты); `tsc --noEmit` — чисто; `eslint .` — чисто; `verify:product-flavor-profile` — те же 30/50/103/{15,15,0}, что и до переименования (подтверждает: значения не пересчитывались).
+
+**Осталось:** следующий исследовательский проход должен сначала добрать `strength`/`heatResistance`/`juiciness` для уже покрытых 30 продуктов batch 1–2, и только затем расширять на batch 3 (продукты 31+) по очереди с manufacturer-tier tie-break; вопрос фактической персистентности в Postgres остаётся отдельным будущим решением вне ADR-014.

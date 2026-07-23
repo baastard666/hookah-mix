@@ -2,7 +2,9 @@
 
 ## Назначение
 
-Product Flavor Profile Registry — независимый read-only справочник числовых вкусовых характеристик для уже разрешённых (`RESOLVED`) канонических продуктов из Tobacco Identity Decision Registry. Он не заменяет и не расширяет Flavor Knowledge Layer: там хранится таксономия категорий и нот, здесь — числовые измерения `sweetness`, `sourness`, `freshness`, `richness` конкретного товара с evidence и confidence. В v0.3.5 registry не подключён к `calculateMixAnalysis`, scoring или UI.
+Product Flavor Profile Registry — независимый read-only справочник числовых вкусовых характеристик для уже разрешённых (`RESOLVED`) канонических продуктов из Tobacco Identity Decision Registry. Он не заменяет и не расширяет Flavor Knowledge Layer: там хранится таксономия категорий и нот, здесь — числовые измерения конкретного товара с evidence и confidence. В v0.3.5 registry не подключён к `calculateMixAnalysis`, scoring или UI.
+
+Целевая модель измерений зафиксирована [ADR-014](../adr/ADR-014-product-flavor-profile-dimension-scope.md): ровно 7 измерений (`sweetness`, `sourness`, `freshness`, `intensity`, `strength`, `heatResistance`, `juiciness`) из 18 числовых полей будущей модели Prisma `Flavor` — только те, для которых существует реальный класс evidence (официальные страницы производителей, HTReviews, независимые обзоры). Остальные 11 Prisma-полей (`cooling`, `creaminess`, `bitterness`, `dessertLevel`, `spiceLevel`, `floralLevel`, `herbalLevel`, `smokyLevel`, `dryness`, `naturalness`, `persistence`) намеренно не входят в `FlavorDimensionId` — не как временно неиспользуемая опция, а как явно исключённые: при молчании источника присвоение им значения было бы угадыванием.
 
 ## Область охвата
 
@@ -17,12 +19,14 @@ Product Flavor Profile Registry — независимый read-only справ�
 ```text
 ProductFlavorProfile
   canonicalProductId  — точная ссылка на RESOLVED-решение
-  dimensions          — Partial<Record<sweetness | sourness | freshness | richness, FlavorDimensionValue>>
+  dimensions          — Partial<Record<sweetness | sourness | freshness | intensity | strength | heatResistance | juiciness, FlavorDimensionValue>>
   dominantNoteIds     — ссылки на существующие категории Flavor Knowledge Layer
   overallConfidence   — не выше минимального confidence среди заполненных dimensions
 ```
 
 Каждое заполненное измерение — это `{ value: 0..10, confidence, evidence[] }`. Отсутствующее измерение не получает выдуманное среднее значение: оно просто не включается в `dimensions`. Пустой объект `dimensions` — легитимное состояние для продукта без независимого вкусового описания; в этом случае `overallConfidence` равен `LOW`.
+
+`richness` из исходной версии v0.3.5 переименован в `intensity` (ADR-014) — это было дублирующее имя одного и того же понятия «насыщенность вкуса»; переименование затронуло только ключ, значения и evidence не пересчитывались. Batch 1–2 (30 продуктов) пока не имеют заполненных `strength`, `heatResistance` и `juiciness` — эти три измерения появились в модели позже самих батчей; следующий исследовательский проход обязан сначала добрать их для уже покрытых 30 продуктов, прежде чем расширяться на новые.
 
 ## Evidence и confidence
 
@@ -53,6 +57,7 @@ ProductFlavorProfile
 ## Границы v0.3.5
 
 - Покрыты 30 из 86-87 `RESOLVED` продуктов (батчи 1–2 по 15); остальные — предмет будущих итераций.
+- Целевая модель — 7 из 18 будущих Prisma-полей `Flavor` (ADR-014); остальные 11 явно исключены из registry, а не отложены.
 - Registry не подключён к Mix Profile, Compatibility, Recommendation, Canonical Mix Scoring или UI — это отдельная будущая интеграция.
 - Flavor Knowledge Layer не расширен новыми категориями; `dominantNoteIds` используют только существующий список.
 - Prisma schema, миграции и Tobacco Identity Decision Registry не изменены.

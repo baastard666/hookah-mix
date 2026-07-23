@@ -43,7 +43,7 @@ export const PRODUCT_FLAVOR_PROFILES_BATCH_1: readonly ProductFlavorProfile[] = 
         manufacturer("MUSTHAVE: официальное описание — «освежающий лёгкий десерт»", "https://musthave.ru/tabak-dlya-kalyana-musthave-klybnishnyi-sorbet/"),
         editorial("Числовое значение отражает прямое указание производителя на освежающий эффект сорбета."),
       ]),
-      richness: dim(6, "MEDIUM", [
+      intensity: dim(6, "MEDIUM", [
         manufacturer("MUSTHAVE: официальное описание — «насыщенным вкусом»", "https://musthave.ru/tabak-dlya-kalyana-musthave-klybnishnyi-sorbet/"),
         editorial("Числовое значение отражает заявленную производителем насыщенность вкуса при формулировке «лёгкий десерт»."),
       ]),
@@ -62,7 +62,7 @@ export const PRODUCT_FLAVOR_PROFILES_BATCH_1: readonly ProductFlavorProfile[] = 
         reviewAggregate("Розничные описания явно указывают на отсутствие холодящего эффекта у «На расслабоне»", "https://nn-kalyan.ru/tabak-dlya-kalyana-black-burn-na-rasslabone-bananovoe-sufle-feat-dzhigan-opisanie-miksy-otzyvy/"),
         editorial("Минимальное значение отражает прямое указание источника «без охлаждения»."),
       ]),
-      richness: dim(7, "MEDIUM", [
+      intensity: dim(7, "MEDIUM", [
         reviewAggregate("Розничные описания: сливочные ноты мороженого дополняют банановое суфле", "https://nn-kalyan.ru/tabak-dlya-kalyana-black-burn-na-rasslabone-bananovoe-sufle-feat-dzhigan-opisanie-miksy-otzyvy/"),
         editorial("Числовое значение отражает многослойность десертного профиля (суфле + жвачка + сливочные ноты)."),
       ]),
@@ -91,7 +91,7 @@ export const PRODUCT_FLAVOR_PROFILES_BATCH_1: readonly ProductFlavorProfile[] = 
         reviewAggregate("Отзывы: «кислинка чувствуется уверенная», сок с мякотью", "https://hookah-voodoo.com/burn-black-dzhigan-na-chille-blekbern-dzhigan-tropicheskij-sok-100g"),
         editorial("Числовое значение отражает явное указание на уверенную кислинку в пользовательских отзывах."),
       ]),
-      richness: dim(6, "LOW", [
+      intensity: dim(6, "LOW", [
         reviewAggregate("Розничное описание: «сок с мякотью», насыщенное сочетание фруктов", "https://hookah-voodoo.com/burn-black-dzhigan-na-chille-blekbern-dzhigan-tropicheskij-sok-100g"),
         editorial("Низкая уверенность: указание на насыщенность носит общий рекламный характер."),
       ]),

@@ -9,7 +9,7 @@ export const PRODUCT_FLAVOR_PROFILES_BATCH_2: readonly ProductFlavorProfile[] = 
         reviewAggregate("Розничные описания: «сладкий вкус и аромат нежного сливочного крема», крем для профитролей", "https://nn-kalyan.ru/daily-hookah-slivochnyy-krem-opisanie-miksy/"),
         editorial("Числовое значение отражает выраженную десертную сладость взбитого сливочного крема."),
       ]),
-      richness: dim(6, "LOW", [
+      intensity: dim(6, "LOW", [
         reviewAggregate("Розничные описания: «насыщенный, полный и яркий вкус», при этом описывается как «воздушный, нежный»", "https://nn-kalyan.ru/daily-hookah-slivochnyy-krem-opisanie-miksy/"),
         editorial("Низкая уверенность: источники одновременно называют вкус «насыщенным» и «воздушным/лёгким», сигнал противоречивый."),
       ]),
@@ -35,7 +35,7 @@ export const PRODUCT_FLAVOR_PROFILES_BATCH_2: readonly ProductFlavorProfile[] = 
   {
     canonicalProductId: "overdose-masala-tea",
     dimensions: {
-      richness: dim(8, "MEDIUM", [
+      intensity: dim(8, "MEDIUM", [
         manufacturer("OVERDOSE: официальный каталог вкусов подтверждает позицию «Чай Масала»", "https://overdose.pro/taste"),
         reviewAggregate("Обзорные источники: «пряный индийский чай со специями и лёгким молочным шлейфом... насыщенный восточный аромат»", "https://hookahhouse.ru/company/news/tabak_overdose_opisanie_top_vkusov_zabivka/"),
         editorial("Числовое значение отражает прямое указание на насыщенный, плотный аромат пряного чая."),
@@ -98,7 +98,7 @@ export const PRODUCT_FLAVOR_PROFILES_BATCH_2: readonly ProductFlavorProfile[] = 
         reviewAggregate("Розничные описания: «насыщенный вкус свежезаваренного чая с лёгким сладким послевкусием»", "https://hookah-voodoo.com/burn-black-green-tea-zelenyj-chaj-100g"),
         editorial("Низкое числовое значение отражает второстепенный характер сладости на фоне травяной чайной основы."),
       ]),
-      richness: dim(6, "LOW", [
+      intensity: dim(6, "LOW", [
         reviewAggregate("Розничные описания: «насыщенный», «бархатистый вкус зелёного чая»", "https://hookah-voodoo.com/burn-black-green-tea-zelenyj-chaj-100g"),
         editorial("Низкая уверенность: описание насыщенности носит общий рекламный характер без детализации."),
       ]),
@@ -188,7 +188,7 @@ export const PRODUCT_FLAVOR_PROFILES_BATCH_2: readonly ProductFlavorProfile[] = 
         manufacturer("HTReviews: официальное описание позиции — «Спелая вишня»", "https://htreviews.org/tobaccos/sapphire-crown/main/bitter-cherry"),
         editorial("Числовое значение отражает базовую сладость спелой вишни, заявленную производителем."),
       ]),
-      richness: dim(6, "LOW", [
+      intensity: dim(6, "LOW", [
         reviewAggregate("Обзорные источники: горчинка косточки и лёгкий миндальный аромат «добавляют глубину и сложность» вкусу", "https://ivankalyanshop.ru/blog-noviy-tabak-sapphire"),
         editorial("Низкая уверенность: горькая нота косточки не тождественна насыщенности и не имеет отдельного измерения в модели; используется как косвенный сигнал сложности вкуса."),
       ]),

@@ -6,7 +6,14 @@ import { TOBACCO_IDENTITY_DECISION_REGISTRY } from "../src/lib/tobacco-identity-
 const registryBefore = JSON.stringify(listProductFlavorProfiles());
 
 assert.equal(validateProductFlavorProfiles(PRODUCT_FLAVOR_PROFILE_REGISTRY).length, 0, "shipped registry must have zero validation issues");
-assert.equal(PRODUCT_FLAVOR_PROFILE_REGISTRY.length, 75, "batches 1-5 must cover exactly 75 canonical products");
+assert.equal(PRODUCT_FLAVOR_PROFILE_REGISTRY.length, 86, "batches 1-6 must cover exactly 86 canonical products (all RESOLVED products)");
+
+const resolvedCanonicalProductIds = TOBACCO_IDENTITY_DECISION_REGISTRY.list()
+  .filter(decision => decision.decision.status === "RESOLVED" && decision.decision.canonicalProductId)
+  .map(decision => decision.decision.canonicalProductId!)
+  .sort();
+const registeredCanonicalProductIds = PRODUCT_FLAVOR_PROFILE_REGISTRY.map(profile => profile.canonicalProductId).sort();
+assert.deepEqual(registeredCanonicalProductIds, resolvedCanonicalProductIds, "registry must now cover every RESOLVED canonical product, with none left out and none invented");
 
 const confidenceCounts = { LOW: 0, MEDIUM: 0, HIGH: 0 };
 let filledDimensionCount = 0;

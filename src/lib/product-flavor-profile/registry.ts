@@ -3,6 +3,7 @@ import { PRODUCT_FLAVOR_PROFILES_BATCH_2 } from "./batch-2";
 import { PRODUCT_FLAVOR_PROFILES_BATCH_3 } from "./batch-3";
 import { PRODUCT_FLAVOR_PROFILES_BATCH_4 } from "./batch-4";
 import { PRODUCT_FLAVOR_PROFILES_BATCH_5 } from "./batch-5";
+import { PRODUCT_FLAVOR_PROFILES_BATCH_6 } from "./batch-6";
 import { ProductFlavorProfileError } from "./errors";
 import { validateProductFlavorProfiles } from "./validation";
 import type { ProductFlavorProfile } from "./types";
@@ -13,6 +14,7 @@ const profiles: readonly ProductFlavorProfile[] = [
   ...PRODUCT_FLAVOR_PROFILES_BATCH_3,
   ...PRODUCT_FLAVOR_PROFILES_BATCH_4,
   ...PRODUCT_FLAVOR_PROFILES_BATCH_5,
+  ...PRODUCT_FLAVOR_PROFILES_BATCH_6,
 ];
 
 const issues = validateProductFlavorProfiles(profiles);

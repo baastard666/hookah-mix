@@ -36,10 +36,10 @@ export const calculateProfileRecommendations = (input: MixRecommendationInput): 
   if (bitterSourRules.length) {
     const bitterness = sourceComponentForCharacteristic(input.components, "bitterness");
     const acidity = sourceComponentForCharacteristic(input.components, "acidity");
-    // ADR-015: bitterness is a secondary field and may be null ("not measured") for the chosen component;
-    // acidity is core and always known. When bitterness is unmeasured we cannot claim it dominates, so the
-    // comparison conservatively favors the known quantity (acidity) rather than guessing a bitterness value.
-    const key = (bitterness.profile.bitterness ?? 0) * bitterness.percentage >= acidity.profile.acidity * acidity.percentage ? "bitterness" : "acidity";
+    // ADR-015/ADR-017: bitterness and acidity may both be null ("not measured") for the chosen component.
+    // Whichever is unmeasured cannot be claimed to dominate, so it contributes 0 to this comparison rather
+    // than a guessed value - the decision still favors whichever side actually has evidence of dominance.
+    const key = (bitterness.profile.bitterness ?? 0) * bitterness.percentage >= (acidity.profile.acidity ?? 0) * acidity.percentage ? "bitterness" : "acidity";
     result.push(decreaseSource(input, key, "BITTER_SOUR_CONFLICT", bitterSourRules, 85));
     const direction = createNoteDirectionRecommendation(input, ["VANILLA", "CREAMY"], "ADD_SOFTENING_DIRECTION", bitterSourRules, ["bitterness", "acidity"], 55);
     if (direction) result.push(direction);

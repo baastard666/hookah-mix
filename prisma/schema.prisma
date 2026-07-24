@@ -75,17 +75,17 @@ model Flavor {
   name                 String
   slug                 String
   description          String
-  strength             Float
-  heatResistance       Float
-  intensity            Float
-  sweetness            Float
-  acidity              Float
+  strength             Float?
+  heatResistance       Float?
+  intensity            Float?
+  sweetness            Float?
+  acidity              Float?
   cooling              Float?
   creaminess           Float?
   bitterness           Float?
   dryness              Float?
-  juiciness            Float
-  freshness            Float
+  juiciness            Float?
+  freshness            Float?
   dessertLevel         Float?
   spiceLevel           Float?
   floralLevel          Float?

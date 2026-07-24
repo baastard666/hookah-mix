@@ -33,10 +33,11 @@ describe("валидация входа mix-profile",()=>{
  it("16. отклоняет некорректный noteType",()=>expectInvalid([component(1,40,{notes:[{...note("bad"),noteType:"WRONG"}]}),component(2,60)]));
  it("возвращает типизированную ошибку из основной функции",()=>expect(()=>calculateMixProfile([component(1,100)])).toThrow(MixProfileValidationError));
 
- // ADR-015: null - легитимное состояние "не измерено" для второстепенных полей.
+ // ADR-015/ADR-017: null - легитимное состояние "не измерено" для всех 18 полей, включая core.
  it("принимает null для второстепенного поля (creaminess)",()=>expect(validateMixProfileInput([component(1,40,{profile:profile({creaminess:null})}),component(2,60)]).success).toBe(true));
- it("отклоняет null для core-поля (sweetness)",()=>expectInvalid([component(1,40,{profile:profile({sweetness:null as unknown as number})}),component(2,60)]));
+ it("принимает null для core-поля (sweetness) с ADR-017",()=>expect(validateMixProfileInput([component(1,40,{profile:profile({sweetness:null})}),component(2,60)]).success).toBe(true));
  it("отклоняет некорректное значение второстепенного поля, даже когда null разрешён",()=>expectInvalid([component(1,40,{profile:profile({creaminess:11})}),component(2,60)]));
+ it("отклоняет некорректное значение core-поля, даже когда null разрешён",()=>expectInvalid([component(1,40,{profile:profile({sweetness:11})}),component(2,60)]));
 });
 
 describe("средневзвешенный профиль",()=>{
@@ -56,6 +57,11 @@ describe("средневзвешенный профиль",()=>{
    expect(result).toBeCloseTo((4*30+8*50)/80,1);
  });
  it("core-поля усредняются как обычно независимо от null в второстепенных полях",()=>expect(calculateMixProfile([component(1,40,{profile:profile({sweetness:3,creaminess:null})}),component(2,60,{profile:profile({sweetness:8,creaminess:null})})]).profile.sweetness).toBe(6));
+
+ // ADR-017: core-поля (sweetness/acidity/freshness/intensity/strength/heatResistance/juiciness) теперь
+ // тоже nullable и подчиняются той же политике частичного среднего, что и второстепенные.
+ it("возвращает null для core-поля, если оно не измерено ни у одного компонента",()=>expect(calculateMixProfile([component(1,40,{profile:profile({sweetness:null})}),component(2,60,{profile:profile({sweetness:null})})]).profile.sweetness).toBeNull());
+ it("исключает компоненты с null из среднего по core-полю, а не подставляет 0",()=>expect(calculateMixProfile([component(1,40,{profile:profile({sweetness:null})}),component(2,60,{profile:profile({sweetness:8})})]).profile.sweetness).toBe(8));
 });
 
 describe("влияние компонентов",()=>{

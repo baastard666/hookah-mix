@@ -140,12 +140,14 @@ const toPublicRecommendation = (item: MixRecommendation, mix: EffectivePresentat
   };
 };
 
-const buildHeatRisk = (legacy: MixAnalysis, options: { bowlType: string; coalCount: number; warmupMinutes: number }, heatResistance: number): PublicRisk | null => {
+// ADR-017: heatResistance may be null ("not measured" for the whole mix) - the reason line about it is
+// simply omitted rather than computed from a guessed number.
+const buildHeatRisk = (legacy: MixAnalysis, options: { bowlType: string; coalCount: number; warmupMinutes: number }, heatResistance: number | null): PublicRisk | null => {
   if (legacy.overheatingRisk === "низкий") return null;
   const reasons: string[] = [];
   if (options.coalCount === 4) reasons.push("используются четыре угля");
   if (options.warmupMinutes > 6) reasons.push(`прогрев длится ${options.warmupMinutes} минут`);
-  if (heatResistance < 7) reasons.push(`средняя жаростойкость смеси ${heatResistance}/10`);
+  if (heatResistance !== null && heatResistance < 7) reasons.push(`средняя жаростойкость смеси ${heatResistance}/10`);
   if (/турк|Turkish/i.test(options.bowlType)) reasons.push("турка концентрирует жар");
   const reason = reasons.length ? `Риск повышен: ${formatList(reasons)}.` : "Текущий режим жара требует контроля во время сессии.";
   return { id: "heat", title: "Перегрев", level: legacy.overheatingRisk === "высокий" ? "Высокий" : "Средний", reason, recommendation: options.coalCount === 4 ? "После прогрева перейдите на три угля и держите их ближе к краю." : "Контролируйте горечь и при её появлении уменьшите жар." };

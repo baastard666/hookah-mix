@@ -1,5 +1,5 @@
 import type { FlavorNoteCategory, FlavorNoteType, FlavorProfile } from "../src/lib/flavors/types";
-import { calculateMixCompatibility } from "../src/lib/mix-compatibility";
+import { calculateMixCompatibility, resolveComponentIntensity } from "../src/lib/mix-compatibility";
 import { calculateMixProfile, type MixProfileNoteInput } from "../src/lib/mix-profile";
 import { calculateMixRecommendations, type RecommendationComponentInput } from "../src/lib/mix-recommendation";
 
@@ -21,7 +21,7 @@ const scenarios: ReadonlyArray<{ name: string; components: RecommendationCompone
 try {
   for (const scenario of scenarios) {
     const mixProfile = calculateMixProfile(scenario.components);
-    const compatibility = calculateMixCompatibility({ mixProfile, componentIntensities: scenario.components.map(item => ({ flavorId: item.flavorId, intensity: item.profile.intensity })) });
+    const compatibility = calculateMixCompatibility({ mixProfile, componentIntensities: scenario.components.map(item => ({ flavorId: item.flavorId, intensity: resolveComponentIntensity(item.profile.intensity) })) });
     const result = calculateMixRecommendations({ components: scenario.components, mixProfile, compatibility });
     const variantTotal = result.summary.suggestedMixVariant?.components.reduce((sum, item) => sum + item.suggestedPercentage, 0);
     if (result.recommendations.length === 0 || (variantTotal !== undefined && variantTotal !== 100)) throw new Error(`Invalid recommendation result for ${scenario.name}`);

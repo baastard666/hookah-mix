@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { FlavorNoteCategory as LegacyCategory, FlavorNoteType, FlavorProfile } from "../flavors/types";
 import { validateKnowledgeRegistry, FLAVOR_KNOWLEDGE_REGISTRY } from "../flavor-knowledge";
-import { calculateMixCompatibility } from "../mix-compatibility";
+import { calculateMixCompatibility, resolveComponentIntensity } from "../mix-compatibility";
 import { calculateMixProfile, type MixProfileNoteInput } from "../mix-profile";
 import { calculateMixRecommendations, MixRecommendationInputError } from ".";
 import { sourceComponentForCharacteristic } from "./helpers";
@@ -13,7 +13,7 @@ const note = (slug: string, category: LegacyCategory, intensity = 10, noteType: 
 const component = (id: string, percentage: number, notes: MixProfileNoteInput[], values: Partial<FlavorProfile> = {}, dataConfidenceScore?: number): RecommendationComponentInput => ({ flavorId: id, brandName: "Fixture", flavorName: id, flavorSlug: id, percentage, profile: profile(values), notes, dataConfidenceScore });
 const input = (components: RecommendationComponentInput[]): MixRecommendationInput => {
   const mixProfile = calculateMixProfile(components);
-  const compatibility = calculateMixCompatibility({ mixProfile, componentIntensities: components.map(item => ({ flavorId: item.flavorId, intensity: item.profile.intensity })) });
+  const compatibility = calculateMixCompatibility({ mixProfile, componentIntensities: components.map(item => ({ flavorId: item.flavorId, intensity: resolveComponentIntensity(item.profile.intensity) })) });
   return { components, mixProfile, compatibility };
 };
 const calculate = (components: RecommendationComponentInput[]) => calculateMixRecommendations(input(components));

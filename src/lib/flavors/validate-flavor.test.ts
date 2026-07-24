@@ -22,4 +22,14 @@ describe("validateFlavor",()=>{
  it("принимает MANUAL",()=>expect(validateFlavor({...valid(),profileSource:"MANUAL"}).success).toBe(true));
  it("отклоняет некорректный profileStatus",()=>expect(validateFlavor({...valid(),profileStatus:"UNKNOWN"}).success).toBe(false));
  it("отклоняет некорректный profileSource",()=>expect(validateFlavor({...valid(),profileSource:"UNKNOWN"}).success).toBe(false));
+
+ // ADR-015/ADR-017: null - легитимное состояние "не измерено" для всех 18 полей, включая core.
+ it("принимает null для второстепенного поля (creaminess)",()=>expect(validateFlavor({...valid(),creaminess:null}).success).toBe(true));
+ it("принимает null сразу для нескольких второстепенных полей",()=>expect(validateFlavor({...valid(),cooling:null,bitterness:null,dryness:null,dessertLevel:null,spiceLevel:null,floralLevel:null,herbalLevel:null,smokyLevel:null,naturalness:null,persistence:null,creaminess:null}).success).toBe(true));
+ it("принимает null для core-поля (sweetness) с ADR-017",()=>expect(validateFlavor({...valid(),sweetness:null}).success).toBe(true));
+ it("принимает null сразу для всех 7 core-полей",()=>expect(validateFlavor({...valid(),strength:null,heatResistance:null,intensity:null,sweetness:null,acidity:null,juiciness:null,freshness:null}).success).toBe(true));
+ it("отклоняет некорректное значение core-поля, даже когда null разрешён",()=>expect(validateFlavor({...valid(),sweetness:11}).success).toBe(false));
+ it("отклоняет некорректное значение второстепенного поля, даже когда null разрешён",()=>expect(validateFlavor({...valid(),creaminess:11}).success).toBe(false));
+ it("отклоняет NaN для второстепенного поля (не путает с null)",()=>expect(validateFlavor({...valid(),creaminess:NaN}).success).toBe(false));
+ it("отклоняет NaN для core-поля (не путает с null)",()=>expect(validateFlavor({...valid(),sweetness:NaN}).success).toBe(false));
 });

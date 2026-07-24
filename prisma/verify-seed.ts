@@ -9,7 +9,8 @@ async function main(){
  for(const name of required)if(!flavors.some(f=>f.name===name))errors.push(`Отсутствует Flavor: ${name}`);
  for(const flavor of flavors){
   if(flavor.profileStatus!=="DRAFT"||flavor.profileSource!=="MANUAL")errors.push(`${flavor.name}: неверный статус или источник`);
-  for(const field of FLAVOR_PROFILE_FIELDS)if(flavor[field]<0||flavor[field]>10)errors.push(`${flavor.name}: ${field} вне диапазона`);
+  // Demo/seed Flavor rows are a curated, fully-populated dataset (unlike real evidence-backed data, see ADR-015) - null here means the seed drifted, not "not measured".
+  for(const field of FLAVOR_PROFILE_FIELDS)if(flavor[field]===null||flavor[field]<0||flavor[field]>10)errors.push(`${flavor.name}: ${field} вне диапазона`);
   if(!flavor.notes.some(n=>n.noteType==="DOMINANT"))errors.push(`${flavor.name}: нет DOMINANT-ноты`);
   if(flavor.notes.some(n=>n.intensity<1||n.intensity>10))errors.push(`${flavor.name}: intensity ноты вне диапазона`);
   if(new Set(flavor.notes.map(n=>n.flavorNoteId)).size!==flavor.notes.length)errors.push(`${flavor.name}: повторяющиеся назначения нот`);

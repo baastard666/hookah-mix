@@ -19,7 +19,8 @@ const validateInput = (input: MixRecommendationInput): void => {
   if (input.components.some(item => !Number.isFinite(item.percentage) || item.percentage <= 0 || item.percentage >= 100)) throw new MixRecommendationInputError("INVALID_PERCENTAGE", "Each percentage must be between 0 and 100");
   const total = input.components.reduce((sum, item) => sum + item.percentage, 0);
   if (Math.abs(total - 100) > PERCENTAGE_EPSILON) throw new MixRecommendationInputError("INVALID_TOTAL", "Component percentages must total 100");
-  if (input.components.some(item => FLAVOR_PROFILE_FIELDS.some(key => !Number.isFinite(item.profile[key]) || item.profile[key] < 0 || item.profile[key] > 10))) throw new MixRecommendationInputError("INVALID_PROFILE", "Component profiles must contain values from 0 to 10");
+  // ADR-015/ADR-017: null is a legitimate "not measured" state for any sensory field.
+  if (input.components.some(item => FLAVOR_PROFILE_FIELDS.some(key => { const value = item.profile[key]; return value !== null && (!Number.isFinite(value) || value < 0 || value > 10); }))) throw new MixRecommendationInputError("INVALID_PROFILE", "Component profiles must contain values from 0 to 10 or null");
   if (input.components.some(item => item.dataConfidenceScore !== undefined && (!Number.isFinite(item.dataConfidenceScore) || item.dataConfidenceScore < 0 || item.dataConfidenceScore > 100))) throw new MixRecommendationInputError("INVALID_CONFIDENCE", "Data confidence must be between 0 and 100");
   if (input.mixProfile.metadata.calculationVersion !== "mix-profile-v1") throw new MixRecommendationInputError("INVALID_PROFILE_VERSION", "Unsupported mix profile version");
   if (input.compatibility.metadata.calculationVersion !== "mix-compatibility-v1") throw new MixRecommendationInputError("INVALID_COMPATIBILITY_VERSION", "Unsupported compatibility version");

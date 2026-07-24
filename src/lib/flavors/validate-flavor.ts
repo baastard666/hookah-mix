@@ -10,7 +10,8 @@ export function validateFlavor(value: FlavorProfileInput): FlavorValidationResul
   if (!name) errors.push("Flavor name не должен быть пустым");
   if (!value.slug.trim()) errors.push("Flavor slug не должен быть пустым");
   else if (value.slug !== slug) errors.push("Flavor slug должен быть нормализован");
-  for (const field of FLAVOR_PROFILE_FIELDS) if (!Number.isFinite(value[field]) || value[field] < 0 || value[field] > 10) errors.push(`${field} должен быть числом от 0 до 10`);
+  // ADR-015/ADR-017: null is a legitimate "not measured" state for every sensory field, distinct from an invalid value - only reject non-null values outside the valid range.
+  for (const field of FLAVOR_PROFILE_FIELDS) { const fieldValue = value[field]; if (fieldValue !== null && (!Number.isFinite(fieldValue) || fieldValue < 0 || fieldValue > 10)) errors.push(`${field} должен быть null или числом от 0 до 10`); }
   if (!PROFILE_STATUSES.includes(value.profileStatus as typeof PROFILE_STATUSES[number])) errors.push("Некорректный profileStatus");
   if (!PROFILE_SOURCES.includes(value.profileSource as typeof PROFILE_SOURCES[number])) errors.push("Некорректный profileSource");
   if (!value.notes.some(note => note.noteType === "DOMINANT")) errors.push("Flavor должен иметь минимум одну DOMINANT-ноту");

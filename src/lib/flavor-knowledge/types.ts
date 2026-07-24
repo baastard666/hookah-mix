@@ -37,7 +37,12 @@ export type FlavorNoteKnowledge = {
 
 export type KnowledgeEvidenceType =
   | "MANUFACTURER_DESCRIPTION" | "EDITORIAL_RESEARCH" | "COMMUNITY_AGGREGATE"
-  | "VERIFIED_TEST" | "INTERNAL_EXPERT_RULE" | "INFERRED_RELATION";
+  | "VERIFIED_TEST" | "INTERNAL_EXPERT_RULE" | "INFERRED_RELATION"
+  // ADR-019: LLM-aggregated web research with real citations (manufacturer pages, HTReviews,
+  // forums, retail listings) - distinct from EDITORIAL_RESEARCH (this project's own hand-authored
+  // taxonomy work) and from COMMUNITY_AGGREGATE (a single first-party aggregate fixture). Not a
+  // direct manual verification, so never conflated with VERIFIED_TEST.
+  | "AGGREGATED_RESEARCH";
 
 export type KnowledgeEvidence = {
   readonly id: string;

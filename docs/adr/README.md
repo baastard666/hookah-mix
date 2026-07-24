@@ -1,5 +1,11 @@
 # ADR index
 
+- [ADR-019](ADR-019-aggregated-research-category-compatibility-rules.md) — импорт 22 из 29 пар совместимости категорий из внешнего агрегированного исследования (новый evidence type `AGGREGATED_RESEARCH`), подключены через `createKnowledgeCategoryRule`; 5 конфликтующих пар и 2 дубля с существующими записями — не импортированы, вынесены в review-список.
+- [ADR-018](ADR-018-product-flavor-profile-note-category-backfill.md) — перенос `dominantNoteIds` 86 продуктов в `FlavorNoteAssignment` отдельным скриптом, расширение `FlavorNoteCategory` на 9 недостающих категорий, `CATEGORY_RELATIONS` (FLORAL+CREAMY и др.) — вынесено в отдельную будущую задачу.
+- [ADR-017](ADR-017-flavor-profile-nullable-core-dimensions.md) — расширение политики ADR-015 «null ≠ 0» на оставшиеся 7 core-полей `FlavorProfile`; `FlavorProfile` упрощён до единого `Record<Field, number|null>`.
+- [ADR-016](ADR-016-catalog-import-and-demo-reconciliation-policy.md) — политика импорта Product Flavor Profile Registry: без порога отсечения (`dataCompleteness` отдельной осью), evidence всегда побеждает demo-данные, `Test Kitchen` скрыт из публичной выдачи, почти-дубли — в review-список.
+- [ADR-015](ADR-015-flavor-profile-nullable-secondary-dimensions.md) — nullable для 11 вторичных полей `FlavorProfile`, явная политика «null ≠ 0» для всех потребляющих модулей.
+- [ADR-014](ADR-014-product-flavor-profile-dimension-scope.md) — целевая модель из 7 измерений Product Flavor Profile Registry, явное исключение остальных 11 Prisma-полей.
 - [ADR-013](ADR-013-canonical-product-id-ascii-transliteration.md) — ASCII-only canonicalProductId, детерминированная транслитерация и legacy lookup.
 - [ADR-012](ADR-012-canonical-tobacco-identity-decisions.md) — подтверждённые identity decisions, nullable productLine и запрет fuzzy matching.
 

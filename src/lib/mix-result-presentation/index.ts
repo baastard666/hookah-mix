@@ -66,7 +66,8 @@ const profileStatusLabel = (status: PublicProfileStatus): string => ({
 
 export const actualMixRoleFor = (component: PreparedCanonicalComponent, dominantId: string): ActualMixRole => {
   const dominant = String(component.flavorId) === dominantId;
-  const cooling = component.profile.cooling >= 7;
+  // ADR-015: cooling is a secondary field and may be null ("not measured") - an unmeasured component is never treated as cooling.
+  const cooling = component.profile.cooling !== null && component.profile.cooling >= 7;
   if (dominant && component.percentage >= 45) return "DOMINANT_BASE";
   if (dominant) return "DOMINANT";
   if (component.percentage >= 45) return "BASE";
@@ -110,8 +111,8 @@ const effectiveDirectionLabels = (mix: EffectivePresentationMix): readonly strin
       .find(note => localizeTasteTag(note.noteSlug || note.noteName) === noteLabel);
     return directionLabelFor(noteLabel, source?.category ?? "OTHER");
   });
-  const hasCoolingDirection = mix.mixProfile.profile.cooling >= 2
-    || mix.canonicalMix.components.some(component => component.percentage >= 15 && component.profile.cooling >= 7);
+  const hasCoolingDirection = (mix.mixProfile.profile.cooling !== null && mix.mixProfile.profile.cooling >= 2)
+    || mix.canonicalMix.components.some(component => component.percentage >= 15 && component.profile.cooling !== null && component.profile.cooling >= 7);
   if (hasCoolingDirection) directions.push("Холод");
   return [...new Set(directions)].slice(0, 4);
 };
@@ -139,12 +140,14 @@ const toPublicRecommendation = (item: MixRecommendation, mix: EffectivePresentat
   };
 };
 
-const buildHeatRisk = (legacy: MixAnalysis, options: { bowlType: string; coalCount: number; warmupMinutes: number }, heatResistance: number): PublicRisk | null => {
+// ADR-017: heatResistance may be null ("not measured" for the whole mix) - the reason line about it is
+// simply omitted rather than computed from a guessed number.
+const buildHeatRisk = (legacy: MixAnalysis, options: { bowlType: string; coalCount: number; warmupMinutes: number }, heatResistance: number | null): PublicRisk | null => {
   if (legacy.overheatingRisk === "низкий") return null;
   const reasons: string[] = [];
   if (options.coalCount === 4) reasons.push("используются четыре угля");
   if (options.warmupMinutes > 6) reasons.push(`прогрев длится ${options.warmupMinutes} минут`);
-  if (heatResistance < 7) reasons.push(`средняя жаростойкость смеси ${heatResistance}/10`);
+  if (heatResistance !== null && heatResistance < 7) reasons.push(`средняя жаростойкость смеси ${heatResistance}/10`);
   if (/турк|Turkish/i.test(options.bowlType)) reasons.push("турка концентрирует жар");
   const reason = reasons.length ? `Риск повышен: ${formatList(reasons)}.` : "Текущий режим жара требует контроля во время сессии.";
   return { id: "heat", title: "Перегрев", level: legacy.overheatingRisk === "высокий" ? "Высокий" : "Средний", reason, recommendation: options.coalCount === 4 ? "После прогрева перейдите на три угля и держите их ближе к краю." : "Контролируйте горечь и при её появлении уменьшите жар." };
@@ -195,7 +198,10 @@ const meaningfulProfileNotes = (analysis: EffectivePresentationMix): { dominant:
   return { dominant, background: [...new Set(otherNotes)].slice(0, 5) };
 };
 
-const displayMetric = (value: number, reliability: "LOW" | "MEDIUM" | "HIGH"): string => {
+// ADR-015: creaminess/bitterness may be null ("not measured") for the aggregated mix profile - render an
+// explicit "нет данных" state instead of computing a number from null (which would look like a real 0/10 reading).
+const displayMetric = (value: number | null, reliability: "LOW" | "MEDIUM" | "HIGH"): string => {
+  if (value === null) return "нет данных";
   if (reliability === "HIGH") return `${value}/10`;
   if (reliability === "MEDIUM") return `ориентировочно ${Math.round(value * 2) / 2}/10`;
   return `около ${Math.round(value)}/10`;

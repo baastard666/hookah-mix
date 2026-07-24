@@ -1,3 +1,4 @@
+import { resolveIntensity } from "../flavors/types";
 import type { FlavorNoteCategory, FlavorNoteType } from "../flavors/types";
 import { NOTE_TYPE_WEIGHTS, roundTo } from "./constants";
 import type { MixProfileComponentInput, MixProfileNoteResult, NoteSource } from "./types";
@@ -8,7 +9,7 @@ const sourceCompare=(a:RawSource,b:RawSource)=>b.rawContribution-a.rawContributi
 export function calculateNoteContributions(components:readonly MixProfileComponentInput[]):MixProfileNoteResult[]{
   const grouped=new Map<string,RawSource[]>();
   for(const component of components)for(const note of component.notes){
-    const rawContribution=component.percentage/100*component.profile.intensity*note.intensity*NOTE_TYPE_WEIGHTS[note.noteType as FlavorNoteType];
+    const rawContribution=component.percentage/100*resolveIntensity(component.profile.intensity)*note.intensity*NOTE_TYPE_WEIGHTS[note.noteType as FlavorNoteType];
     const source:RawSource={flavorId:component.flavorId,brandName:component.brandName,flavorName:component.flavorName,percentage:component.percentage,sourceContribution:roundTo(rawContribution,2),sourceNoteType:note.noteType as FlavorNoteType,sourceNoteIntensity:note.intensity,noteId:note.noteId,noteName:note.noteName,noteSlug:note.noteSlug,category:note.category,rawContribution,flavorSlug:component.flavorSlug};
     grouped.set(note.noteSlug,[...(grouped.get(note.noteSlug)??[]),source]);
   }

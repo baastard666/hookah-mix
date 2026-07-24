@@ -83,6 +83,55 @@ const colaMint = (): CanonicalMixComponentInput[] => {
   ];
 };
 
+describe("ADR-015: null secondary fields in the public presentation", () => {
+  // buildEffectiveTobaccoProfile (canonical-mix-scoring) already cascades a null secondary field to the
+  // NEUTRAL_FALLBACK=5 candidate before it ever reaches mixProfile/canonicalMix, so a null source profile
+  // alone cannot reach this presentation layer through the real pipeline. These tests override the already
+  // -computed analysis object directly (same pattern as test 15 above) to unit-test the presentation layer's
+  // OWN null handling in isolation, the way it would need to behave if a future caller fed it a genuinely
+  // unresolved value.
+  const withNullProfileFields = (overrides: Partial<FlavorProfile>) => {
+    const analysis = calculateMixAnalysis({ components: resolved() });
+    return {
+      ...analysis,
+      mixProfile: { ...analysis.mixProfile, profile: { ...analysis.mixProfile.profile, ...overrides } },
+      canonicalMix: { ...analysis.canonicalMix, components: analysis.canonicalMix.components.map(item => ({ ...item, profile: { ...item.profile, ...overrides } })) },
+    };
+  };
+  const presentWith = (overrides: Partial<FlavorProfile>) => buildMixResultPresentation({ analysis: withNullProfileFields(overrides), legacyAnalysis: legacy(), preparation: { bowlType: "фанел", coalCount: 3, warmupMinutes: 6 } });
+
+  it("shows an explicit 'нет данных' metric instead of a fabricated 0/10 when creaminess/bitterness are null", () => {
+    const result = presentWith({ creaminess: null, bitterness: null });
+    const creaminess = result.profile.metrics.find(metric => metric.key === "creaminess");
+    const bitterness = result.profile.metrics.find(metric => metric.key === "bitterness");
+    expect(creaminess?.displayValue).toBe("нет данных");
+    expect(bitterness?.displayValue).toBe("нет данных");
+    expect(creaminess?.value).toBeNull();
+  });
+  it("still shows a real value for a measured metric alongside an unmeasured one", () => {
+    const result = presentWith({ creaminess: null, bitterness: null });
+    const strength = result.profile.metrics.find(metric => metric.key === "strength");
+    expect(strength?.displayValue).not.toBe("нет данных");
+  });
+  it("never crashes and never reports NaN/Infinity when cooling is null", () => {
+    expect(JSON.stringify(presentWith({ cooling: null }))).not.toMatch(/NaN|Infinity/);
+  });
+  it("does not add a cooling direction when cooling is null, even for a component tagged COOLING", () => {
+    // colaMint() reliably produces actions (see test 42, which asserts "Холод" is present with real cooling
+    // data) - overriding its resolved profile to null lets us prove the direction disappears specifically
+    // because of the null guard, not because this fixture happens to produce no actions at all.
+    const analysis = calculateMixAnalysis({ components: colaMint() });
+    const withNullCooling = {
+      ...analysis,
+      mixProfile: { ...analysis.mixProfile, profile: { ...analysis.mixProfile.profile, cooling: null } },
+      canonicalMix: { ...analysis.canonicalMix, components: analysis.canonicalMix.components.map(item => ({ ...item, profile: { ...item.profile, cooling: null } })) },
+    };
+    const result = buildMixResultPresentation({ analysis: withNullCooling, legacyAnalysis: legacy({ overheatingRisk: "низкий", heatRecommendations: [] }), preparation: { bowlType: "фанел", coalCount: 3, warmupMinutes: 6 } });
+    expect(result.actions.length).toBeGreaterThan(0);
+    expect(result.actions.every(action => !action.directionLabels.includes("Холод"))).toBe(true);
+  });
+});
+
 describe("v0.3.3 corrective public presentation", () => {
   const corrective = () => present(colaMint(), null, { overheatingRisk: "низкий", heatRecommendations: [] });
   it("22. distinguishes catalog presence from product matching", () => expect(corrective().resolution.components[0]).toMatchObject({ catalogStatus: "Товар найден в каталоге", status: expect.stringContaining("сопоставление с базой продуктов") }));

@@ -1,5 +1,5 @@
 import { calculateCanonicalMixScore, groupCompatibilityRisks, prepareCanonicalMix, riskSeverityRank } from "../canonical-mix-scoring";
-import { calculateMixCompatibility } from "../mix-compatibility";
+import { calculateMixCompatibility, resolveComponentIntensity } from "../mix-compatibility";
 import { calculateMixProfile } from "../mix-profile";
 import { calculateMixRecommendations } from "../mix-recommendation";
 import type { MixAnalysisInput, MixAnalysisResult, MixProposalComparison, MixProposalSnapshot } from "./types";
@@ -9,7 +9,7 @@ const analyzeBase = (input: MixAnalysisInput): BaseAnalysis => {
   const canonicalMix = prepareCanonicalMix(input.components);
   if (canonicalMix.components.length < 2) throw new Error("После canonical-нормализации микс должен содержать минимум два разных компонента");
   const mixProfile = calculateMixProfile(canonicalMix.components);
-  const compatibility = calculateMixCompatibility({ mixProfile, componentIntensities: canonicalMix.components.map(component => ({ flavorId: component.flavorId, intensity: component.profile.intensity })) });
+  const compatibility = calculateMixCompatibility({ mixProfile, componentIntensities: canonicalMix.components.map(component => ({ flavorId: component.flavorId, intensity: resolveComponentIntensity(component.profile.intensity) })) });
   const recommendations = calculateMixRecommendations({ components: canonicalMix.components, mixProfile, compatibility });
   const scoring = calculateCanonicalMixScore({ preparedMix: canonicalMix, compatibility, verifiedSmokeScore: input.verifiedSmokeScore });
   return { canonicalMix, mixProfile, compatibility, recommendations, scoring };

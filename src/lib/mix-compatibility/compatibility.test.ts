@@ -5,13 +5,14 @@ import { analyzeNoteCompatibility } from "./analyze-note-compatibility";
 import { calculateMixCompatibility,MixCompatibilityInputError } from "./calculate-compatibility";
 import { COMPATIBILITY_WEIGHTS } from "./constants";
 import { sortConflicts } from "./helpers";
+import { resolveComponentIntensity } from "./types";
 import type { MixCompatibilityInput,MixConflict } from "./types";
 
 const profile=(values:Partial<FlavorProfile>={}):FlavorProfile=>({sweetness:5,acidity:4,bitterness:2,creaminess:3,cooling:1,strength:5,intensity:6,heatResistance:7,dryness:3,juiciness:5,freshness:4,dessertLevel:3,spiceLevel:0,floralLevel:0,herbalLevel:0,smokyLevel:0,naturalness:6,persistence:6,...values});
 let noteId=1;
 const note=(slug:string,category:FlavorNoteCategory="OTHER",intensity=10,noteType:FlavorNoteType="DOMINANT"):MixProfileNoteInput=>({noteId:noteId++,noteName:slug,noteSlug:slug,category,intensity,noteType});
 const component=(id:number,percentage:number,notes:MixProfileNoteInput[]=[note(`note-${id}`)],values:Partial<FlavorProfile>={}):MixProfileComponentInput=>({flavorId:id,brandName:`Brand ${id}`,flavorName:`Flavor ${id}`,flavorSlug:`flavor-${id}`,percentage,profile:profile(values),notes});
-const input=(components:MixProfileComponentInput[]):MixCompatibilityInput=>({mixProfile:calculateMixProfile(components),componentIntensities:components.map(component=>({flavorId:component.flavorId,intensity:component.profile.intensity}))});
+const input=(components:MixProfileComponentInput[]):MixCompatibilityInput=>({mixProfile:calculateMixProfile(components),componentIntensities:components.map(component=>({flavorId:component.flavorId,intensity:resolveComponentIntensity(component.profile.intensity)}))});
 const analyze=(components:MixProfileComponentInput[])=>calculateMixCompatibility(input(components));
 const rules=(result:ReturnType<typeof calculateMixCompatibility>)=>[...result.noteCompatibility.appliedRules,...result.profileBalance.appliedRules,...result.intensityBalance.appliedRules,...result.proportionBalance.appliedRules].map(rule=>rule.ruleId);
 const pair=(left:MixProfileNoteInput,right:MixProfileNoteInput)=>analyze([component(1,50,[left]),component(2,50,[right])]);
@@ -50,6 +51,23 @@ describe("баланс профиля",()=>{
  it("21. поощряет сочный свежий профиль",()=>hasRule(altered({freshness:7,juiciness:8,dryness:3}),"profile.fresh-juicy"));
  it("22. определяет сильный cold",()=>hasRule(altered({cooling:9},[note("coffee","COFFEE")]),"profile.strong-cooling"));
  it("23. определяет плоский профиль",()=>hasRule(altered({sweetness:2,acidity:2,bitterness:2,creaminess:2,cooling:2,freshness:2,juiciness:2}),"profile.flat"));
+
+ // ADR-015: bitterness/dryness/creaminess/cooling/dessertLevel/spiceLevel/floralLevel/herbalLevel/smokyLevel
+ // are secondary fields and may be null ("не измерено"). null must never silently satisfy or fail a rule.
+ it("не определяет сухую горечь, если bitterness не измерен (null), даже при высокой dryness",()=>expect(rules(altered({bitterness:null,dryness:8}))).not.toContain("profile.dry-bitterness"));
+ it("не начисляет десертный баланс, если bitterness не измерен - <=6 не должно молча выполняться для null",()=>expect(rules(altered({dessertLevel:6,creaminess:5,bitterness:null}))).not.toContain("profile.dessert-balance"));
+ it("начисляет десертный баланс как обычно, когда bitterness измерен и подходит",()=>expect(rules(altered({dessertLevel:6,creaminess:5,bitterness:4}))).toContain("profile.dessert-balance"));
+ it("не поощряет сочный свежий профиль, если dryness не измерен - <= не должно молча выполняться для null",()=>expect(rules(altered({freshness:7,juiciness:8,dryness:null}))).not.toContain("profile.fresh-juicy"));
+ it("не определяет плоский профиль только из-за null - реальные высокие значения по-прежнему перевешивают",()=>expect(rules(altered({sweetness:9,acidity:2,bitterness:null,creaminess:null,cooling:null,freshness:2,juiciness:2}))).not.toContain("profile.flat"));
+ it("не бросает исключение и не путает null с 0 при большом числе неизмеренных вторичных полей",()=>expect(()=>altered({bitterness:null,creaminess:null,cooling:null,dessertLevel:null,spiceLevel:null,floralLevel:null,herbalLevel:null,smokyLevel:null,dryness:null,naturalness:null,persistence:null})).not.toThrow());
+
+ // ADR-017: sweetness/acidity/freshness/juiciness/intensity/strength/heatResistance тоже теперь nullable.
+ // `<=`-направленные правила особенно опасны: null молча удовлетворяет "<= порог" (0 <= порог всегда true).
+ it("не определяет приторный профиль, если acidity не измерена - <=low не должно молча выполняться для null",()=>expect(rules(altered({sweetness:9,acidity:null,freshness:2}))).not.toContain("profile.cloying"));
+ it("не определяет резкую кислотность, если sweetness не измерена - <=low не должно молча выполняться для null",()=>expect(rules(altered({acidity:9,sweetness:null}))).not.toContain("profile.sharp-acidity"));
+ it("не определяет сладость без свежести, если acidity/freshness не измерены",()=>expect(rules(altered({sweetness:9,acidity:null,freshness:null}))).not.toContain("profile.sweet-low-freshness"));
+ it("определяет сладость без свежести как обычно, когда все три поля измерены",()=>expect(rules(altered({sweetness:9,acidity:2,freshness:2}))).toContain("profile.sweet-low-freshness"));
+ it("не бросает исключение, когда все core-поля не измерены одновременно",()=>expect(()=>altered({sweetness:null,acidity:null,freshness:null,intensity:null,strength:null,heatResistance:null,juiciness:null})).not.toThrow());
 });
 
 describe("баланс интенсивности и пропорций",()=>{
@@ -72,6 +90,13 @@ describe("итог, конфликты и теги",()=>{
  it("37. summaryTags не превышают 6",()=>expect(normal().summaryTags.length).toBeLessThanOrEqual(6));
  it("38. summaryTags детерминированы",()=>expect(normal().summaryTags).toEqual(normal().summaryTags));
  it("39. calculationVersion равна mix-compatibility-v1",()=>expect(normal().metadata.calculationVersion).toBe("mix-compatibility-v1"));
+
+ // ADR-015: creaminess/cooling/dessertLevel/spiceLevel/herbalLevel/floralLevel/smokyLevel may be null.
+ it("не присваивает тег CREAMY, если creaminess не измерен (null)",()=>expect(analyze([component(1,50,[note("one")],{creaminess:null}),component(2,50,[note("two")],{creaminess:null})]).summaryTags).not.toContain("CREAMY"));
+ it("присваивает тег CREAMY как обычно, когда creaminess измерен и высок",()=>expect(analyze([component(1,50,[note("one")],{creaminess:8}),component(2,50,[note("two")],{creaminess:8})]).summaryTags).toContain("CREAMY"));
+ // ADR-017: intensity<=4 ("LIGHT") - опасное направление: null молча удовлетворяет "<=4" (0<=4 истинно в JS).
+ it("не присваивает тег LIGHT, если intensity не измерена (null)",()=>expect(analyze([component(1,50,[note("one")],{intensity:null}),component(2,50,[note("two")],{intensity:null})]).summaryTags).not.toContain("LIGHT"));
+ it("присваивает тег LIGHT как обычно, когда intensity измерена и низка",()=>expect(analyze([component(1,50,[note("one")],{intensity:2}),component(2,50,[note("two")],{intensity:2})]).summaryTags).toContain("LIGHT"));
 });
 
 describe("обязательные миксы",()=>{

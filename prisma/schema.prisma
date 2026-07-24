@@ -37,6 +37,17 @@ enum FlavorNoteCategory {
   TROPICAL
   SMOKY
   OTHER
+  // ADR-018: added to cover dominantNoteIds categories used in Product Flavor Profile Registry
+  // that had no equivalent in the original 16-value enum. Additive only - nothing above renamed/removed.
+  SOUR
+  CANDY
+  MINT
+  TEA
+  FRESH
+  BAKERY
+  ALCOHOL
+  WOODY
+  VANILLA
 }
 
 enum FlavorNoteType {
@@ -75,24 +86,24 @@ model Flavor {
   name                 String
   slug                 String
   description          String
-  strength             Float
-  heatResistance       Float
-  intensity            Float
-  sweetness            Float
-  acidity              Float
-  cooling              Float
-  creaminess           Float
-  bitterness           Float
-  dryness              Float
-  juiciness            Float
-  freshness            Float
-  dessertLevel         Float
-  spiceLevel           Float
-  floralLevel          Float
-  herbalLevel          Float
-  smokyLevel           Float
-  naturalness          Float
-  persistence          Float
+  strength             Float?
+  heatResistance       Float?
+  intensity            Float?
+  sweetness            Float?
+  acidity              Float?
+  cooling              Float?
+  creaminess           Float?
+  bitterness           Float?
+  dryness              Float?
+  juiciness            Float?
+  freshness            Float?
+  dessertLevel         Float?
+  spiceLevel           Float?
+  floralLevel          Float?
+  herbalLevel          Float?
+  smokyLevel           Float?
+  naturalness          Float?
+  persistence          Float?
   profileStatus        ProfileStatus
   profileSource        ProfileSource
   manufacturerId       String?

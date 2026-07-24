@@ -1,13 +1,14 @@
 import { describe, expect, it } from "vitest";
 import type { MixProfileNoteResult } from "../mix-profile";
 import { analyzeNoteCompatibility, getKnowledgeRelationForLegacyCategories } from "../mix-compatibility";
+import { createKnowledgeCategoryRule } from "../mix-compatibility/knowledge-adapter";
 import {
   FLAVOR_KNOWLEDGE_REGISTRY, FLAVOR_NOTE_CATEGORIES, areNotesRelated, areRelatedCategories,
   calculateKnowledgeConfidence, calculateKnowledgeConfidenceForClaim, findNoteByAlias,
   getCategoryDefinition, getCategoryRelation, getCategoryRelationScore, getChildCategories,
   getClaim, getClaimsForSubject, getEvidence, getNoteCategories, getNoteKnowledge,
   getParentCategory, getRelatedCategories, getRelatedNotes, isParentCategory, isSameCategory,
-  toKnowledgeCategory, validateEvidence, validateKnowledgeRegistry,
+  toKnowledgeCategory, toLegacyCategory, validateEvidence, validateKnowledgeRegistry,
 } from ".";
 import type { FlavorKnowledgeRegistry, KnowledgeEvidence } from ".";
 
@@ -41,6 +42,15 @@ describe("Flavor Knowledge taxonomy", () => {
   it("13. legacy DRINK maps to BEVERAGE", () => expect(toKnowledgeCategory("DRINK")).toBe("BEVERAGE"));
   it("14. legacy DAIRY maps to CREAMY", () => expect(toKnowledgeCategory("DAIRY")).toBe("CREAMY"));
   it("15. legacy OTHER has no invented canonical category", () => expect(toKnowledgeCategory("OTHER")).toBeUndefined());
+  it("16. ADR-018: knowledge BEVERAGE maps back to legacy DRINK", () => expect(toLegacyCategory("BEVERAGE")).toBe("DRINK"));
+  it("17. ADR-018: knowledge CREAMY maps back to legacy DAIRY", () => expect(toLegacyCategory("CREAMY")).toBe("DAIRY"));
+  it("18. ADR-018: identity-named categories round-trip in both directions", () => {
+    for (const category of ["SOUR", "CANDY", "MINT", "TEA", "FRESH", "BAKERY", "ALCOHOL", "WOODY", "VANILLA"] as const) {
+      expect(toLegacyCategory(category)).toBe(category);
+      expect(toKnowledgeCategory(category)).toBe(category);
+    }
+  });
+  it("19. ADR-018: TOBACCO has no legacy equivalent (unused by the registry, not added to the Prisma enum)", () => expect(toLegacyCategory("TOBACCO")).toBeUndefined());
 });
 
 describe("Flavor Knowledge category relations", () => {
@@ -54,6 +64,34 @@ describe("Flavor Knowledge category relations", () => {
   it("23. every baseScore is between -1 and 1", () => expect(FLAVOR_KNOWLEDGE_REGISTRY.categoryRelations.every(item => item.baseScore >= -1 && item.baseScore <= 1)).toBe(true));
   it("24. every relation ruleId is unique", () => expect(idsAreUnique(FLAVOR_KNOWLEDGE_REGISTRY.categoryRelations.map(item => item.ruleId))).toBe(true));
   it("25. creamy and sour keep conditional metadata", () => expect(getCategoryRelation("CREAMY", "SOUR").metadata?.conditionalContrastAtModerateAcidity).toBe(true));
+  it("62. ADR-019: FLORAL + CREAMY is now COMPLEMENTARY_CONTRAST (was NEUTRAL/no relation)", () => expect(getCategoryRelation("FLORAL", "CREAMY").type).toBe("COMPLEMENTARY_CONTRAST"));
+  it("63. ADR-019 review resolution: MINT+CREAMY and VANILLA+COFFEE were reviewed and explicitly KEPT UNCHANGED (sign-flip proposals rejected)", () => {
+    expect(getCategoryRelation("MINT", "CREAMY")).toMatchObject({ type: "RISKY", baseScore: -0.5, ruleId: "category.mint-creamy" });
+    expect(getCategoryRelation("VANILLA", "COFFEE")).toMatchObject({ type: "GOOD_MATCH", baseScore: 0.4, ruleId: "category.vanilla-coffee" });
+  });
+  it("69. ADR-019 review resolution: TEA+CITRUS and BERRY+CREAMY (DAIRY+BERRY) upgraded to STRONG_MATCH per explicit decision", () => {
+    expect(getCategoryRelation("TEA", "CITRUS")).toMatchObject({ type: "STRONG_MATCH", baseScore: 0.7, ruleId: "category.tea-citrus" });
+    expect(getCategoryRelation("BERRY", "CREAMY")).toMatchObject({ type: "STRONG_MATCH", baseScore: 0.7, ruleId: "category.berry-creamy" });
+  });
+  it("70. ADR-019 review resolution: SPICE+TEA downgraded from unconditional GOOD_MATCH to COMPLEMENTARY_CONTRAST per explicit decision", () => expect(getCategoryRelation("SPICE", "TEA")).toMatchObject({ type: "COMPLEMENTARY_CONTRAST", baseScore: 0.25, ruleId: "category.spice-tea" }));
+  it("71. ADR-019 review resolution: the 3 revised pairs now use aggregated-research evidence, not the original internal-expert-rule evidence", () => {
+    expect(getCategoryRelation("TEA", "CITRUS").evidenceIds).toEqual(["evidence.aggregated-research.high"]);
+    expect(getCategoryRelation("BERRY", "CREAMY").evidenceIds).toEqual(["evidence.aggregated-research.high"]);
+    expect(getCategoryRelation("SPICE", "TEA").evidenceIds).toEqual(["evidence.aggregated-research.high"]);
+  });
+  it("72. ADR-019 review resolution: DESSERT+CREAMY keeps its original STRONG_MATCH value but now also carries the confirming aggregated-research evidence", () => expect(getCategoryRelation("DESSERT", "CREAMY")).toMatchObject({ type: "STRONG_MATCH", baseScore: 0.7, evidenceIds: ["evidence.internal.rules", "evidence.aggregated-research.high"] }));
+  it("73. ADR-019 review resolution: FLORAL+BERRY (the other exact duplicate) was left completely untouched", () => expect(getCategoryRelation("FLORAL", "BERRY")).toMatchObject({ type: "GOOD_MATCH", baseScore: 0.4, evidenceIds: ["evidence.internal.rules"] }));
+  it("74. ADR-019 review resolution: the 3 revised pairs are wired via createKnowledgeCategoryRule, so the decision actually affects scoring", () => {
+    expect(appliedRuleIds(profileNote("citrus-note", "CITRUS"), profileNote("tea-note", "TEA"))).toContain("category.tea-citrus");
+    expect(appliedRuleIds(profileNote("cream", "DAIRY"), profileNote("blueberry", "BERRY"))).toContain("category.berry-creamy");
+    expect(appliedRuleIds(profileNote("spice-note", "SPICE"), profileNote("tea-note-2", "TEA"))).toContain("category.spice-tea");
+  });
+  it("64. ADR-019: CITRUS + SPICE is recorded (not merely defaulted) as an explicit NEUTRAL relation", () => expect(FLAVOR_KNOWLEDGE_REGISTRY.categoryRelations.some(item => item.ruleId === "category.citrus-spice")).toBe(true));
+  it("65. ADR-019: createKnowledgeCategoryRule refuses to wire the NEUTRAL CITRUS+SPICE relation", () => expect(() => createKnowledgeCategoryRule("CITRUS", "SPICE")).toThrow());
+  it("66. ADR-019 п.2: single-product-marketing evidence has the lowest weight in the entire registry", () => {
+    const weights = FLAVOR_KNOWLEDGE_REGISTRY.evidence.map(item => item.weight);
+    expect(getEvidence("evidence.aggregated-research.single-product-marketing")?.weight).toBe(Math.min(...weights));
+  });
 });
 
 describe("Flavor Knowledge notes", () => {
@@ -141,4 +179,6 @@ describe("Compatibility Engine integration", () => {
   it("61. repeated compatibility analysis is deterministic", () => {
     const notes = [profileNote("coffee", "COFFEE"), profileNote("lemon", "CITRUS")]; expect(analyzeNoteCompatibility(notes)).toEqual(analyzeNoteCompatibility(notes));
   });
+  it("67. ADR-019: Sarma (FLORAL) + Daily Hookah Сливки (DAIRY) now receives the new Knowledge Layer rule", () => expect(appliedRuleIds(profileNote("lavender", "FLORAL"), profileNote("cream", "DAIRY"))).toContain("category.floral-creamy"));
+  it("68. ADR-019: a single-product-marketing-sourced RISKY rule still applies (Coffee + Berry)", () => expect(appliedRuleIds(profileNote("coffee", "COFFEE"), profileNote("blueberry", "BERRY"))).toContain("category.coffee-berry"));
 });

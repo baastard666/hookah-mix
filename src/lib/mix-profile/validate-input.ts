@@ -30,7 +30,8 @@ export function validateMixProfileInput(components: readonly MixProfileComponent
     if(!component.flavorName.trim())issues.push({path:`${base}.flavorName`,message:"Значение обязательно"});
     if(!component.flavorSlug.trim())issues.push({path:`${base}.flavorSlug`,message:"Значение обязательно"});
     if(!Number.isFinite(component.percentage)||component.percentage<=0||component.percentage>=100)issues.push({path:`${base}.percentage`,message:"Должно быть конечным числом больше 0 и меньше 100"});
-    for(const field of FLAVOR_PROFILE_FIELDS){const value=component.profile?.[field];if(!Number.isFinite(value)||value<0||value>10)issues.push({path:`${base}.profile.${field}`,message:"Должно быть конечным числом от 0 до 10"})}
+    // ADR-015/ADR-017: null means "not measured" for any sensory field - only reject non-null values outside 0-10.
+    for(const field of FLAVOR_PROFILE_FIELDS){const value=component.profile?.[field];if(value!==null&&value!==undefined&&(!Number.isFinite(value)||value<0||value>10))issues.push({path:`${base}.profile.${field}`,message:"Должно быть null или конечным числом от 0 до 10"})}
     if(!component.notes.some(note=>note.noteType==="DOMINANT"))issues.push({path:`${base}.notes`,message:"Нужна минимум одна DOMINANT-нота"});
     const noteSlugs=new Set<string>();
     component.notes.forEach((note,noteIndex)=>{

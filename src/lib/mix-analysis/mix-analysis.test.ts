@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { FlavorNoteCategory, FlavorProfile } from "../flavors/types";
-import { calculateMixCompatibility } from "../mix-compatibility";
+import { calculateMixCompatibility, resolveComponentIntensity } from "../mix-compatibility";
 import { calculateMixProfile } from "../mix-profile";
 import type { RecommendationComponentInput } from "../mix-recommendation";
 import { calculateMixRecommendations } from "../mix-recommendation";
@@ -18,7 +18,7 @@ const colaMint = () => [component("cola", 80, "cola", "DRINK", { intensity: 8, s
 describe("Mix Analysis Service", () => {
   it("1. builds the complete pipeline", () => expect(analyze(coffeeCream())).toMatchObject({ mixProfile: { metadata: { calculationVersion: "mix-profile-v1" } }, compatibility: { metadata: { calculationVersion: "mix-compatibility-v1" } }, recommendations: { version: "mix-recommendation-v1" } }));
   it("2. passes the exact calculated profile onward", () => { const components = coffeeCream(); const result = analyze(components); expect(result.mixProfile).toEqual(calculateMixProfile(components)); });
-  it("3. preserves Compatibility result", () => { const components = coffeeCitrus(); const result = analyze(components); expect(result.compatibility).toEqual(calculateMixCompatibility({ mixProfile: result.mixProfile, componentIntensities: components.map(item => ({ flavorId: item.flavorId, intensity: item.profile.intensity })) })); });
+  it("3. preserves Compatibility result", () => { const components = coffeeCitrus(); const result = analyze(components); expect(result.compatibility).toEqual(calculateMixCompatibility({ mixProfile: result.mixProfile, componentIntensities: components.map(item => ({ flavorId: item.flavorId, intensity: resolveComponentIntensity(item.profile.intensity) })) })); });
   it("4. preserves Recommendation result", () => { const components = coffeeCitrus(); const result = analyze(components); expect(result.recommendations).toEqual(calculateMixRecommendations({ components, mixProfile: result.mixProfile, compatibility: result.compatibility })); });
   it("5. does not mutate input", () => { const components = berryLavender(60, 40); const snapshot = structuredClone(components); analyze(components); expect(components).toEqual(snapshot); });
   it("6. is deterministic", () => { const components = coffeeCitrus(); expect(analyze(components)).toEqual(analyze(components)); });

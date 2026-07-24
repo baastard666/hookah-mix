@@ -2,6 +2,7 @@ import { THRESHOLDS } from "./constants";
 import { allCategories, componentCategories, componentId, confidenceFor, decreaseRange, findComponent, hasRule, increaseRange, makeReason, range, relatedComponentIds, rules } from "./helpers";
 import type { MixRecommendation, MixRecommendationInput, RecommendationComponentInput } from "./types";
 import { getCategoryRelation } from "../flavor-knowledge";
+import { resolveIntensity } from "../flavors/types";
 
 const dataConfidence = (components: readonly RecommendationComponentInput[]) => components.reduce((sum, item) => sum + (item.dataConfidenceScore ?? 80), 0) / components.length;
 const warningRules = (input: MixRecommendationInput) => rules(input.compatibility.warnings);
@@ -29,17 +30,17 @@ export const calculateDominanceRecommendations = (input: MixRecommendationInput)
     if (!component) continue;
     const baseCategories = componentCategories(component);
     const hasSafeAccent = input.components.some(item => {
-      if (componentId(item.flavorId) === id || item.percentage < 5 || item.percentage > 10 || item.profile.intensity < THRESHOLDS.intense) return false;
+      if (componentId(item.flavorId) === id || item.percentage < 5 || item.percentage > 10 || resolveIntensity(item.profile.intensity) < THRESHOLDS.intense) return false;
       return baseCategories.every(base => componentCategories(item).every(accent => !["RISKY", "CONFLICT"].includes(getCategoryRelation(base, accent).type)));
     });
-    const intentionalBaseAndAccent = component.percentage >= 85 && component.profile.intensity < THRESHOLDS.intense && hasSafeAccent;
+    const intentionalBaseAndAccent = component.percentage >= 85 && resolveIntensity(component.profile.intensity) < THRESHOLDS.intense && hasSafeAccent;
     if (component.percentage > THRESHOLDS.weakPercentage && !intentionalBaseAndAccent) result.push(decrease(component, rules(dominanceFactors.filter(item => item.relatedComponents.map(componentId).includes(id))), "DOMINANT_COMPONENT_OVERUSED", confidence));
   }
 
   for (const component of input.components) {
     const categories = componentCategories(component);
     const floralConfirmed = hasRule(allWarningRules, "profile.floral-spice") || hasRule(allWarningRules, "intensity.bright-competition") || hasRule(allWarningRules, `proportion.bright-large.${componentId(component.flavorId)}`);
-    if (categories.includes("FLORAL") && component.profile.intensity >= THRESHOLDS.veryIntense && component.percentage >= THRESHOLDS.largeAccentPercentage) {
+    if (categories.includes("FLORAL") && resolveIntensity(component.profile.intensity) >= THRESHOLDS.veryIntense && component.percentage >= THRESHOLDS.largeAccentPercentage) {
       const sourceRules = floralConfirmed ? allWarningRules.filter(id => id.includes("floral") || id.includes("bright")) : ["recommendation.floral-high-share"];
       result.push(decrease(component, sourceRules, "FLORAL_OVERLOAD", confidence, true));
     }
@@ -69,7 +70,7 @@ export const calculateDominanceRecommendations = (input: MixRecommendationInput)
   const competition = input.compatibility.warnings.filter(item => item.ruleId === "intensity.bright-competition" || item.ruleId === "proportion.bright-equal");
   if (competition.length) {
     const ids = relatedComponentIds(competition);
-    const candidates = input.components.filter(item => ids.includes(componentId(item.flavorId))).sort((a, b) => b.percentage + b.profile.intensity * 2 - (a.percentage + a.profile.intensity * 2) || componentId(a.flavorId).localeCompare(componentId(b.flavorId), "en"));
+    const candidates = input.components.filter(item => ids.includes(componentId(item.flavorId))).sort((a, b) => b.percentage + resolveIntensity(b.profile.intensity) * 2 - (a.percentage + resolveIntensity(a.profile.intensity) * 2) || componentId(a.flavorId).localeCompare(componentId(b.flavorId), "en"));
     const base = candidates[0];
     result.push({
       id: "recommendation.rebalance.competing-bases", type: "REBALANCE_COMPONENTS", priority: "HIGH", confidenceScore: confidenceFor(confidence, rules(competition), [], candidates.length > 1), impactScore: 70,
@@ -83,7 +84,7 @@ export const calculateDominanceRecommendations = (input: MixRecommendationInput)
     const categories = input.components.map(componentCategories);
     const scored = input.components.map((component, index) => {
       const relationScore = categories[index].flatMap(category => categories.flatMap((items, other) => other === index ? [] : items.map(item => getCategoryRelation(category, item).baseScore))).reduce((sum, value) => sum + value, 0);
-      return { component, score: component.percentage + component.profile.intensity * 2 + relationScore * 5 };
+      return { component, score: component.percentage + resolveIntensity(component.profile.intensity) * 2 + relationScore * 5 };
     }).sort((a, b) => b.score - a.score || componentId(a.component.flavorId).localeCompare(componentId(b.component.flavorId), "en"));
     const clear = scored[0].score - scored[1].score >= 3;
     const base = scored[0].component;

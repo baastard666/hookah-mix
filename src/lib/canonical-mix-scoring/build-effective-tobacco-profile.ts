@@ -57,7 +57,7 @@ export const buildEffectiveTobaccoProfile = (component: CanonicalMixComponentInp
   const contributing = [...new Map(FLAVOR_PROFILE_FIELDS.map(field => parameters[field]).map(item => [`${item.source}:${item.profileId ?? ""}`, item])).values()];
   const dominantSource = [...contributing].sort((a, b) => sourcePriority(b.source, b.reliabilityScore) - sourcePriority(a.source, a.reliabilityScore) || b.reliabilityScore - a.reliabilityScore)[0];
   return {
-    profile, notes: structuredClone(noteCandidate.notes ?? [fallbackNote(component)]), strengthLevel5: clamp(Math.round(profile.strength / 2), 1, 5), parameters,
+    profile, notes: structuredClone(noteCandidate.notes ?? [fallbackNote(component)]), strengthLevel5: clamp(Math.round(profile.strength! / 2), 1, 5), parameters,
     profileId: dominantSource.profileId, profileSource: dominantSource.source, profileReliability: reliabilityLabel(profileReliabilityScore), profileReliabilityScore,
     usedFallback: FLAVOR_PROFILE_FIELDS.some(field => parameters[field].source === "NEUTRAL_FALLBACK") || noteCandidate.type === "NEUTRAL_FALLBACK",
     recommendedRole: roleCandidate?.recommendedRole ?? null, confirmedPercentageRange: rangeCandidate?.confirmedPercentageRange ?? null,

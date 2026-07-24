@@ -65,12 +65,26 @@ describe("Flavor Knowledge category relations", () => {
   it("24. every relation ruleId is unique", () => expect(idsAreUnique(FLAVOR_KNOWLEDGE_REGISTRY.categoryRelations.map(item => item.ruleId))).toBe(true));
   it("25. creamy and sour keep conditional metadata", () => expect(getCategoryRelation("CREAMY", "SOUR").metadata?.conditionalContrastAtModerateAcidity).toBe(true));
   it("62. ADR-019: FLORAL + CREAMY is now COMPLEMENTARY_CONTRAST (was NEUTRAL/no relation)", () => expect(getCategoryRelation("FLORAL", "CREAMY").type).toBe("COMPLEMENTARY_CONTRAST"));
-  it("63. ADR-019: pairs that conflicted with existing internal-expert-rule relations keep their ORIGINAL values, not the new research", () => {
-    expect(getCategoryRelation("TEA", "CITRUS")).toMatchObject({ type: "GOOD_MATCH", baseScore: 0.4, ruleId: "category.tea-citrus" });
-    expect(getCategoryRelation("BERRY", "CREAMY")).toMatchObject({ type: "GOOD_MATCH", baseScore: 0.4, ruleId: "category.berry-creamy" });
-    expect(getCategoryRelation("SPICE", "TEA")).toMatchObject({ type: "GOOD_MATCH", baseScore: 0.4, ruleId: "category.spice-tea" });
+  it("63. ADR-019 review resolution: MINT+CREAMY and VANILLA+COFFEE were reviewed and explicitly KEPT UNCHANGED (sign-flip proposals rejected)", () => {
     expect(getCategoryRelation("MINT", "CREAMY")).toMatchObject({ type: "RISKY", baseScore: -0.5, ruleId: "category.mint-creamy" });
     expect(getCategoryRelation("VANILLA", "COFFEE")).toMatchObject({ type: "GOOD_MATCH", baseScore: 0.4, ruleId: "category.vanilla-coffee" });
+  });
+  it("69. ADR-019 review resolution: TEA+CITRUS and BERRY+CREAMY (DAIRY+BERRY) upgraded to STRONG_MATCH per explicit decision", () => {
+    expect(getCategoryRelation("TEA", "CITRUS")).toMatchObject({ type: "STRONG_MATCH", baseScore: 0.7, ruleId: "category.tea-citrus" });
+    expect(getCategoryRelation("BERRY", "CREAMY")).toMatchObject({ type: "STRONG_MATCH", baseScore: 0.7, ruleId: "category.berry-creamy" });
+  });
+  it("70. ADR-019 review resolution: SPICE+TEA downgraded from unconditional GOOD_MATCH to COMPLEMENTARY_CONTRAST per explicit decision", () => expect(getCategoryRelation("SPICE", "TEA")).toMatchObject({ type: "COMPLEMENTARY_CONTRAST", baseScore: 0.25, ruleId: "category.spice-tea" }));
+  it("71. ADR-019 review resolution: the 3 revised pairs now use aggregated-research evidence, not the original internal-expert-rule evidence", () => {
+    expect(getCategoryRelation("TEA", "CITRUS").evidenceIds).toEqual(["evidence.aggregated-research.high"]);
+    expect(getCategoryRelation("BERRY", "CREAMY").evidenceIds).toEqual(["evidence.aggregated-research.high"]);
+    expect(getCategoryRelation("SPICE", "TEA").evidenceIds).toEqual(["evidence.aggregated-research.high"]);
+  });
+  it("72. ADR-019 review resolution: DESSERT+CREAMY keeps its original STRONG_MATCH value but now also carries the confirming aggregated-research evidence", () => expect(getCategoryRelation("DESSERT", "CREAMY")).toMatchObject({ type: "STRONG_MATCH", baseScore: 0.7, evidenceIds: ["evidence.internal.rules", "evidence.aggregated-research.high"] }));
+  it("73. ADR-019 review resolution: FLORAL+BERRY (the other exact duplicate) was left completely untouched", () => expect(getCategoryRelation("FLORAL", "BERRY")).toMatchObject({ type: "GOOD_MATCH", baseScore: 0.4, evidenceIds: ["evidence.internal.rules"] }));
+  it("74. ADR-019 review resolution: the 3 revised pairs are wired via createKnowledgeCategoryRule, so the decision actually affects scoring", () => {
+    expect(appliedRuleIds(profileNote("citrus-note", "CITRUS"), profileNote("tea-note", "TEA"))).toContain("category.tea-citrus");
+    expect(appliedRuleIds(profileNote("cream", "DAIRY"), profileNote("blueberry", "BERRY"))).toContain("category.berry-creamy");
+    expect(appliedRuleIds(profileNote("spice-note", "SPICE"), profileNote("tea-note-2", "TEA"))).toContain("category.spice-tea");
   });
   it("64. ADR-019: CITRUS + SPICE is recorded (not merely defaulted) as an explicit NEUTRAL relation", () => expect(FLAVOR_KNOWLEDGE_REGISTRY.categoryRelations.some(item => item.ruleId === "category.citrus-spice")).toBe(true));
   it("65. ADR-019: createKnowledgeCategoryRule refuses to wire the NEUTRAL CITRUS+SPICE relation", () => expect(() => createKnowledgeCategoryRule("CITRUS", "SPICE")).toThrow());

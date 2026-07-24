@@ -40,5 +40,13 @@ export const NOTE_COMPATIBILITY_RULES:readonly NoteCompatibilityRule[]=[
  createKnowledgeCategoryRule("FLORAL","DAIRY"),
  createKnowledgeCategoryRule("SPICE","BERRY"),
  createKnowledgeCategoryRule("SPICE","VANILLA"),
- createKnowledgeCategoryRule("COFFEE","BERRY")
+ createKnowledgeCategoryRule("COFFEE","BERRY"),
+ // ADR-019 review resolution: these 3 pairs were originally left out of CATEGORY_RELATIONS as
+ // conflicts (see docs/adr/ADR-019 review list), then explicitly resolved by the user to take the
+ // new aggregated-research value. Wiring them here is what makes that decision actually affect
+ // scoring - an updated CATEGORY_RELATIONS value with no createKnowledgeCategoryRule() call would
+ // be inert, same gap this project already fixed once for the original 21 ADR-019 pairs.
+ createKnowledgeCategoryRule("TEA","CITRUS"),
+ createKnowledgeCategoryRule("DAIRY","BERRY"),
+ createKnowledgeCategoryRule("SPICE","TEA")
 ];

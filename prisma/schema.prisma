@@ -37,6 +37,17 @@ enum FlavorNoteCategory {
   TROPICAL
   SMOKY
   OTHER
+  // ADR-018: added to cover dominantNoteIds categories used in Product Flavor Profile Registry
+  // that had no equivalent in the original 16-value enum. Additive only - nothing above renamed/removed.
+  SOUR
+  CANDY
+  MINT
+  TEA
+  FRESH
+  BAKERY
+  ALCOHOL
+  WOODY
+  VANILLA
 }
 
 enum FlavorNoteType {

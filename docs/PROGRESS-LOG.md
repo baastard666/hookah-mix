@@ -277,3 +277,31 @@
 **Тесты:** Vitest **1072/1072 passed, 32 файла** (было 1066/32, +6: новые значения `TEA+CITRUS`/`DAIRY+BERRY`/`SPICE+TEA`, их evidence, неизменность `DESSERT+CREAMY`(с доп. evidence)/`FLORAL+BERRY`, фактическое срабатывание всех 3 пересмотренных правил через `analyzeNoteCompatibility`); `tsc --noEmit` — чисто; `eslint .` — чисто.
 
 **Осталось:** ничего — review-список ADR-019 закрыт полностью (все 5 конфликтов и оба дубля разобраны и применены).
+
+## 2026-07-24 — приоритизация правил совместимости: аналитика + ADR-020 (Step A применён, Step B — предложение)
+
+**Сделано:** по запросу пользователя посчитана приоритизация поиска новых правил совместимости на основе двух уже существующих в проекте источников (без внешнего поиска): (1) частота 24 категорий среди 86 импортированных продуктов (`FRUIT`=38 — доминирует, `FLORAL`/`SMOKY`=1 — редчайшие); (2) реальные пары категорий из 37 `status=VERIFIED` миксов `Mixes_Internal`/`Mix_Components` исходного workbook, сопоставленные с `reaction_class`. Для сопоставления сырых названий компонентов с canonicalProductId изначально использована не та функция (`resolveCatalogTobaccoIdentity` — общий резолвер брендов/линеек, 0% совпадений), исправлено на `resolveIdentityWithDecisions` против `TOBACCO_IDENTITY_DECISION_REGISTRY` (91% компонентов разрешено — 104 из 114). Получено 292 пары-вхождения по 120 уникальным парам; важная находка — `reaction_class` ни разу не был `negative` во всей истории (только `very_positive`/`positive`/`mixed`/`unknown`), что является ограничением выборки, а не доказательством отсутствия плохих сочетаний.
+
+По итогам аналитики пользователь запросил два шага. **Step A** (реализован): программный аудит всех 46 записей `CATEGORY_RELATIONS` против фактически подключённых пар нашёл **19** несвязанных non-NEUTRAL записей (не 5, как в примере) — подключено **17** через `createKnowledgeCategoryRule` в `compatibility-rules.ts` без изменения значений, включая единственную во всей системе запись `CONFLICT` (`CANDY+SMOKY`), которая до этого ни разу не влияла на scoring. **2 пары не подключены технически** — `TOBACCO+WOODY`/`TOBACCO+FRUIT`: `TOBACCO` существует только в словаре `flavor-knowledge`, но никогда не добавлялась в legacy Prisma-enum (не используется в registry), а `createKnowledgeCategoryRule` требует legacy-аргументы.
+
+**Step B** (инфраструктура реализована, конкретные значения — предложение, не применено): заведён новый evidence type `VERIFIED_MIX_HISTORY` (3 уровня по размеру выборки n: HIGH n≥10/вес 0.75, MEDIUM n=5-9/вес 0.55, LOW n=3-4/вес 0.35) с явной оговоркой в комментариях про отсутствие `negative`-примеров как ограничение выборки. Пересчитан топ-15 непокрытых пар (n≥3) уже ПОСЛЕ Step A — список изменился (например `CITRUS+FRUIT`, `CREAMY+DESSERT`, `FRUIT+SPICE` выпали, так как теперь уже подключены). Предложена консервативная методология (никогда не `STRONG_MATCH`, никогда `RISKY`/`CONFLICT` из этой истории) и таблица для всех 15 пар — 12 предлагается подключить как `COMPLEMENTARY_CONTRAST`, 2 (`FRUIT+SOUR`, `FRUIT+NUT`) оставить `NEUTRAL` из-за заметной доли `mixed`. Таблица и методология оформлены в ADR-020, но реализация (создание 12 записей `CATEGORY_RELATIONS`/`createKnowledgeCategoryRule`) не выполнена — ждёт решения пользователя по порогам/конкретным парам.
+
+**Файлы:**
+- создано: `docs/adr/ADR-020-wiring-audit-and-verified-mix-history-evidence.md`;
+- изменено: `src/lib/mix-compatibility/compatibility-rules.ts` (+17 `createKnowledgeCategoryRule`), `src/lib/flavor-knowledge/types.ts` (`VERIFIED_MIX_HISTORY`), `src/lib/flavor-knowledge/constants.ts` (`EVIDENCE_TYPES`), `src/lib/flavor-knowledge/evidence.ts` (3 новые evidence-записи), `src/lib/flavor-knowledge/knowledge.test.ts` (+5 тестов), `docs/adr/README.md`;
+- не изменено: `src/lib/flavor-knowledge/category-relations.ts` (Step A не меняет значения — только wiring в отдельном файле; Step B ничего не добавляет, пока нет решения).
+
+**Тесты:** Vitest **1076/1076 passed, 32 файла** (было 1072/32, +5: 3 из Step A через `analyzeNoteCompatibility` — `FRUIT+CITRUS`, `CANDY+SMOKY`, `MINT+CREAMY`, + подтверждение, что `TOBACCO+WOODY` технически не подключаем, + упорядоченность весов новых evidence-тиров); `tsc --noEmit` — чисто; `eslint .` — чисто.
+
+**Осталось:** решение пользователя по таблице ADR-020 (методология/пороги, и/или конкретные значения по каждой из 15 пар) — до этого Step B не реализуется в коде.
+
+## 2026-07-24 — ADR-020 Step B: применение одобренной методологии (13 из 15 пар подключены)
+
+**Сделано:** пользователь одобрил предложенную в ADR-020 таблицу и пороги без изменений. Реализовано: добавлен helper `verifiedHistory()` в `category-relations.ts` (по аналогии с `researched()` из ADR-019, но evidenceIds указывают на `evidence.verified-mix-history.{high,medium,low}`); добавлены все 15 записей `CATEGORY_RELATIONS` с типами и confidence-тирами точно по одобренной таблице. 13 из 15 подключены через `createKnowledgeCategoryRule` (все — `COMPLEMENTARY_CONTRAST`, `0.25`; ни одна пара не набрала HIGH-confidence + `positiveRatio`≥85%, нужные для `GOOD_MATCH`, что и предсказывалось при формулировке методологии). `FRUIT+SOUR` и `FRUIT+NUT` записаны как `NEUTRAL` (заметная доля `mixed`) и не подключены — `createKnowledgeCategoryRule` бросает исключение для `NEUTRAL`, та же схема, что и `CITRUS+SPICE` в ADR-019.
+
+**Файлы:**
+- изменено: `src/lib/flavor-knowledge/category-relations.ts` (`verifiedHistory()` + 15 записей), `src/lib/mix-compatibility/compatibility-rules.ts` (+13 `createKnowledgeCategoryRule`), `src/lib/flavor-knowledge/knowledge.test.ts` (+4 теста: 80–83), `docs/adr/ADR-020-...md` (addendum о применении), `docs/adr/README.md`.
+
+**Тесты:** Vitest **1081/1081 passed, 32 файла** (было 1076/32, +5); `tsc --noEmit` — чисто; `eslint .` — чисто.
+
+**Осталось:** ничего по этой задаче — приоритизация из предыдущей сессии полностью закрыта (Step A и Step B реализованы).

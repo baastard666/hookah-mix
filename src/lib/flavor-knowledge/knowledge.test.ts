@@ -181,4 +181,38 @@ describe("Compatibility Engine integration", () => {
   });
   it("67. ADR-019: Sarma (FLORAL) + Daily Hookah Сливки (DAIRY) now receives the new Knowledge Layer rule", () => expect(appliedRuleIds(profileNote("lavender", "FLORAL"), profileNote("cream", "DAIRY"))).toContain("category.floral-creamy"));
   it("68. ADR-019: a single-product-marketing-sourced RISKY rule still applies (Coffee + Berry)", () => expect(appliedRuleIds(profileNote("coffee", "COFFEE"), profileNote("blueberry", "BERRY"))).toContain("category.coffee-berry"));
+  it("75. Step A: FRUIT+CITRUS (existed since before ADR-019, never wired) now fires", () => expect(appliedRuleIds(profileNote("fruit-note", "FRUIT"), profileNote("citrus-note", "CITRUS"))).toContain("category.fruit-citrus"));
+  it("76. Step A: CANDY+SMOKY (the only CONFLICT-type relation in the registry) now fires", () => expect(appliedRuleIds(profileNote("candy-note", "CANDY"), profileNote("smoky-note", "SMOKY"))).toContain("category.candy-smoky"));
+  it("77. Step A: MINT+CREAMY (RISKY, kept unchanged by the ADR-019 review) now fires", () => expect(appliedRuleIds(profileNote("mint-note", "MINT"), profileNote("cream", "DAIRY"))).toContain("category.mint-creamy"));
+  it("78. Step A: TOBACCO+WOODY cannot be wired - TOBACCO has no legacy Prisma category", () => expect(toLegacyCategory("TOBACCO")).toBeUndefined());
+  it("79. ADR-020: VERIFIED_MIX_HISTORY evidence tiers are ordered high > medium > low by sample size", () => {
+    expect(getEvidence("evidence.verified-mix-history.high")?.weight).toBeGreaterThan(getEvidence("evidence.verified-mix-history.medium")!.weight);
+    expect(getEvidence("evidence.verified-mix-history.medium")?.weight).toBeGreaterThan(getEvidence("evidence.verified-mix-history.low")!.weight);
+    expect(getEvidence("evidence.verified-mix-history.high")?.type).toBe("VERIFIED_MIX_HISTORY");
+  });
+  it("80. ADR-020 Step B: DESSERT+FRUIT (HIGH confidence, n=10) fires as COMPLEMENTARY_CONTRAST", () => {
+    expect(getCategoryRelation("DESSERT", "FRUIT")).toMatchObject({ type: "COMPLEMENTARY_CONTRAST", baseScore: 0.25, evidenceIds: ["evidence.verified-mix-history.high"] });
+    expect(appliedRuleIds(profileNote("dessert-note", "DESSERT"), profileNote("fruit-note", "FRUIT"))).toContain("category.dessert-fruit");
+  });
+  it("81. ADR-020 Step B: all 13 wired verified-mix-history pairs fire", () => {
+    const pairs: [string, string, string][] = [
+      ["BERRY", "FRUIT", "category.berry-fruit"], ["FRUIT", "TROPICAL", "category.fruit-tropical"], ["CANDY", "FRUIT", "category.candy-fruit"],
+      ["COOLING", "FRUIT", "category.cooling-fruit"], ["CITRUS", "DAIRY", "category.citrus-creamy"], ["CITRUS", "SOUR", "category.citrus-sour"],
+      ["BERRY", "SOUR", "category.berry-sour"], ["CANDY", "DAIRY", "category.candy-creamy"], ["BERRY", "TROPICAL", "category.berry-tropical"],
+      ["CITRUS", "DESSERT", "category.citrus-dessert"], ["BERRY", "DESSERT", "category.berry-dessert"], ["CANDY", "SOUR", "category.candy-sour"],
+    ];
+    for (const [a, b, ruleId] of pairs) expect(appliedRuleIds(profileNote("a", a as never), profileNote("b", b as never))).toContain(ruleId);
+  });
+  it("82. ADR-020 Step B: FRUIT+SOUR and FRUIT+NUT are recorded as NEUTRAL (notable mixed fraction) and not wired", () => {
+    expect(getCategoryRelation("FRUIT", "SOUR").type).toBe("NEUTRAL");
+    expect(getCategoryRelation("FRUIT", "NUT").type).toBe("NEUTRAL");
+    expect(() => createKnowledgeCategoryRule("FRUIT", "SOUR")).toThrow();
+    expect(() => createKnowledgeCategoryRule("FRUIT", "NUT")).toThrow();
+  });
+  it("83. ADR-020 Step B: none of the 15 verified-mix-history relations reach STRONG_MATCH/RISKY/CONFLICT", () => {
+    const ruleIds = new Set(["category.berry-fruit", "category.fruit-tropical", "category.dessert-fruit", "category.candy-fruit", "category.cooling-fruit", "category.citrus-creamy", "category.citrus-sour", "category.berry-sour", "category.candy-creamy", "category.berry-tropical", "category.citrus-dessert", "category.berry-dessert", "category.candy-sour", "category.fruit-sour", "category.fruit-nut"]);
+    const relations = FLAVOR_KNOWLEDGE_REGISTRY.categoryRelations.filter(item => ruleIds.has(item.ruleId));
+    expect(relations).toHaveLength(15);
+    expect(relations.every(item => item.type === "COMPLEMENTARY_CONTRAST" || item.type === "NEUTRAL")).toBe(true);
+  });
 });

@@ -1,5 +1,6 @@
 # ADR index
 
+- [ADR-020](ADR-020-wiring-audit-and-verified-mix-history-evidence.md) — Step A: подключены 17 ранее несвязанных записей `CATEGORY_RELATIONS` (значения не менялись); Step B: новый evidence type `VERIFIED_MIX_HISTORY` (внутренняя статистика 37 verified-миксов), 13 из 15 непокрытых пар подключены как `COMPLEMENTARY_CONTRAST`, 2 — `NEUTRAL`.
 - [ADR-019](ADR-019-aggregated-research-category-compatibility-rules.md) — импорт 22 из 29 пар совместимости категорий из внешнего агрегированного исследования (новый evidence type `AGGREGATED_RESEARCH`), подключены через `createKnowledgeCategoryRule`; 5 конфликтующих пар и 2 дубля с существующими записями — не импортированы, вынесены в review-список.
 - [ADR-018](ADR-018-product-flavor-profile-note-category-backfill.md) — перенос `dominantNoteIds` 86 продуктов в `FlavorNoteAssignment` отдельным скриптом, расширение `FlavorNoteCategory` на 9 недостающих категорий, `CATEGORY_RELATIONS` (FLORAL+CREAMY и др.) — вынесено в отдельную будущую задачу.
 - [ADR-017](ADR-017-flavor-profile-nullable-core-dimensions.md) — расширение политики ADR-015 «null ≠ 0» на оставшиеся 7 core-полей `FlavorProfile`; `FlavorProfile` упрощён до единого `Record<Field, number|null>`.

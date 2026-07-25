@@ -19,6 +19,20 @@ export const KNOWLEDGE_EVIDENCE: readonly KnowledgeEvidence[] = [
   // (Deus Vanilla Berries) - это маркетинговый текст про конкретный продукт, а не независимое
   // подтверждение сочетаемости категорий в целом.
   { id: "evidence.aggregated-research.single-product-marketing", type: "AGGREGATED_RESEARCH", sourceName: "aggregated public research (LLM web search)", reference: "category-compatibility-v1", weight: 0.15, notes: "Розничное описание единственного товара (Deus Vanilla Berries) - НЕ независимое подтверждение для категорий в целом, только маркетинговый текст про один продукт." },
+  // ADR-020 (проект, веса подлежат подтверждению): собственная эмпирическая статистика по 37
+  // status=VERIFIED миксам (Mixes_Internal + Mix_Components, реально протестированные рецепты с
+  // зафиксированным reaction_class) - НЕ внешний источник, это внутренние данные проекта. Confidence
+  // разбит на 3 уровня по размеру выборки n (число вхождений конкретной пары категорий в истории):
+  // n>=10 -> HIGH, n=5-9 -> MEDIUM, n=3-4 -> LOW. Пары с n<3 (83 из 120 обнаруженных) статистически
+  // слишком слабы и не рассматриваются вообще - см. docs/adr/ADR-020.
+  // ВАЖНАЯ ОГОВОРКА: во всех 37 миксах reaction_class ни разу не был "negative" (только
+  // very_positive/positive/mixed/unknown) - это ограничение выборки (только внутренние тестовые
+  // миксы авторов, не репрезентативная выборка всех возможных сочетаний), а не доказательство, что
+  // плохих сочетаний не существует. Отсутствие negative-примеров НЕ должно само по себе повышать
+  // confidence или тип связи до STRONG_MATCH.
+  { id: "evidence.verified-mix-history.high", type: "VERIFIED_MIX_HISTORY", sourceName: "hookah-mix verified mixes (Mixes_Internal)", reference: "verified-mix-history-v1", weight: 0.75, notes: "n>=10 вхождений пары категорий среди 37 verified-миксов." },
+  { id: "evidence.verified-mix-history.medium", type: "VERIFIED_MIX_HISTORY", sourceName: "hookah-mix verified mixes (Mixes_Internal)", reference: "verified-mix-history-v1", weight: 0.55, notes: "n=5-9 вхождений пары категорий среди 37 verified-миксов." },
+  { id: "evidence.verified-mix-history.low", type: "VERIFIED_MIX_HISTORY", sourceName: "hookah-mix verified mixes (Mixes_Internal)", reference: "verified-mix-history-v1", weight: 0.35, notes: "n=3-4 вхождения пары категорий среди 37 verified-миксов - минимальный принимаемый порог выборки." },
 ];
 
 export const KNOWLEDGE_CLAIMS: readonly KnowledgeClaim[] = [

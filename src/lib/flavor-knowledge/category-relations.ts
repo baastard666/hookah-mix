@@ -30,6 +30,22 @@ const researched = (
   metadata: { sourceDescription, aggregatedResearchConfidence: confidence },
 });
 
+// ADR-020 Step B: same shape as `relation`/`researched`, but evidenceIds point at the
+// VERIFIED_MIX_HISTORY tier matching the pair's sample size (n) among the 37 verified mixes.
+const verifiedHistory = (
+  left: FlavorNoteCategory,
+  right: FlavorNoteCategory,
+  type: FlavorCategoryRelationType,
+  baseScore: number,
+  ruleId: string,
+  confidence: "HIGH" | "MEDIUM" | "LOW",
+  sampleSize: number,
+): FlavorCategoryRelation => ({
+  left, right, type, baseScore, ruleId,
+  evidenceIds: [`evidence.verified-mix-history.${confidence.toLowerCase()}`],
+  metadata: { verifiedMixHistorySampleSize: sampleSize, verifiedMixHistoryConfidence: confidence },
+});
+
 export const CATEGORY_RELATIONS: readonly FlavorCategoryRelation[] = [
   relation("FRUIT", "CITRUS", "STRONG_MATCH", 0.7, "category.fruit-citrus"),
   // ADR-019 review resolution: aggregated-research batch independently confirmed this exact
@@ -111,4 +127,30 @@ export const CATEGORY_RELATIONS: readonly FlavorCategoryRelation[] = [
   researched("SPICE", "BERRY", "RISKY", -0.4, "category.spice-berry", "SINGLE_PRODUCT_MARKETING", "розничное описание одного продукта (Deus Vanilla Berries)"),
   researched("SPICE", "VANILLA", "RISKY", -0.4, "category.spice-vanilla", "SINGLE_PRODUCT_MARKETING", "розничное описание одного продукта (Deus Vanilla Berries)"),
   researched("COFFEE", "BERRY", "RISKY", -0.4, "category.coffee-berry", "SINGLE_PRODUCT_MARKETING", "розничное описание одного продукта (Deus Vanilla Berries)"),
+
+  // ADR-020 Step B: 15 pairs derived from this project's own 37 status=VERIFIED mixes
+  // (Mixes_Internal + Mix_Components), not external research. Threshold methodology (confidence
+  // tier by sample size n, type by positiveRatio = positive/(positive+mixed), unknown excluded from
+  // the ratio but counted in n) is documented in docs/adr/ADR-020 and was approved by the user
+  // as-is. Deliberately conservative: nothing here reaches STRONG_MATCH or RISKY/CONFLICT - the
+  // 37-mix history contains zero negative-reaction examples, which reflects the limited scope of
+  // internally tested mixes, not proof that no combination in these categories can go badly.
+  verifiedHistory("BERRY", "FRUIT", "COMPLEMENTARY_CONTRAST", 0.25, "category.berry-fruit", "MEDIUM", 7),
+  verifiedHistory("FRUIT", "TROPICAL", "COMPLEMENTARY_CONTRAST", 0.25, "category.fruit-tropical", "MEDIUM", 9),
+  verifiedHistory("DESSERT", "FRUIT", "COMPLEMENTARY_CONTRAST", 0.25, "category.dessert-fruit", "HIGH", 10),
+  verifiedHistory("CANDY", "FRUIT", "COMPLEMENTARY_CONTRAST", 0.25, "category.candy-fruit", "MEDIUM", 7),
+  verifiedHistory("COOLING", "FRUIT", "COMPLEMENTARY_CONTRAST", 0.25, "category.cooling-fruit", "LOW", 3),
+  verifiedHistory("CITRUS", "CREAMY", "COMPLEMENTARY_CONTRAST", 0.25, "category.citrus-creamy", "LOW", 3),
+  verifiedHistory("CITRUS", "SOUR", "COMPLEMENTARY_CONTRAST", 0.25, "category.citrus-sour", "LOW", 4),
+  verifiedHistory("BERRY", "SOUR", "COMPLEMENTARY_CONTRAST", 0.25, "category.berry-sour", "LOW", 4),
+  verifiedHistory("CANDY", "CREAMY", "COMPLEMENTARY_CONTRAST", 0.25, "category.candy-creamy", "LOW", 4),
+  verifiedHistory("BERRY", "TROPICAL", "COMPLEMENTARY_CONTRAST", 0.25, "category.berry-tropical", "MEDIUM", 5),
+  verifiedHistory("CITRUS", "DESSERT", "COMPLEMENTARY_CONTRAST", 0.25, "category.citrus-dessert", "LOW", 4),
+  verifiedHistory("BERRY", "DESSERT", "COMPLEMENTARY_CONTRAST", 0.25, "category.berry-dessert", "LOW", 3),
+  verifiedHistory("CANDY", "SOUR", "COMPLEMENTARY_CONTRAST", 0.25, "category.candy-sour", "MEDIUM", 5),
+  // Both NEUTRAL - notable mixed fraction relative to sample confidence (FRUIT+SOUR: 78% positive
+  // at MEDIUM n=9; FRUIT+NUT: 67% positive at MEDIUM n=7) - recorded for provenance like
+  // CITRUS+SPICE above, not wired via createKnowledgeCategoryRule (throws for NEUTRAL).
+  verifiedHistory("FRUIT", "SOUR", "NEUTRAL", 0, "category.fruit-sour", "MEDIUM", 9),
+  verifiedHistory("FRUIT", "NUT", "NEUTRAL", 0, "category.fruit-nut", "MEDIUM", 7),
 ];

@@ -42,7 +42,14 @@ export type KnowledgeEvidenceType =
   // forums, retail listings) - distinct from EDITORIAL_RESEARCH (this project's own hand-authored
   // taxonomy work) and from COMMUNITY_AGGREGATE (a single first-party aggregate fixture). Not a
   // direct manual verification, so never conflated with VERIFIED_TEST.
-  | "AGGREGATED_RESEARCH";
+  | "AGGREGATED_RESEARCH"
+  // ADR-020: statistics derived from this project's own 37 status=VERIFIED mixes (Mixes_Internal +
+  // Mix_Components, real tested recipes with a recorded reaction_class) - internal empirical
+  // evidence, distinct from VERIFIED_TEST (a single controlled lab-style fixture claim) and from
+  // AGGREGATED_RESEARCH (external web sources). Confidence must scale with sample size (n) - see
+  // the per-tier weights in evidence.ts - and this history contains zero negative-reaction
+  // examples, a limitation of what was tested, never treated as proof nothing combines badly.
+  | "VERIFIED_MIX_HISTORY";
 
 export type KnowledgeEvidence = {
   readonly id: string;

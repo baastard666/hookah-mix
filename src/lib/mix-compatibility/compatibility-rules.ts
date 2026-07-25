@@ -48,5 +48,43 @@ export const NOTE_COMPATIBILITY_RULES:readonly NoteCompatibilityRule[]=[
  // be inert, same gap this project already fixed once for the original 21 ADR-019 pairs.
  createKnowledgeCategoryRule("TEA","CITRUS"),
  createKnowledgeCategoryRule("DAIRY","BERRY"),
- createKnowledgeCategoryRule("SPICE","TEA")
+ createKnowledgeCategoryRule("SPICE","TEA"),
+ // Step A (mechanical audit, no new data/values): 17 relations that already existed in
+ // CATEGORY_RELATIONS - some since before ADR-019 - but were never wired into
+ // NOTE_COMPATIBILITY_RULES, so they had zero effect on scoring despite having a correct value.
+ // 2 more candidates (TOBACCO+WOODY, TOBACCO+FRUIT) could NOT be wired: "TOBACCO" has no legacy
+ // Prisma category equivalent (toLegacyCategory("TOBACCO") is undefined, never added to the enum
+ // since the registry never uses it) - createKnowledgeCategoryRule() requires a legacy category arg.
+ createKnowledgeCategoryRule("FRUIT","CITRUS"),
+ createKnowledgeCategoryRule("DESSERT","DAIRY"),
+ createKnowledgeCategoryRule("COFFEE","DAIRY"),
+ createKnowledgeCategoryRule("CHOCOLATE","NUT"),
+ createKnowledgeCategoryRule("BAKERY","VANILLA"),
+ createKnowledgeCategoryRule("TROPICAL","COOLING"),
+ createKnowledgeCategoryRule("FRUIT","FRESH"),
+ createKnowledgeCategoryRule("ALCOHOL","FRUIT"),
+ createKnowledgeCategoryRule("VANILLA","COFFEE"),
+ createKnowledgeCategoryRule("DESSERT","SOUR"),
+ createKnowledgeCategoryRule("FRUIT","SPICE"),
+ createKnowledgeCategoryRule("FLORAL","SMOKY"),
+ createKnowledgeCategoryRule("FLORAL","COOLING"),
+ createKnowledgeCategoryRule("SOUR","DAIRY"),
+ createKnowledgeCategoryRule("HERBAL","DESSERT"),
+ createKnowledgeCategoryRule("MINT","DAIRY"),
+ createKnowledgeCategoryRule("CANDY","SMOKY"),
+ // ADR-020 Step B: 13 of the 15 verified-mix-history pairs (FRUIT+SOUR and FRUIT+NUT are NEUTRAL -
+ // createKnowledgeCategoryRule() throws for NEUTRAL, same as CITRUS+SPICE in ADR-019).
+ createKnowledgeCategoryRule("BERRY","FRUIT"),
+ createKnowledgeCategoryRule("FRUIT","TROPICAL"),
+ createKnowledgeCategoryRule("DESSERT","FRUIT"),
+ createKnowledgeCategoryRule("CANDY","FRUIT"),
+ createKnowledgeCategoryRule("COOLING","FRUIT"),
+ createKnowledgeCategoryRule("CITRUS","DAIRY"),
+ createKnowledgeCategoryRule("CITRUS","SOUR"),
+ createKnowledgeCategoryRule("BERRY","SOUR"),
+ createKnowledgeCategoryRule("CANDY","DAIRY"),
+ createKnowledgeCategoryRule("BERRY","TROPICAL"),
+ createKnowledgeCategoryRule("CITRUS","DESSERT"),
+ createKnowledgeCategoryRule("BERRY","DESSERT"),
+ createKnowledgeCategoryRule("CANDY","SOUR")
 ];

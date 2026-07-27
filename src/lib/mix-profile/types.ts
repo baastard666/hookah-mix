@@ -40,6 +40,10 @@ export type MixProfileNoteResult = {
   contributionScore: number;
   sharePercent: number;
   sources: NoteSource[];
+  // distinct component flavorIds that contributed to this (already cross-component-aggregated)
+  // note entry - lets cross-component compatibility checks tell "two different tobaccos both
+  // touch this category" apart from "one tobacco's own two categories" (see analyzeNoteCompatibility).
+  componentFlavorIds: Array<number|string>;
 };
 
 export type MixProfileResult = {

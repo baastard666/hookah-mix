@@ -15,6 +15,15 @@
 .result-summary{background:linear-gradient(135deg,#f7fadf 0%,#fff 100%)}
 .result-summary h2{max-width:900px}
 .reliability-panel{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:24px;align-items:start}
+.confidence-tooltip{position:relative;display:inline-block;margin-top:6px;cursor:help}
+.confidence-tooltip:focus{outline:2px solid var(--ink);outline-offset:4px;border-radius:999px}
+.confidence-badge{display:inline-flex;align-items:center;padding:10px 20px;border-radius:999px;font-size:22px;font-weight:900;background:#edf0ea;color:var(--ink)}
+.confidence-предварительная{background:#edf0ea;color:var(--muted)}
+.confidence-средняя{background:#fff5dc;color:#765200}
+.confidence-высокая{background:#edf7e7;color:#31702c}
+.confidence-подтверждённая{background:#eef3ff;color:#294b8d}
+.confidence-tooltip-content{position:absolute;left:0;top:calc(100% + 10px);z-index:10;width:340px;max-width:min(340px,80vw);background:var(--ink);color:#fff;padding:14px 16px;border-radius:14px;font-size:14px;line-height:1.55;font-weight:400;opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .15s ease,transform .15s ease;pointer-events:none}
+.confidence-tooltip:hover .confidence-tooltip-content,.confidence-tooltip:focus .confidence-tooltip-content,.confidence-tooltip:focus-within .confidence-tooltip-content{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
 .variant-row small{white-space:nowrap}
 .proposal-compare{margin-top:14px;padding-top:4px;border-top:1px solid #dbe5b5}
 .result-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.result-actions .btn{min-height:48px}.btn-secondary{border:1px solid var(--line);background:#f4f6f1;color:var(--ink)}.btn-secondary:hover{background:#e9ede5}

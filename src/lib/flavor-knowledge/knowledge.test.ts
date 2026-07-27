@@ -20,8 +20,13 @@ const registryWith = (values: Partial<FlavorKnowledgeRegistry>): FlavorKnowledge
 const evidence = (values: Partial<KnowledgeEvidence> = {}): KnowledgeEvidence => ({
   id: "test-evidence", type: "INTERNAL_EXPERT_RULE", sourceName: "test", reference: "one", weight: 0.6, ...values,
 });
+// Each call gets its own componentFlavorIds - every pair of profileNote(...) calls in this file is
+// meant to model two different tobaccos (matching how these tests are actually used below), so the
+// self-pairing guard in analyzeNoteCompatibility must see them as distinct components.
+let profileNoteComponentId = 0;
 const profileNote = (noteSlug: string, category: MixProfileNoteResult["category"]): MixProfileNoteResult => ({
   noteIds: [noteSlug], noteName: noteSlug, noteSlug, category, contributionScore: 10, sharePercent: 25, sources: [],
+  componentFlavorIds: [++profileNoteComponentId],
 });
 const appliedRuleIds = (left: MixProfileNoteResult, right: MixProfileNoteResult) =>
   analyzeNoteCompatibility([left, right]).appliedRules.map(item => item.ruleId);

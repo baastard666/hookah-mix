@@ -18,7 +18,15 @@ export const calculateMixConfidence = (mix: PreparedCanonicalMix, options: { rea
   const proportionCoverage = weighted(mix.components.map(item => ({ percentage: item.percentage, value: item.proportionConfirmed ? 100 : 70 })));
   const externalEvidenceCoverage = weighted(mix.components.map(item => ({ percentage: item.percentage, value: clamp(item.independentEvidenceCount / 2 * 100) })));
   const riskPenalty = Math.min(10, Math.max(0, options.knownRiskCount ?? 0) * 2);
-  const score = clamp(identityCoverage * 0.4 + profileCoverage * 0.35 + proportionCoverage * 0.15 + externalEvidenceCoverage * 0.1 - riskPenalty);
+  // ADR-022: proportionCoverage/externalEvidenceCoverage are excluded from the weighted score below.
+  // Root cause (see ADR-021): fromPrismaFlavor never sets proportionConfirmed/independentEvidenceCount for any
+  // live product, so both axes are a flat, uninformative constant (70 / 0) for every mix in the system today -
+  // weighting them in was equivalent to docking every score by a fixed amount regardless of actual mix quality,
+  // the same "unmeasured != 0" mistake ADR-015/017 already fixed for FlavorProfile fields. Their weight is
+  // redistributed onto identityCoverage/profileCoverage, which do vary meaningfully today. Both fields are still
+  // computed and reported below (UI transparency, and so this reverts cleanly once VerifiedMixRecipeRegistry
+  // (ADR-021) gives them real signal - this redistribution is a stopgap, not a permanent scoring decision.
+  const score = clamp(identityCoverage * 0.55 + profileCoverage * 0.45 - riskPenalty);
   const reasons: string[] = [];
   if (identityCoverage === 100) reasons.push("Все основные компоненты сопоставлены с canonical catalog.");
   else {

@@ -222,6 +222,10 @@ export const buildMixResultPresentation = (input: {
   if (analysis.scoring.predictionConfidence.profileCoverage < 75) confidenceReasons.push(`Надёжность вкусовых профилей составляет ${analysis.scoring.predictionConfidence.profileCoverage}%.`);
   if (!analysis.scoring.isVerifiedSmokeScore) confidenceReasons.push("Результат реального покура пока отсутствует.");
   else confidenceReasons.push("Результат реального покура сохранён отдельно от прогноза.");
+  // ADR-022: methodological transparency, not an excuse - совпадение пропорций с проверенным рецептом и число
+  // независимых источников по конкретному сочетанию сегодня физически не отслеживаются ни для одного продукта
+  // в каталоге, поэтому эти оси не участвуют в весе оценки уверенности (см. ADR-021/ADR-022).
+  confidenceReasons.push("Совпадение пропорций с проверенным рецептом и число независимых источников по этому сочетанию пока не отслеживаются и не влияют на оценку уверенности.");
   const fallbackShare = analysis.canonicalMix.components.filter(item => item.effectiveProfile.usedFallback).reduce((sum, item) => sum + item.percentage, 0);
   const lowReliabilityShare = analysis.canonicalMix.components.filter(item => item.effectiveProfile.profileReliability === "LOW").reduce((sum, item) => sum + item.percentage, 0);
   const qualityReasons: string[] = [];
@@ -280,7 +284,7 @@ export const buildMixResultPresentation = (input: {
     predictedScore: { title: displayReliability === "LOW" ? "Ориентировочная прогнозная оценка" : "Прогнозная оценка", value: analysis.scoring.predictedQualityScore, description: "Оценка рассчитана на основе состава, пропорций и известных характеристик табаков." },
     verifiedSmoke: analysis.scoring.verifiedSmokeScore === null ? { title: "Реальный покур", value: null, description: "Реальный покур ещё не добавлен." } : { title: "Оценка после покура", value: analysis.scoring.verifiedSmokeScore, description: "Практическая оценка хранится отдельно от прогноза." },
     breakdown: (Object.keys(breakdownLabels) as BreakdownKey[]).map(key => ({ key, label: breakdownLabels[key], value: analysis.scoring.scoreBreakdown[key], explanation: scoreExplanation(key, analysis.scoring.scoreBreakdown[key], key === "risks" ? groupCompatibilityRisks(analysis.compatibility).length : 0) })),
-    confidence: { label: analysis.scoring.predictionConfidence.finalConfidenceLabel, score: analysis.scoring.predictionConfidence.score, summary: `Уверенность ${analysis.scoring.predictionConfidence.finalConfidenceLabel.toLocaleLowerCase("ru-RU")}: ${confidenceReasons.slice(0, 3).join(" ")}`, reasons: confidenceReasons.slice(0, 3) },
+    confidence: { label: analysis.scoring.predictionConfidence.finalConfidenceLabel, score: analysis.scoring.predictionConfidence.score, summary: `Уверенность ${analysis.scoring.predictionConfidence.finalConfidenceLabel.toLocaleLowerCase("ru-RU")}: ${confidenceReasons.slice(0, 4).join(" ")}`, reasons: confidenceReasons.slice(0, 4) },
     dataQuality: { value: analysis.scoring.dataQuality, reasons: qualityReasons.slice(0, 3) },
     resolution: {
       total, resolved, manufacturerOnly: counts.MANUFACTURER_ONLY, ambiguous: counts.AMBIGUOUS, unresolved: counts.UNRESOLVED,

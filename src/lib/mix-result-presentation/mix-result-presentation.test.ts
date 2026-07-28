@@ -25,7 +25,9 @@ describe("mix result public presentation", () => {
     const analysis = calculateMixAnalysis({ components: resolved() });
     const result = buildMixResultPresentation({ analysis, legacyAnalysis: legacy(), preparation: { bowlType: "фанел", coalCount: 3, warmupMinutes: 6 } });
     expect(Object.fromEntries(result.breakdown.map(item => [item.key, item.value]))).toEqual(analysis.scoring.scoreBreakdown);
-    const weighted = Object.entries(MIX_SCORE_WEIGHTS).reduce((sum, [key, weight]) => sum + analysis.scoring.scoreBreakdown[key as keyof typeof analysis.scoring.scoreBreakdown] * weight, 0);
+    // resolved() gives both components a full (non-null) profile, so no breakdown entry is null here and
+    // the ADR-023 renormalization divides by the full weight sum (1.0) - equivalent to a plain weighted sum.
+    const weighted = Object.entries(MIX_SCORE_WEIGHTS).reduce((sum, [key, weight]) => sum + (analysis.scoring.scoreBreakdown[key as keyof typeof analysis.scoring.scoreBreakdown] as number) * weight, 0);
     expect(analysis.scoring.predictedQualityScore).toBe(Math.round((weighted + Number.EPSILON) * 10) / 10);
   });
   it("6. explains confidence from actual coverage", () => expect(present().confidence.summary).toContain("компонента распознаны точно"));

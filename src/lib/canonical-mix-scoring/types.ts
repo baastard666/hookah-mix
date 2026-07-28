@@ -77,11 +77,13 @@ export type MixComponentResolution = {
   readonly debugReasons: readonly string[];
 };
 
-export type EffectiveParameter = { readonly value: number; readonly source: EffectiveProfileSource; readonly reliabilityScore: number; readonly profileId: string | null };
+// ADR-023: value is null when no candidate (source/technical/canonical) had a real measurement for this
+// field - NEUTRAL_FALLBACK no longer fabricates a number here, only marks reliabilityScore low.
+export type EffectiveParameter = { readonly value: number | null; readonly source: EffectiveProfileSource; readonly reliabilityScore: number; readonly profileId: string | null };
 export type EffectiveTobaccoProfile = {
   readonly profile: FlavorProfile;
   readonly notes: readonly MixProfileNoteInput[];
-  readonly strengthLevel5: number;
+  readonly strengthLevel5: number | null;
   readonly parameters: Readonly<Record<FlavorProfileField, EffectiveParameter>>;
   readonly profileId: string | null;
   readonly profileSource: EffectiveProfileSource;
@@ -115,8 +117,11 @@ export type PreparedCanonicalMix = {
 export type MixScoreBreakdown = {
   readonly compatibility: number;
   readonly proportions: number;
-  readonly componentQuality: number;
-  readonly balance: number;
+  // ADR-023: null when the mix has no real (non-NEUTRAL_FALLBACK) measurement for any field this
+  // component reads - "no data" is excluded from predictedQualityScore's weighted average (weight
+  // redistributed onto the other components) rather than silently scored as a neutral 0/10.
+  readonly componentQuality: number | null;
+  readonly balance: number | null;
   readonly risks: number;
   readonly confirmations: number;
 };

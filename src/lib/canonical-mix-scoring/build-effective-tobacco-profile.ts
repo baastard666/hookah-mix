@@ -45,9 +45,16 @@ export const buildEffectiveTobaccoProfile = (component: CanonicalMixComponentInp
   candidates.push(fallback);
   const sorted = sortCandidates(candidates);
   const parameters = {} as Record<FlavorProfileField, EffectiveParameter>;
+  // ADR-023: NEUTRAL_FALLBACK no longer supplies a fabricated field value (previously always 5,
+  // regardless of the field). A missing measurement stays null and flows downstream as such - the
+  // null-exclusion logic already written for calculateMixProfile/componentQuality/analyzeProfileBalance
+  // (ADR-015/017) was correct all along, it just never received a real null to exclude, because this
+  // function silently replaced every null with a number before it ever got there.
   for (const field of FLAVOR_PROFILE_FIELDS) {
-    const chosen = sorted.find(candidate => Number.isFinite(candidate.profile[field]) && candidate.profile[field]! >= 0 && candidate.profile[field]! <= 10) ?? fallback;
-    parameters[field] = { value: chosen.profile[field]!, source: chosen.type, reliabilityScore: chosen.reliabilityScore, profileId: chosen.profileId ?? null };
+    const found = sorted.find(candidate => candidate.type !== "NEUTRAL_FALLBACK" && Number.isFinite(candidate.profile[field]) && candidate.profile[field]! >= 0 && candidate.profile[field]! <= 10);
+    parameters[field] = found
+      ? { value: found.profile[field]!, source: found.type, reliabilityScore: found.reliabilityScore, profileId: found.profileId ?? null }
+      : { value: null, source: fallback.type, reliabilityScore: fallback.reliabilityScore, profileId: null };
   }
   const profile = Object.fromEntries(FLAVOR_PROFILE_FIELDS.map(field => [field, parameters[field].value])) as FlavorProfile;
   const noteCandidate = sorted.find(candidate => candidate.notes?.length) ?? fallback;
@@ -57,7 +64,7 @@ export const buildEffectiveTobaccoProfile = (component: CanonicalMixComponentInp
   const contributing = [...new Map(FLAVOR_PROFILE_FIELDS.map(field => parameters[field]).map(item => [`${item.source}:${item.profileId ?? ""}`, item])).values()];
   const dominantSource = [...contributing].sort((a, b) => sourcePriority(b.source, b.reliabilityScore) - sourcePriority(a.source, a.reliabilityScore) || b.reliabilityScore - a.reliabilityScore)[0];
   return {
-    profile, notes: structuredClone(noteCandidate.notes ?? [fallbackNote(component)]), strengthLevel5: clamp(Math.round(profile.strength! / 2), 1, 5), parameters,
+    profile, notes: structuredClone(noteCandidate.notes ?? [fallbackNote(component)]), strengthLevel5: profile.strength !== null ? clamp(Math.round(profile.strength / 2), 1, 5) : null, parameters,
     profileId: dominantSource.profileId, profileSource: dominantSource.source, profileReliability: reliabilityLabel(profileReliabilityScore), profileReliabilityScore,
     usedFallback: FLAVOR_PROFILE_FIELDS.some(field => parameters[field].source === "NEUTRAL_FALLBACK") || noteCandidate.type === "NEUTRAL_FALLBACK",
     recommendedRole: roleCandidate?.recommendedRole ?? null, confirmedPercentageRange: rangeCandidate?.confirmedPercentageRange ?? null,

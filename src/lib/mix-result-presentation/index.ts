@@ -37,7 +37,10 @@ const formatList = (items: readonly string[]): string => {
   if (unique.length < 2) return unique[0] ?? "мягкий смешанный профиль";
   return `${unique.slice(0, -1).join(", ")} и ${unique.at(-1)}`;
 };
-const scoreExplanation = (key: BreakdownKey, value: number, riskCount = 0): string => {
+// ADR-023: componentQuality/balance may be null when the mix has no measured data for that dimension at
+// all - explain the absence honestly instead of forcing it through the strong/weak number thresholds.
+const scoreExplanation = (key: BreakdownKey, value: number | null, riskCount = 0): string => {
+  if (value === null) return "Недостаточно измеренных данных, чтобы оценить эту часть - она не учитывается в итоговой оценке.";
   const strong = value >= 8; const weak = value < 6;
   const messages: Record<BreakdownKey, [string, string, string]> = {
     compatibility: ["Вкусовые направления хорошо поддерживают друг друга.", "Сочетание в целом согласовано, но отдельные ноты требуют внимания.", "Между вкусовыми направлениями есть заметное напряжение."],

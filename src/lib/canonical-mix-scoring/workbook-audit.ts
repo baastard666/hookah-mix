@@ -66,7 +66,9 @@ export const createCanonicalMixScoringAudit = (imported: ExpertMixImportResult):
       effectiveComponents += analysis.canonicalMix.effectiveComponentCount; duplicateGroups += analysis.canonicalMix.warnings.length; mergedDuplicates += analysis.canonicalMix.rawComponentCount - analysis.canonicalMix.effectiveComponentCount;
       fallbackProfileComponents += analysis.canonicalMix.components.filter(component => component.effectiveProfile.usedFallback).length;
       if (analysis.scoring.riskFlags.length > 0) mixesWithRiskFlags += 1;
-      for (const key of breakdownKeys) breakdownValues[key].push(analysis.scoring.scoreBreakdown[key]);
+      // ADR-023: componentQuality/balance may be null ("no measured data at all for this mix") - excluded
+      // from the distribution stats rather than counted as a measured 0.
+      for (const key of breakdownKeys) { const value = analysis.scoring.scoreBreakdown[key]; if (value !== null) breakdownValues[key].push(value); }
       if (analysis.scoring.componentResolutions.length !== source.length) componentErrors.push(mix.mixId);
       if (Math.abs(analysis.canonicalMix.totalPercentage - 100) > 0.0001) sumErrors.push(mix.mixId);
       let resolvedInMix = 0;

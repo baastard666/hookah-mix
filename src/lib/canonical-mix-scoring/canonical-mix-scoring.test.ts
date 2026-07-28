@@ -165,7 +165,18 @@ describe("effective profile precedence", () => {
     const withSource = component("Sebero", "Черника", 50, { profile: profile({ sweetness: 8 }) });
     const withoutSource = component("Sebero", "Черника", 50, { sourceProfileAvailable: false });
     expect(buildEffectiveTobaccoProfile(withSource, resolveMixComponentIdentity(withSource)).parameters.sweetness.source).toBe("SOURCE_PROFILE");
-    expect(buildEffectiveTobaccoProfile(withoutSource, resolveMixComponentIdentity(withoutSource)).parameters.sweetness).toMatchObject({ value: 5, source: "NEUTRAL_FALLBACK" });
+    // ADR-023: NEUTRAL_FALLBACK no longer fabricates a value (previously 5) - value stays null, only the
+    // low reliabilityScore marks the field as unmeasured.
+    expect(buildEffectiveTobaccoProfile(withoutSource, resolveMixComponentIdentity(withoutSource)).parameters.sweetness).toMatchObject({ value: null, source: "NEUTRAL_FALLBACK", reliabilityScore: 15 });
+  });
+
+  it("ADR-023: keeps a null field null even when the same source profile measures other fields", () => {
+    const input = sorbet(50, { profile: profile({ sweetness: 7, acidity: null }) });
+    const effective = buildEffectiveTobaccoProfile(input, resolveMixComponentIdentity(input));
+    expect(effective.parameters.sweetness).toMatchObject({ value: 7, source: "SOURCE_PROFILE" });
+    expect(effective.parameters.acidity).toMatchObject({ value: null, source: "NEUTRAL_FALLBACK" });
+    expect(effective.profile.acidity).toBeNull();
+    expect(effective.usedFallback).toBe(true);
   });
 
   it("does not invent a confirmed percentage range", () => {
@@ -206,7 +217,7 @@ describe("canonical aggregation and scoring integration", () => {
     expect(result.scoring.version).toBe("canonical-mix-scoring-v1");
     expect(result.scoring.predictedQualityScore).toBeGreaterThanOrEqual(0);
     expect(result.scoring.predictedQualityScore).toBeLessThanOrEqual(10);
-    expect(Object.values(result.scoring.scoreBreakdown).every(value => Number.isFinite(value) && value >= 0 && value <= 10)).toBe(true);
+    expect(Object.values(result.scoring.scoreBreakdown).every(value => value !== null && Number.isFinite(value) && value >= 0 && value <= 10)).toBe(true);
     expect(result.recommendations.recommendations.flatMap(item => item.componentIds).every(id => ["blackburn-tic-tac", "musthave-sorbetto"].includes(String(id)))).toBe(true);
   });
 
@@ -239,6 +250,20 @@ describe("canonical aggregation and scoring integration", () => {
     const result = calculateMixAnalysis({ components: [ticTac(50), sorbet(50)] });
     const serialized = JSON.stringify(toPublicCanonicalMixScoringResult(result.scoring));
     for (const token of ["decisionId", "rawIdentity", "sourceRow", "debugReasons", "sourceUrl", "evidence", "author"]) expect(serialized).not.toContain(token);
+  });
+
+  it("ADR-023: profile-balance rules do not fire on a pair where every field is NEUTRAL_FALLBACK, not measured", () => {
+    // Both unresolved (no canonicalManufacturer), so technicalCandidate() also has nothing to contribute -
+    // sourceProfileAvailable:false alone is not enough for a RESOLVED product, since its manufacturer/line
+    // may still carry real strength/heatResistance data from the separate tobacco-profile registry.
+    const result = calculateMixAnalysis({ components: [unknown(50, { sourceProfileAvailable: false }), component("не указан", "Второй неизвестный вкус", 50, { sourceProfileAvailable: false })] });
+    const ruleIds = result.compatibility.profileBalance.positiveFactors.map(item => item.ruleId);
+    expect(ruleIds).not.toContain("profile.sweet-sour-balance");
+    expect(ruleIds).not.toContain("profile.fresh-juicy");
+    expect(ruleIds).not.toContain("profile.dessert-balance");
+    expect(result.compatibility.profileBalance.positiveFactors).toEqual([]);
+    expect(result.scoring.scoreBreakdown.componentQuality).toBeNull();
+    expect(result.scoring.scoreBreakdown.balance).toBeNull();
   });
 });
 

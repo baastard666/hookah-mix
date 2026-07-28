@@ -352,3 +352,21 @@
 **Тесты:** Vitest **1081/1081 passed, 32 файла** (без новых тестов — только правка 4 существующих фикстур под новое обязательное поле типа); `tsc --noEmit` — чисто; `eslint .` — чисто.
 
 **Осталось:** Приоритет 2 (расширение RISKY/CONFLICT-покрытия для 10 непокрытых категорий, в т.ч. `ALCOHOL`/`FRUIT`/`BEVERAGE`) — отдельная будущая задача, сознательно не начата в этой сессии. Коммит — по отдельному запросу пользователя.
+
+## 2026-07-28 — ADR-023: NEUTRAL_FALLBACK больше не подменяет значение поля числом
+
+**Сделано:** по запросу пользователя реализован фикс диагностированной ранее (без кода) проблемы: `buildEffectiveTobaccoProfile` при отсутствии измерения подставлял число `5` прямо в значение поля (не только в `reliabilityScore`), из-за чего уже написанная под ADR-015/017 null-исключающая логика в `calculateWeightedProfile`/`analyzeProfileBalance`/`componentQuality()` никогда не получала настоящий `null` на живом пути. Теперь fallback передаёт `value: null` (только `reliabilityScore: 15` отмечает поле как неизмеренное); `EffectiveParameter.value`/`EffectiveTobaccoProfile.strengthLevel5`/`MixScoreBreakdown.componentQuality`/`balance` стали `number | null`.
+
+Добавлен `weightedPartial()` в `calculate-canonical-mix-score.ts` — компонент без единого измеренного поля исключён из взвешенного среднего (не считается нулём); если ВСЕ компоненты микса ничего не измерили — `componentQuality`/`balance` (через новую `hasAnyProfileField`) становятся `null` целиком и **исключаются из `predictedQualityScore`** с перевзвешиванием остальных компонентов пропорционально (тот же приём, что ADR-022 уже применил к `calculateMixConfidence`; `confirmations` не тронут по явному указанию, участвует в перевзвешивании только как получатель освободившегося веса). Ложные позитивные факторы (`profile.sweet-sour-balance`/`fresh-juicy`/`dessert-balance`, срабатывавшие на паре из двух fallback-значений «5», ведь 5 — ровно "безопасная середина" большинства пороговых правил) устранены автоматически самой починкой null-пропагации — отдельного механизма не потребовалось, поскольку правила и так уже требовали `!== null`.
+
+Диагностика до/после на тех же 13 парах (`git stash`/`pop` для честного сравнения): 5 из 13 пар потеряли хотя бы один ложный фактор (3 из них — сразу все 3 разом: Cider+Vanilla Cream, Sarma Лимонад+Daily Крем). `componentQuality` заметно вырос там, где раньше половина полей была fallback (Apple+Jelly 6.7→8.8, Лимонад+Крем 5.9→8.0). `Sarma Суфле+Лимонад` — единственная пара с `componentQuality=null` целиком (0 измеренных полей у обоих компонентов); `predictedQualityScore` при этом не упал, а вырос (7.6→7.9) — перевзвешивание убрало заниженный вклад несуществующих данных, а не наказало микс.
+
+**Побочная находка (не исправлена, вне объёма):** диагностика пары `HIT Banana Shake + Daily Hookah Сливочный крем` после фикса упала с `Сумма должна быть 100%, получено 95` — обнаружен пред­существующий баг в `calculate-mix-analysis.ts` (`compareProposal`): `proposedInput` ищет процент по сырому `flavorId` вместо канонического id из `variant.componentId`, из-за чего для `RESOLVED`-товара с отличающимся каноническим id доля не подставляется. Баг не создан этой сессией — просто впервые задет новым (более честным) набором рекомендаций для этой конкретной пары. Не исправлялся — другой модуль, не заявлен в объёме ADR-023.
+
+**Файлы:**
+- создано: `docs/adr/ADR-023-neutral-fallback-null-propagation.md`;
+- изменено: `src/lib/canonical-mix-scoring/build-effective-tobacco-profile.ts`, `src/lib/canonical-mix-scoring/calculate-canonical-mix-score.ts`, `src/lib/canonical-mix-scoring/types.ts`, `src/lib/canonical-mix-scoring/workbook-audit.ts`, `src/lib/mix-result-presentation/index.ts`, `src/app/result/[id]/page.tsx`, `src/lib/canonical-mix-scoring/canonical-mix-scoring.test.ts` (+2 теста), `src/lib/canonical-mix-scoring/calculate-canonical-mix-score.test.ts` (+3 теста), `src/lib/mix-result-presentation/mix-result-presentation.test.ts` (тип), `docs/adr/README.md`.
+
+**Тесты:** Vitest **1086/1086 passed, 32 файла** (+5 новых); `tsc --noEmit` — чисто; `eslint .` — чисто.
+
+**Осталось:** пред­существующий баг `compareProposal` (сопоставление по сырому `flavorId` вместо канонического id) — отдельная будущая задача, не начата. Коммит — по отдельному запросу пользователя.

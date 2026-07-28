@@ -53,7 +53,7 @@ export default async function Result({ params }: { params: Promise<{ id: string 
 
     <section className="card"><div className="eyebrow">Статус компонентов</div><h2>{presentation.resolution.summary}</h2><div className="resolution-list">{presentation.resolution.components.map((component, index) => <div className="resolution-item" key={`${component.name}-${index}`}><span><b>{component.name}</b><small>{component.percentage}% · {component.catalogStatus}</small><small>{component.status}</small><small>{component.profileStatus}</small><small><b>Роль в этом миксе:</b> {component.actualMixRole}</small>{component.recommendedCatalogRole && <small>Обычная роль продукта в миксах: {component.recommendedCatalogRole}</small>}</span></div>)}</div></section>
 
-    <section className="card"><div className="eyebrow">Из чего складывается оценка</div><div className="breakdown-grid">{presentation.breakdown.map(item => <article className="breakdown-item" key={item.key}><div><h3>{item.label}</h3><strong>{item.value}</strong></div><p>{item.explanation}</p></article>)}</div></section>
+    <section className="card"><div className="eyebrow">Из чего складывается оценка</div><div className="breakdown-grid">{presentation.breakdown.map(item => <article className="breakdown-item" key={item.key}><div><h3>{item.label}</h3><strong>{item.value === null ? "нет данных" : item.value}</strong></div><p>{item.explanation}</p></article>)}</div></section>
 
     <div className="result-main-grid">
       <div className="result-column">

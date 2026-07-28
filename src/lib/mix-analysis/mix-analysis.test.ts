@@ -36,4 +36,21 @@ describe("Mix Analysis Service", () => {
   it("18. proposal uses the same input confidence", () => { const result = analyze(colaMint()); expect(result.proposalComparison?.proposed.predictionConfidenceScore).toBe(result.proposalComparison?.current.predictionConfidenceScore); });
   it("19. proposal comparison is deterministic", () => expect(analyze(colaMint()).proposalComparison).toEqual(analyze(colaMint()).proposalComparison));
   it("20. rejected proposals carry a reason", () => { const result = analyze(berryLavender(60, 40)); if (result.proposalComparison && !result.proposalComparison.accepted) expect(result.proposalComparison.rejectionReasons.length).toBeGreaterThan(0); else expect(result.proposalComparison).toBeDefined(); });
+
+  it("21. does not throw when a resolved component's canonical id differs from its raw flavorId (regression)", () => {
+    // The "lavender" component keeps its own flavorId (raw) but resolves, via identity, to a real
+    // catalog product ("musthave-sorbetto") - a different string than its flavorId. This reproduces the
+    // exact shape that used to make calculateMixAnalysis throw "Сумма должна быть 100%": the proposed
+    // variant's percentage for this component was looked up by raw flavorId instead of canonical id, so it
+    // silently kept its old percentage and the proposed mix stopped summing to 100.
+    const [berry, lavender] = berryLavender(60, 40);
+    const resolvedLavender = { ...lavender, identity: { rawManufacturer: "MustHave", rawProductLine: null, rawProductName: "Клубничный сорбет" } };
+    const result = analyze([berry, resolvedLavender]);
+    expect(result.canonicalMix.components.some(item => item.flavorId === "musthave-sorbetto")).toBe(true);
+    expect(result.summary.hasSuggestedMixVariant).toBe(true);
+    expect(result.proposalComparison).toBeDefined();
+    expect(result.proposalComparison?.variant.components.reduce((sum, item) => sum + item.suggestedPercentage, 0)).toBe(100);
+    const resolvedEntry = result.proposalComparison?.variant.components.find(item => item.componentId === "musthave-sorbetto");
+    expect(resolvedEntry?.suggestedPercentage).not.toBe(resolvedEntry?.currentPercentage);
+  });
 });

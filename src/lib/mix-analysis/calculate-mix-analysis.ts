@@ -50,8 +50,31 @@ export const calculateMixAnalysis = (input: MixAnalysisInput): MixAnalysisResult
   const variant = recommendations.summary.suggestedMixVariant;
   let proposalComparison: MixProposalComparison | undefined;
   if (variant) {
-    const percentages = new Map(variant.components.map(item => [item.componentId, item.suggestedPercentage]));
-    const proposedInput = input.components.map(component => ({ ...component, percentage: percentages.get(String(component.flavorId)) ?? component.percentage }));
+    // variant.components[].componentId is the CANONICAL flavorId (canonicalMix.components[].flavorId),
+    // which for a RESOLVED product differs from input.components[].flavorId (the raw, pre-resolution id -
+    // e.g. a numeric Prisma id vs. a canonical string like "daily-hookah-slivochnyi-krem"). Looking the
+    // suggested percentage up by the raw flavorId silently misses for any resolved product, leaving its
+    // percentage unchanged and making the proposed mix no longer sum to 100. Map through
+    // canonicalMix.componentResolutions instead, which is index-aligned with input.components and already
+    // exposes the correctly-computed sourceComponentId for each raw component, then resolve each raw
+    // component's new percentage via the canonical group it belongs to (canonicalMix.components[].sourceComponentIds),
+    // splitting proportionally across duplicates if more than one raw component merged into that group.
+    const canonicalPercentages = new Map(variant.components.map(item => [item.componentId, item.suggestedPercentage]));
+    const sourceIdToNewPercentage = new Map<string, number>();
+    for (const canonicalComponent of canonicalMix.components) {
+      const suggested = canonicalPercentages.get(String(canonicalComponent.flavorId));
+      if (suggested === undefined) continue;
+      for (const sourceComponentId of canonicalComponent.sourceComponentIds) {
+        const originalShare = canonicalMix.componentResolutions.find(item => item.sourceComponentId === sourceComponentId)?.percentage ?? 0;
+        const share = canonicalComponent.percentage > 0 ? originalShare / canonicalComponent.percentage : 1 / canonicalComponent.sourceComponentIds.length;
+        sourceIdToNewPercentage.set(sourceComponentId, suggested * share);
+      }
+    }
+    const proposedInput = input.components.map((component, index) => {
+      const sourceComponentId = canonicalMix.componentResolutions[index].sourceComponentId;
+      const newPercentage = sourceIdToNewPercentage.get(sourceComponentId);
+      return { ...component, percentage: newPercentage ?? component.percentage };
+    });
     const proposed = analyzeBase({ ...input, components: proposedInput });
     proposalComparison = compareProposal(current, proposed, variant);
   }

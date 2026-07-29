@@ -237,7 +237,10 @@ export const buildMixResultPresentation = (input: {
   const resolved = counts.RESOLVED; const total = resolutions.length;
   const uncertain = counts.MANUFACTURER_ONLY + counts.AMBIGUOUS + counts.UNRESOLVED;
   const confidenceReasons: string[] = [resolved === total ? `Все ${total} компонента распознаны точно.` : `${resolved} из ${total} компонентов распознаны точно; ${uncertain} ${uncertain === 1 ? "требует" : "требуют"} уточнения.`];
-  if (analysis.scoring.predictionConfidence.profileCoverage < 75) confidenceReasons.push(`Надёжность вкусовых профилей составляет ${analysis.scoring.predictionConfidence.profileCoverage}%.`);
+  // ADR-022 leftover, fixed here: this line used to interpolate the raw profileCoverage percent
+  // straight into the confidence tooltip text, even though the visible badge only ever shows the tier
+  // (ADR-022) - the exact number was still leaking out through this reason string. Qualitative only now.
+  if (analysis.scoring.predictionConfidence.profileCoverage < 75) confidenceReasons.push("Надёжность вкусовых профилей ниже среднего.");
   if (!analysis.scoring.isVerifiedSmokeScore) confidenceReasons.push("Результат реального покура пока отсутствует.");
   else confidenceReasons.push("Результат реального покура сохранён отдельно от прогноза.");
   // ADR-022: methodological transparency, not an excuse - совпадение пропорций с проверенным рецептом и число

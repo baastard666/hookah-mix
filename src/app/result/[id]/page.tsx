@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { calculateMixAnalysis } from "@/lib/mix-analysis";
 import { analyzeMix, type BowlType } from "@/lib/mix-analyzer";
 import { fromPrismaFlavor } from "@/lib/mix-profile";
+import { categoryLabels } from "@/lib/flavor-knowledge";
 import { buildMixResultPresentation } from "@/lib/mix-result-presentation";
 import { prisma } from "@/lib/prisma";
 import RecommendationSection from "../recommendation-section";
@@ -60,7 +61,7 @@ export default async function Result({ params }: { params: Promise<{ id: string 
         <section className="card"><div className="eyebrow">Предполагаемый профиль</div><h2>{presentation.profile.summary}</h2><h3>Доминирующие ноты</h3><div className="chips">{presentation.profile.dominantNotes.map(note => <span className="tag" key={note}>{note}</span>)}</div>{presentation.profile.backgroundNotes.length > 0 && <><h3>Фоновые ноты</h3><div className="chips">{presentation.profile.backgroundNotes.map(note => <span className="tag" key={note}>{note}</span>)}</div></>}</section>
         {/* ADR-015: creaminess/bitterness may be null ("не измерено") - the fill stays at 0% width, but the label above already says "нет данных" so an unmeasured metric is never shown as if it were a real low reading. */}
         <section className="card"><h2>Баланс профиля</h2><div className="scales">{metrics.map(key => <div key={key}><div className="scale-label"><span>{labels[key]}</span><b>{metricPresentation[key].displayValue}</b></div><div className="scale-line"><div className="scale-fill" style={{ width: `${(metricPresentation[key].value ?? 0) * 10}%` }}/></div></div>)}</div></section>
-        {presentation.strengths.length > 0 && <section className="card"><div className="eyebrow">Сильные стороны</div><ul>{presentation.strengths.map(item => <li key={item}>{item}</li>)}</ul></section>}
+        {presentation.strengths.length > 0 && <section className="card"><div className="eyebrow">Сильные стороны</div><ul>{presentation.strengths.map(item => <li key={item}>{item}</li>)}</ul>{presentation.matchedCategoryPairs.length > 0 && <div className="category-match-tooltip" tabIndex={0} aria-describedby="category-match-explanation"><span className="category-match-badge">Через какие категории сработало ⓘ</span><div className="category-match-tooltip-content" role="tooltip" id="category-match-explanation"><ul className="compact-list">{presentation.matchedCategoryPairs.map(pair => <li key={pair.ruleId}>{categoryLabels[pair.left]} + {categoryLabels[pair.right]}</li>)}</ul></div></div>}</section>}
         <RecommendationSection actions={presentation.actions} status={presentation.recommendationStatus} suggestedVariant={presentation.suggestedVariant} componentNames={componentNames} proposalComparison={presentation.proposalComparison} currentBuilderHref={currentBuilderHref} proposedBuilderHref={proposedBuilderHref}/>
       </div>
       <aside className="result-column">

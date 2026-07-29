@@ -388,3 +388,21 @@
 **Тесты:** Vitest **1087/1087 passed, 32 файла** (+1); `tsc --noEmit` — чисто; `eslint .` — чисто.
 
 **Осталось:** ничего по этой задаче. Коммит — по отдельному запросу пользователя.
+
+## 2026-07-29 — ADR-024: показ пары категорий, через которую сработала связь совместимости
+
+**Сделано:** по масштабной диагностике (87.4% пар каталога дают категориальное совпадение, 98.3% из них неоднозначны — у товара есть другая категория, через которую тоже могло сработать) пользователь запросил explainability-механизм. Разведка перед правкой (Шаг 1) выявила два нюанса, не очевидных из самой постановки: (1) `presentation.strengths` уже дедуплицирует позитивные факторы по `AnalysisCategory` (не по вкусовой категории — все `category.*`-правила делят одно ведро `"NOTE_COMPATIBILITY"`) и режет до 3, то есть при 2+ сработавших категориальных правилах до `page.tsx` доезжает только одно; (2) `NOTE_COMPATIBILITY_RULES` хранит категории в legacy-пространстве (`createKnowledgeCategoryRule("DAIRY","FRUIT")` для `category.creamy-fruit`), а `categoryLabels` — в knowledge-пространстве (`CREAMY`, не `DAIRY`) — прямой lookup дал бы `undefined` без конвертации через `toKnowledgeCategory`.
+
+Реализовано: `categoryLabels` вынесен из `src/app/result/recommendation-presentation.ts` в новый общий `src/lib/flavor-knowledge/category-labels.ts` (импорт `app`→`lib` инвертировал бы принятую слоистость проекта), старое место — тонкий ре-экспорт. В `mix-result-presentation/index.ts` — новое поле `matchedCategoryPairs: {left,right,ruleId}[]`, построенное независимым сканом полного `analysis.compatibility.positiveFactors` (не через уже дедуплицированный `strengths`), с конвертацией категорий в knowledge-пространство. В `page.tsx` — CSS-only tooltip-бейдж «Через какие категории сработало ⓘ» рядом со списком «Сильные стороны», один на весь список (не на каждый пункт по отдельности — обоснование в самой ADR), по паттерну `.confidence-tooltip` из ADR-022. Compatibility Engine (`category-relations.ts`, `knowledge-adapter.ts`, `compatibility-rules.ts`, scoring) не тронут.
+
+Добавлен тест на реальном примере Belgian Cider + Vanilla Cream (`mix-result-presentation.test.ts`, тест 48), подтверждающий `matchedCategoryPairs` содержит `{left:"CREAMY", right:"FRUIT", ruleId:"category.creamy-fruit"}`. Проверено визуально на живой паре через `/builder`→`/result`: tooltip показывает «Сливочность + Фрукты».
+
+По пути обнаружен и исправлен побочный баг: реальный (не `import type`) импорт через алиас `@/` не резолвился в vitest (алиас настроен только для tsc/Next.js, не для vitest.config.ts) — заменено на относительный путь в `recommendation-presentation.ts`.
+
+**Файлы:**
+- создано: `docs/adr/ADR-024-explainability-categorialnyh-sovpadeniy.md`, `src/lib/flavor-knowledge/category-labels.ts`;
+- изменено: `src/app/globals.css`, `src/app/result/[id]/page.tsx`, `src/app/result/recommendation-presentation.ts`, `src/lib/flavor-knowledge/index.ts`, `src/lib/mix-result-presentation/index.ts`, `src/lib/mix-result-presentation/mix-result-presentation.test.ts` (+1 тест), `docs/adr/README.md`.
+
+**Тесты:** Vitest **1088/1088 passed, 32 файла** (+1); `tsc --noEmit` — чисто; `eslint .` — чисто.
+
+**Осталось:** ничего по этой задаче. Пуш и PR — по отдельному запросу пользователя (явно не запрошены в этом сообщении).

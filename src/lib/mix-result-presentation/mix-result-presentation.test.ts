@@ -195,4 +195,11 @@ describe("v0.3.3 corrective public presentation", () => {
     expect(action).toMatchObject({ proposedActualMixRole: "основа и доминирующий компонент", rangeLabel: "Предварительный диапазон" });
     expect(action?.directionLabels).toEqual(expect.arrayContaining(["Напиток", "Травы", "Холод"]));
   });
+  it("48. ADR-024: exposes the matched category pair for a fired category rule (Belgian Cider + Vanilla Cream)", () => {
+    const result = present([
+      component("Chabacco", "Belgian Cider", 50, { note: "apple", category: "FRUIT" }),
+      component("MustHave", "Vanilla Cream", 50, { note: "cream", category: "DAIRY" }),
+    ]);
+    expect(result.matchedCategoryPairs).toContainEqual({ left: "CREAMY", right: "FRUIT", ruleId: "category.creamy-fruit" });
+  });
 });

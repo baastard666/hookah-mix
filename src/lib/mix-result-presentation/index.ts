@@ -2,8 +2,23 @@ import type { MixAnalysisResult } from "../mix-analysis";
 import type { MixAnalysis } from "../mix-analyzer";
 import { groupCompatibilityRisks } from "../canonical-mix-scoring";
 import type { PreparedCanonicalComponent, PublicProfileStatus } from "../canonical-mix-scoring";
+import { NOTE_COMPATIBILITY_RULES } from "../mix-compatibility";
 import type { MixRecommendation, MixRecommendationResult, SuggestedMixVariant } from "../mix-recommendation";
 import { calculateMixProfile } from "../mix-profile";
+import { toKnowledgeCategory } from "../flavor-knowledge";
+import type { FlavorNoteCategory } from "../flavor-knowledge";
+
+// ADR-024: which two categories fired a given category.* rule, in knowledge-space (CREAMY/BEVERAGE,
+// not the legacy DAIRY/DRINK names createKnowledgeCategoryRule was actually called with) - built once
+// at module load since NOTE_COMPATIBILITY_RULES is static.
+export type MatchedCategoryPair = { readonly left: FlavorNoteCategory; readonly right: FlavorNoteCategory; readonly ruleId: string };
+const ruleCategoryPair = new Map<string, { readonly left: FlavorNoteCategory; readonly right: FlavorNoteCategory }>();
+for (const rule of NOTE_COMPATIBILITY_RULES) {
+  const legacyLeft = rule.left.categories?.[0]; const legacyRight = rule.right.categories?.[0];
+  if (!legacyLeft || !legacyRight) continue;
+  const left = toKnowledgeCategory(legacyLeft); const right = toKnowledgeCategory(legacyRight);
+  if (left && right) ruleCategoryPair.set(rule.id, { left, right });
+}
 
 export type BreakdownKey = keyof MixAnalysisResult["scoring"]["scoreBreakdown"];
 export type PublicRiskLevel = "Низкий" | "Средний" | "Высокий";
@@ -248,6 +263,14 @@ export const buildMixResultPresentation = (input: {
   const profileTitle = dominantNotes.slice(0, 2).map((note, index) => index === 0 ? note[0].toLocaleUpperCase("ru-RU") + note.slice(1) : note).join(" + ");
   const profileSummary = `${profileTitle}. ${analysis.mixProfile.dominantComponent.brandName} ${analysis.mixProfile.dominantComponent.flavorName} задаёт ${analysis.mixProfile.dominanceLevel === "CLEAR" ? "ясную основу" : "заметную основу"} смеси.`;
   const strengths = [...new Map(analysis.compatibility.positiveFactors.map(item => [item.category, item.description])).values()].slice(0, 3);
+  // ADR-024: independent of `strengths` above on purpose - that list dedupes by AnalysisCategory (all
+  // category.* rules share the single "NOTE_COMPATIBILITY" bucket), so a mix firing 2+ category rules
+  // would silently lose all but one before reaching this point. Scan the full, undeduped positiveFactors
+  // instead, so every fired category pair is explainable, not just whichever one `strengths` kept.
+  const matchedCategoryPairs: MatchedCategoryPair[] = analysis.compatibility.positiveFactors
+    .filter(item => item.ruleId.startsWith("category."))
+    .map(item => { const pair = ruleCategoryPair.get(item.ruleId); return pair ? { ...pair, ruleId: item.ruleId } : null; })
+    .filter((item): item is MatchedCategoryPair => item !== null);
   const dominantId = String(analysis.mixProfile.dominantComponent.flavorId);
   const hasPreliminary = analysis.canonicalMix.components.some(component => ["PRELIMINARY", "FALLBACK", "MISSING"].includes(component.profileStatus));
   const displayReliability: "LOW" | "MEDIUM" | "HIGH" = hasPreliminary ? "LOW" : analysis.canonicalMix.components.some(component => component.effectiveProfile.profileReliability !== "HIGH") ? "MEDIUM" : "HIGH";
@@ -311,6 +334,7 @@ export const buildMixResultPresentation = (input: {
       metrics: (["strength", "sweetness", "acidity", "freshness", "creaminess", "bitterness"] as const).map(key => ({ key, value: analysis.mixProfile.profile[key], displayValue: displayMetric(analysis.mixProfile.profile[key], displayReliability) })),
     },
     strengths,
+    matchedCategoryPairs,
     risks,
     actions: deduplicateRecommendations(analysis.recommendations).map(item => toPublicRecommendation(
       item,

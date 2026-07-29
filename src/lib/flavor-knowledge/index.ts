@@ -1,6 +1,7 @@
 export { FLAVOR_NOTE_CATEGORIES, KNOWLEDGE_VERSION } from "./constants";
 export { FLAVOR_KNOWLEDGE_REGISTRY } from "./registry";
 export { toKnowledgeCategory, toLegacyCategory } from "./note-taxonomy";
+export { categoryLabels } from "./category-labels";
 export { calculateKnowledgeConfidence } from "./confidence";
 export { assertValidKnowledgeRegistry, validateEvidence, validateKnowledgeRegistry, KnowledgeValidationError } from "./validation";
 export {

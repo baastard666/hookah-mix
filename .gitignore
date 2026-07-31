@@ -7,3 +7,14 @@ coverage
 *.tsbuildinfo
 data/*.xlsx
 reports/
+
+# Внешние scratch-файлы (Codex/research-агент, запускается с cwd внутри репозитория, не связано с кодом проекта)
+entity_*
+research_*
+run_hookah_batch.py
+inspect_reanalysis.py
+rerun_entity_batch.py
+code_backup_before_entity_extraction/
+hookah-research-agent-work/
+batch_report.json
+batch_transcripts/

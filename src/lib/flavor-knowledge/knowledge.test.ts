@@ -195,24 +195,29 @@ describe("Compatibility Engine integration", () => {
     expect(getEvidence("evidence.verified-mix-history.medium")?.weight).toBeGreaterThan(getEvidence("evidence.verified-mix-history.low")!.weight);
     expect(getEvidence("evidence.verified-mix-history.high")?.type).toBe("VERIFIED_MIX_HISTORY");
   });
-  it("80. ADR-020 Step B: DESSERT+FRUIT (HIGH confidence, n=10) fires as COMPLEMENTARY_CONTRAST", () => {
-    expect(getCategoryRelation("DESSERT", "FRUIT")).toMatchObject({ type: "COMPLEMENTARY_CONTRAST", baseScore: 0.25, evidenceIds: ["evidence.verified-mix-history.high"] });
+  it("80. ADR-020 Step B (2026-08 revision): DESSERT+FRUIT recompute moved HIGH->MEDIUM confidence (n=8), still COMPLEMENTARY_CONTRAST", () => {
+    expect(getCategoryRelation("DESSERT", "FRUIT")).toMatchObject({ type: "COMPLEMENTARY_CONTRAST", baseScore: 0.25, evidenceIds: ["evidence.verified-mix-history.medium"] });
     expect(appliedRuleIds(profileNote("dessert-note", "DESSERT"), profileNote("fruit-note", "FRUIT"))).toContain("category.dessert-fruit");
   });
-  it("81. ADR-020 Step B: all 13 wired verified-mix-history pairs fire", () => {
+  it("81. ADR-020 Step B (2026-08 revision): the 12 currently-wired verified-mix-history pairs fire", () => {
     const pairs: [string, string, string][] = [
       ["BERRY", "FRUIT", "category.berry-fruit"], ["FRUIT", "TROPICAL", "category.fruit-tropical"], ["CANDY", "FRUIT", "category.candy-fruit"],
-      ["COOLING", "FRUIT", "category.cooling-fruit"], ["CITRUS", "DAIRY", "category.citrus-creamy"], ["CITRUS", "SOUR", "category.citrus-sour"],
-      ["BERRY", "SOUR", "category.berry-sour"], ["CANDY", "DAIRY", "category.candy-creamy"], ["BERRY", "TROPICAL", "category.berry-tropical"],
+      ["COOLING", "FRUIT", "category.cooling-fruit"], ["CITRUS", "SOUR", "category.citrus-sour"],
+      ["BERRY", "SOUR", "category.berry-sour"], ["BERRY", "TROPICAL", "category.berry-tropical"],
       ["CITRUS", "DESSERT", "category.citrus-dessert"], ["BERRY", "DESSERT", "category.berry-dessert"], ["CANDY", "SOUR", "category.candy-sour"],
+      ["FRUIT", "SOUR", "category.fruit-sour"],
     ];
     for (const [a, b, ruleId] of pairs) expect(appliedRuleIds(profileNote("a", a as never), profileNote("b", b as never))).toContain(ruleId);
   });
-  it("82. ADR-020 Step B: FRUIT+SOUR and FRUIT+NUT are recorded as NEUTRAL (notable mixed fraction) and not wired", () => {
-    expect(getCategoryRelation("FRUIT", "SOUR").type).toBe("NEUTRAL");
+  it("82. ADR-020 Step B (2026-08 revision): FRUIT+NUT stays NEUTRAL and unwired; CITRUS+CREAMY/CANDY+CREAMY (legacy DAIRY) newly downgraded to NEUTRAL and unwired (n=2, below the n>=3 minimum); FRUIT+SOUR newly upgraded to COMPLEMENTARY_CONTRAST and wired (89% positive, crosses the MEDIUM-tier threshold)", () => {
     expect(getCategoryRelation("FRUIT", "NUT").type).toBe("NEUTRAL");
-    expect(() => createKnowledgeCategoryRule("FRUIT", "SOUR")).toThrow();
+    expect(getCategoryRelation("CITRUS", "CREAMY").type).toBe("NEUTRAL");
+    expect(getCategoryRelation("CANDY", "CREAMY").type).toBe("NEUTRAL");
     expect(() => createKnowledgeCategoryRule("FRUIT", "NUT")).toThrow();
+    expect(() => createKnowledgeCategoryRule("CITRUS", "DAIRY")).toThrow();
+    expect(() => createKnowledgeCategoryRule("CANDY", "DAIRY")).toThrow();
+    expect(getCategoryRelation("FRUIT", "SOUR").type).toBe("COMPLEMENTARY_CONTRAST");
+    expect(appliedRuleIds(profileNote("fruit-note", "FRUIT"), profileNote("sour-note", "SOUR"))).toContain("category.fruit-sour");
   });
   it("83. ADR-020 Step B: none of the 15 verified-mix-history relations reach STRONG_MATCH/RISKY/CONFLICT", () => {
     const ruleIds = new Set(["category.berry-fruit", "category.fruit-tropical", "category.dessert-fruit", "category.candy-fruit", "category.cooling-fruit", "category.citrus-creamy", "category.citrus-sour", "category.berry-sour", "category.candy-creamy", "category.berry-tropical", "category.citrus-dessert", "category.berry-dessert", "category.candy-sour", "category.fruit-sour", "category.fruit-nut"]);

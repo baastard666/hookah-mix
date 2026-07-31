@@ -137,20 +137,51 @@ export const CATEGORY_RELATIONS: readonly FlavorCategoryRelation[] = [
   // internally tested mixes, not proof that no combination in these categories can go badly.
   verifiedHistory("BERRY", "FRUIT", "COMPLEMENTARY_CONTRAST", 0.25, "category.berry-fruit", "MEDIUM", 7),
   verifiedHistory("FRUIT", "TROPICAL", "COMPLEMENTARY_CONTRAST", 0.25, "category.fruit-tropical", "MEDIUM", 9),
-  verifiedHistory("DESSERT", "FRUIT", "COMPLEMENTARY_CONTRAST", 0.25, "category.dessert-fruit", "HIGH", 10),
+  // 2026-08 revision (recompute diagnostic): re-running the exact ADR-020 methodology on the same
+  // workbook/registry (both provably unchanged - see docs/adr/ADR-020 revision note below) now gives
+  // n=8 (was 10) at 86% positive - tier drops HIGH->MEDIUM, but the type threshold (MEDIUM & ratio>=85%
+  // -> COMPLEMENTARY_CONTRAST) still lands on the same type, so only the confidence tier/evidence
+  // weight changes here, not the relation itself.
+  verifiedHistory("DESSERT", "FRUIT", "COMPLEMENTARY_CONTRAST", 0.25, "category.dessert-fruit", "MEDIUM", 8),
   verifiedHistory("CANDY", "FRUIT", "COMPLEMENTARY_CONTRAST", 0.25, "category.candy-fruit", "MEDIUM", 7),
   verifiedHistory("COOLING", "FRUIT", "COMPLEMENTARY_CONTRAST", 0.25, "category.cooling-fruit", "LOW", 3),
-  verifiedHistory("CITRUS", "CREAMY", "COMPLEMENTARY_CONTRAST", 0.25, "category.citrus-creamy", "LOW", 3),
-  verifiedHistory("CITRUS", "SOUR", "COMPLEMENTARY_CONTRAST", 0.25, "category.citrus-sour", "LOW", 4),
-  verifiedHistory("BERRY", "SOUR", "COMPLEMENTARY_CONTRAST", 0.25, "category.berry-sour", "LOW", 4),
-  verifiedHistory("CANDY", "CREAMY", "COMPLEMENTARY_CONTRAST", 0.25, "category.candy-creamy", "LOW", 4),
+  // 2026-08 revision (recompute diagnostic, not a new pair): CITRUS+CREAMY (legacy DAIRY) recomputed
+  // at n=2 - below this project's own n>=3 minimum sample threshold (ADR-020). Downgraded to NEUTRAL
+  // and unwired (createKnowledgeCategoryRule("CITRUS","DAIRY") removed from compatibility-rules.ts) for
+  // that reason specifically - not because the ratio turned negative (the 2 samples were still
+  // positive), but because n no longer clears the bar this project's own methodology requires to say
+  // anything at all. sampleSize kept at the real recomputed value (2) for an honest audit trail;
+  // confidence is nominally "LOW" only because verifiedHistory() requires one of the three fixed tiers
+  // and none actually fit n=2 - do not read this as a real LOW-confidence claim.
+  verifiedHistory("CITRUS", "CREAMY", "NEUTRAL", 0, "category.citrus-creamy", "LOW", 2),
+  // 2026-08 revision (recompute diagnostic): tier moved LOW(n=4)->MEDIUM(n=5, recomputed), ratio 100%
+  // either way - same COMPLEMENTARY_CONTRAST type, only the confidence tier/evidence weight changes.
+  verifiedHistory("CITRUS", "SOUR", "COMPLEMENTARY_CONTRAST", 0.25, "category.citrus-sour", "MEDIUM", 5),
+  // 2026-08 revision (recompute diagnostic): tier moved LOW(n=4)->MEDIUM(n=7, recomputed), ratio 100%
+  // either way - same COMPLEMENTARY_CONTRAST type, only the confidence tier/evidence weight changes.
+  verifiedHistory("BERRY", "SOUR", "COMPLEMENTARY_CONTRAST", 0.25, "category.berry-sour", "MEDIUM", 7),
+  // 2026-08 revision (recompute diagnostic, not a new pair): CANDY+CREAMY (legacy DAIRY) recomputed at
+  // n=2 - below the n>=3 minimum, same situation and same caveat as CITRUS+CREAMY above.
+  verifiedHistory("CANDY", "CREAMY", "NEUTRAL", 0, "category.candy-creamy", "LOW", 2),
   verifiedHistory("BERRY", "TROPICAL", "COMPLEMENTARY_CONTRAST", 0.25, "category.berry-tropical", "MEDIUM", 5),
   verifiedHistory("CITRUS", "DESSERT", "COMPLEMENTARY_CONTRAST", 0.25, "category.citrus-dessert", "LOW", 4),
   verifiedHistory("BERRY", "DESSERT", "COMPLEMENTARY_CONTRAST", 0.25, "category.berry-dessert", "LOW", 3),
-  verifiedHistory("CANDY", "SOUR", "COMPLEMENTARY_CONTRAST", 0.25, "category.candy-sour", "MEDIUM", 5),
-  // Both NEUTRAL - notable mixed fraction relative to sample confidence (FRUIT+SOUR: 78% positive
-  // at MEDIUM n=9; FRUIT+NUT: 67% positive at MEDIUM n=7) - recorded for provenance like
-  // CITRUS+SPICE above, not wired via createKnowledgeCategoryRule (throws for NEUTRAL).
-  verifiedHistory("FRUIT", "SOUR", "NEUTRAL", 0, "category.fruit-sour", "MEDIUM", 9),
-  verifiedHistory("FRUIT", "NUT", "NEUTRAL", 0, "category.fruit-nut", "MEDIUM", 7),
+  // 2026-08 revision (recompute diagnostic): tier moved MEDIUM(n=5)->LOW(n=4, recomputed), ratio 100%
+  // either way - same COMPLEMENTARY_CONTRAST type, only the confidence tier/evidence weight changes.
+  verifiedHistory("CANDY", "SOUR", "COMPLEMENTARY_CONTRAST", 0.25, "category.candy-sour", "LOW", 4),
+  // FRUIT+NUT stays NEUTRAL - notable mixed fraction relative to sample confidence (recomputed: 75%
+  // positive at MEDIUM n=5, was 67% at n=7 - same NEUTRAL outcome either way, both below the 85%
+  // threshold) - recorded for provenance like CITRUS+SPICE above, not wired via
+  // createKnowledgeCategoryRule (throws for NEUTRAL).
+  verifiedHistory("FRUIT", "NUT", "NEUTRAL", 0, "category.fruit-nut", "MEDIUM", 5),
+  // 2026-08 revision (recompute diagnostic): ADR-020 originally recorded this as NEUTRAL (78% positive
+  // at MEDIUM n=9, below the 85% threshold for a MEDIUM-tier positive type). Re-running the exact same
+  // ADR-020 methodology on the same workbook/registry (both provably unchanged since - see the
+  // recompute diagnostic session) now gives 89% positive at the same MEDIUM tier (n=9) - this crosses
+  // the MEDIUM-tier 85% threshold into COMPLEMENTARY_CONTRAST. This is a revision of the ADR-020
+  // figure, not a new pair or a new methodology - see docs/adr/ADR-020 and the follow-up recompute
+  // diagnostic for the full before/after reconciliation (workbook file, identity decision registry and
+  // product categories were all confirmed unchanged; the original ADR-020 script itself was not
+  // preserved, so the exact source of the original figure could not be re-derived line by line).
+  verifiedHistory("FRUIT", "SOUR", "COMPLEMENTARY_CONTRAST", 0.25, "category.fruit-sour", "MEDIUM", 9),
 ];

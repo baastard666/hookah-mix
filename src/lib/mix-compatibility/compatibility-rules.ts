@@ -72,19 +72,25 @@ export const NOTE_COMPATIBILITY_RULES:readonly NoteCompatibilityRule[]=[
  createKnowledgeCategoryRule("HERBAL","DESSERT"),
  createKnowledgeCategoryRule("MINT","DAIRY"),
  createKnowledgeCategoryRule("CANDY","SMOKY"),
- // ADR-020 Step B: 13 of the 15 verified-mix-history pairs (FRUIT+SOUR and FRUIT+NUT are NEUTRAL -
+ // ADR-020 Step B: verified-mix-history pairs (NEUTRAL pairs are never wired here -
  // createKnowledgeCategoryRule() throws for NEUTRAL, same as CITRUS+SPICE in ADR-019).
  createKnowledgeCategoryRule("BERRY","FRUIT"),
  createKnowledgeCategoryRule("FRUIT","TROPICAL"),
  createKnowledgeCategoryRule("DESSERT","FRUIT"),
  createKnowledgeCategoryRule("CANDY","FRUIT"),
  createKnowledgeCategoryRule("COOLING","FRUIT"),
- createKnowledgeCategoryRule("CITRUS","DAIRY"),
+ // CITRUS+DAIRY (CREAMY) removed here 2026-08: recompute diagnostic dropped it to NEUTRAL (n=2, below
+ // the n>=3 minimum) - see the "2026-08 revision" comment on category.citrus-creamy in
+ // category-relations.ts. Was: createKnowledgeCategoryRule("CITRUS","DAIRY").
  createKnowledgeCategoryRule("CITRUS","SOUR"),
  createKnowledgeCategoryRule("BERRY","SOUR"),
- createKnowledgeCategoryRule("CANDY","DAIRY"),
+ // CANDY+DAIRY (CREAMY) removed here 2026-08: same reason and same diagnostic as CITRUS+DAIRY above -
+ // recomputed n=2, below the n>=3 minimum. Was: createKnowledgeCategoryRule("CANDY","DAIRY").
  createKnowledgeCategoryRule("BERRY","TROPICAL"),
  createKnowledgeCategoryRule("CITRUS","DESSERT"),
  createKnowledgeCategoryRule("BERRY","DESSERT"),
- createKnowledgeCategoryRule("CANDY","SOUR")
+ createKnowledgeCategoryRule("CANDY","SOUR"),
+ // 2026-08 revision (recompute diagnostic): FRUIT+SOUR moved from NEUTRAL to COMPLEMENTARY_CONTRAST -
+ // see the matching comment on category.fruit-sour in category-relations.ts for the full rationale.
+ createKnowledgeCategoryRule("FRUIT","SOUR")
 ];

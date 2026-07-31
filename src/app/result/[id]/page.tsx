@@ -10,6 +10,9 @@ import RecommendationSection from "../recommendation-section";
 
 export const dynamic = "force-dynamic";
 const labels = { strength: "Крепость", sweetness: "Сладость", acidity: "Кислотность", freshness: "Свежесть", creaminess: "Сливочность", bitterness: "Горечь" } as const;
+// ADR-025: human-readable phrasing for the numeric-risk tooltip - "Жаростойкость сильно различается: 9
+// vs 3", not the raw field name/Δ, per the ADR's explicit explainability requirement.
+const numericRiskPhrase = { heatResistance: "Жаростойкость сильно различается", strength: "Крепость сильно различается" } as const;
 
 export default async function Result({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -65,7 +68,7 @@ export default async function Result({ params }: { params: Promise<{ id: string 
         <RecommendationSection actions={presentation.actions} status={presentation.recommendationStatus} suggestedVariant={presentation.suggestedVariant} componentNames={componentNames} proposalComparison={presentation.proposalComparison} currentBuilderHref={currentBuilderHref} proposedBuilderHref={proposedBuilderHref}/>
       </div>
       <aside className="result-column">
-        {presentation.risks.length > 0 && <section className="card"><div className="eyebrow">Риски</div><div className="risk-list">{presentation.risks.map(risk => <article className="risk-item" key={risk.id}><div className="recommendation-title"><h3>{risk.title}</h3><span className={`priority priority-${risk.level.toLocaleLowerCase("ru-RU")}`}>{risk.level}</span></div><p><b>Причина:</b> {risk.reason}</p><p><b>Что делать:</b> {risk.recommendation}</p></article>)}</div></section>}
+        {presentation.risks.length > 0 && <section className="card"><div className="eyebrow">Риски</div><div className="risk-list">{presentation.risks.map(risk => <article className="risk-item" key={risk.id}><div className="recommendation-title"><h3>{risk.title}</h3><span className={`priority priority-${risk.level.toLocaleLowerCase("ru-RU")}`}>{risk.level}</span></div><p><b>Причина:</b> {risk.reason}</p><p><b>Что делать:</b> {risk.recommendation}</p></article>)}</div>{presentation.matchedNumericRisks.length > 0 && <div className="numeric-risk-tooltip" tabIndex={0} aria-describedby="numeric-risk-explanation"><span className="numeric-risk-badge">Через какие числовые значения сработало ⓘ</span><div className="numeric-risk-tooltip-content" role="tooltip" id="numeric-risk-explanation"><ul className="compact-list">{presentation.matchedNumericRisks.map(risk => <li key={risk.ruleId}>{numericRiskPhrase[risk.field]}: {risk.componentAValue} vs {risk.componentBValue}</li>)}</ul></div></div>}</section>}
         <section className="card"><div className="eyebrow">Приготовление</div><h3>{presentation.preparation.sourceLabel}</h3><p className="preparation-line">{mix.bowlType} · {mix.coalCount} угля · прогрев&nbsp;{mix.warmupMinutes}&nbsp;мин.</p>{presentation.preparation.recommendations.map(item => <p key={item}>→ {item}</p>)}</section>
       </aside>
     </div>

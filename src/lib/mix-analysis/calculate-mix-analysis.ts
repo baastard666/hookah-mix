@@ -9,7 +9,10 @@ const analyzeBase = (input: MixAnalysisInput): BaseAnalysis => {
   const canonicalMix = prepareCanonicalMix(input.components);
   if (canonicalMix.components.length < 2) throw new Error("После canonical-нормализации микс должен содержать минимум два разных компонента");
   const mixProfile = calculateMixProfile(canonicalMix.components);
-  const compatibility = calculateMixCompatibility({ mixProfile, componentIntensities: canonicalMix.components.map(component => ({ flavorId: component.flavorId, intensity: resolveComponentIntensity(component.profile.intensity) })) });
+  // ADR-025: numeric RISKY rules read the same effective (post-fallback, null-preserving per ADR-023)
+  // per-component profile already used everywhere else - not a separate registry/DB lookup.
+  const numericProfiles = canonicalMix.components.map(component => ({ flavorId: component.flavorId, heatResistance: component.effectiveProfile.profile.heatResistance, strength: component.effectiveProfile.profile.strength }));
+  const compatibility = calculateMixCompatibility({ mixProfile, componentIntensities: canonicalMix.components.map(component => ({ flavorId: component.flavorId, intensity: resolveComponentIntensity(component.profile.intensity) })), numericProfiles });
   const recommendations = calculateMixRecommendations({ components: canonicalMix.components, mixProfile, compatibility });
   const scoring = calculateCanonicalMixScore({ preparedMix: canonicalMix, compatibility, verifiedSmokeScore: input.verifiedSmokeScore });
   return { canonicalMix, mixProfile, compatibility, recommendations, scoring };

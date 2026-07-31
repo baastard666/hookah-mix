@@ -2,6 +2,7 @@ export * from "./types";
 export * from "./constants";
 export * from "./compatibility-rules";
 export * from "./analyze-note-compatibility";
+export * from "./analyze-numeric-risk";
 export * from "./analyze-profile-balance";
 export * from "./analyze-intensity-balance";
 export * from "./analyze-proportions";

@@ -105,3 +105,37 @@ describe("обязательные миксы",()=>{
  it("40. Coffee 40% + Banana Shake 60%",()=>{const result=coffeeBanana();hasRule(result,"note.coffee-banana");expect(rules(result).some(id=>id==="note.coffee-dairy"||id==="note.coffee-vanilla")).toBe(true);expect(result.compatibilityScore).toBeGreaterThanOrEqual(6.5);expect(result.positiveFactors.length).toBeGreaterThan(0);expect(result).toEqual(coffeeBanana())});
  it("41. Mint 20% + Cola 40% + Lemon 40%",()=>{const result=mintColaLemon();hasRule(result,"note.lemon-cola");expect(rules(result).some(id=>id==="note.mint-citrus"||id==="note.mint-drink")).toBe(true);expect(result.summaryTags.some(tag=>["DRINK","CITRUS","FRESH","COOLING"].includes(tag))).toBe(true);expect(result.compatibilityScore).toBeGreaterThanOrEqual(6.5);expect(result.positiveFactors.some(item=>item.ruleId==="profile.fresh-juicy")).toBe(true);expect(result).toEqual(mintColaLemon());hasRule(mintColaLemon(10),"profile.extreme-cooling")});
 });
+
+describe("числовые risky-правила (ADR-025)",()=>{
+ // ADR-025: numericProfiles is optional on MixCompatibilityInput specifically so every test above (none
+ // of which pass it) keeps compiling and behaving exactly as before - these are the only tests that do.
+ const withNumeric=(components:MixProfileComponentInput[],numericProfiles:{flavorId:number|string;heatResistance:number|null;strength:number|null}[])=>
+  calculateMixCompatibility({mixProfile:calculateMixProfile(components),componentIntensities:components.map(c=>({flavorId:c.flavorId,intensity:resolveComponentIntensity(c.profile.intensity)})),numericProfiles});
+
+ it("42. heatResistance: Overdose Masala Tea (9) + Chabacco Mix Апельсин-сливки (3) даёт RISKY через numeric.heat-resistance-diff",()=>{
+  const result=withNumeric([component(1,50),component(2,50)],[{flavorId:1,heatResistance:9,strength:5},{flavorId:2,heatResistance:3,strength:5}]);
+  expect(result.noteCompatibility.appliedRules.map(rule=>rule.ruleId)).toContain("numeric.heat-resistance-diff");
+  expect(result.matchedNumericRisks).toContainEqual({field:"heatResistance",componentAValue:9,componentBValue:3,ruleId:"numeric.heat-resistance-diff"});
+ });
+
+ it("43. strength: BlackBurn На расслабоне (8) + JAM Арбузный рондо (2) даёт RISKY через numeric.strength-diff",()=>{
+  const result=withNumeric([component(1,50),component(2,50)],[{flavorId:1,heatResistance:5,strength:8},{flavorId:2,heatResistance:5,strength:2}]);
+  expect(result.noteCompatibility.appliedRules.map(rule=>rule.ruleId)).toContain("numeric.strength-diff");
+  expect(result.matchedNumericRisks).toContainEqual({field:"strength",componentAValue:8,componentBValue:2,ruleId:"numeric.strength-diff"});
+ });
+
+ it("44. Δ<4 по обоим полям - ни одно numeric-правило не срабатывает",()=>{
+  const result=withNumeric([component(1,50),component(2,50)],[{flavorId:1,heatResistance:9,strength:5},{flavorId:2,heatResistance:6,strength:3}]);
+  expect(result.noteCompatibility.appliedRules.map(rule=>rule.ruleId)).not.toContain("numeric.heat-resistance-diff");
+  expect(result.noteCompatibility.appliedRules.map(rule=>rule.ruleId)).not.toContain("numeric.strength-diff");
+  expect(result.matchedNumericRisks).toEqual([]);
+ });
+
+ it("45. null у одного компонента - правило не падает и не засчитывает пару как risky",()=>{
+  const result=withNumeric([component(1,50),component(2,50)],[{flavorId:1,heatResistance:null,strength:5},{flavorId:2,heatResistance:9,strength:5}]);
+  expect(result.noteCompatibility.appliedRules.map(rule=>rule.ruleId)).not.toContain("numeric.heat-resistance-diff");
+  expect(result.matchedNumericRisks).toEqual([]);
+ });
+
+ it("не меняет существующие категориальные тесты - numericProfiles не переданы, numeric-правила не участвуют",()=>expect(analyze([component(1,40),component(2,60)]).matchedNumericRisks).toEqual([]));
+});

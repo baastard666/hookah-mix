@@ -24,6 +24,7 @@ const emptyCompatibility: MixCompatibilityResult = {
   warnings: [],
   conflicts: [],
   summaryTags: [],
+  matchedNumericRisks: [],
   metadata: { calculationVersion: "mix-compatibility-v1", inputProfileVersion: "mix-profile-v1", positiveRuleCount: 0, warningCount: 0, conflictCount: 0 },
 };
 

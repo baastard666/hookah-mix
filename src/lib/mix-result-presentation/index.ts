@@ -172,6 +172,9 @@ const buildHeatRisk = (legacy: MixAnalysis, options: { bowlType: string; coalCou
 };
 
 const riskRecommendation = (ruleId: string): string => {
+  // ADR-025: numeric RISKY rules - practical, mechanism-specific advice rather than the generic fallback.
+  if (ruleId === "numeric.heat-resistance-diff") return "Разложите табак с более высокой жаростойкостью наверх чаши, а с более низкой - вниз, либо подберите пару с более близкой жаростойкостью.";
+  if (ruleId === "numeric.strength-diff") return "Уменьшите долю более крепкого компонента, чтобы он не забивал лёгкий, либо подберите пару с более близкой крепостью.";
   if (ruleId.includes("cooling")) return "Снизьте долю холодного компонента или сделайте его лёгким акцентом.";
   if (ruleId.includes("acidity") || ruleId.includes("sour")) return "Уменьшите долю кислого направления на 5–10% и перепроверьте баланс.";
   if (ruleId.includes("domin") || ruleId.includes("bright") || ruleId.includes("overload") || ruleId.includes("extreme")) return "Снизьте долю самого интенсивного компонента на 5–10%.";
@@ -338,6 +341,10 @@ export const buildMixResultPresentation = (input: {
     },
     strengths,
     matchedCategoryPairs,
+    // ADR-025: pass-through, not re-derived - unlike matchedCategoryPairs (static ruleId->{left,right}
+    // lookup), the concrete component values here are per-mix runtime data already computed at scoring
+    // time (evaluateNumericRiskRules), so there's nothing to re-scan for.
+    matchedNumericRisks: analysis.compatibility.matchedNumericRisks,
     risks,
     actions: deduplicateRecommendations(analysis.recommendations).map(item => toPublicRecommendation(
       item,

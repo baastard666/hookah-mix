@@ -5,7 +5,7 @@ import { groupCompatibilityRisks } from "./risk-groups";
 const warning = (ruleId: string, impact: number, componentId: string): AnalysisFactor => ({ id: ruleId, category: "PROPORTION_BALANCE", title: ruleId, description: ruleId, impact, relatedNotes: [], relatedComponents: [componentId], ruleId });
 const compatibility = (warnings: AnalysisFactor[]): MixCompatibilityResult => ({
   compatibilityScore: 7, noteCompatibility: { score: 7, positiveFactors: [], warnings: [], appliedRules: [], conflicts: [] }, profileBalance: { score: 7, positiveFactors: [], warnings: [], appliedRules: [], conflicts: [] }, intensityBalance: { score: 7, positiveFactors: [], warnings: [], appliedRules: [], conflicts: [] }, proportionBalance: { score: 7, positiveFactors: [], warnings, appliedRules: [], conflicts: [] },
-  positiveFactors: [], warnings, conflicts: [], summaryTags: [], metadata: { calculationVersion: "mix-compatibility-v1", inputProfileVersion: "mix-profile-v1", positiveRuleCount: 0, warningCount: warnings.length, conflictCount: 0 },
+  positiveFactors: [], warnings, conflicts: [], summaryTags: [], matchedNumericRisks: [], metadata: { calculationVersion: "mix-compatibility-v1", inputProfileVersion: "mix-profile-v1", positiveRuleCount: 0, warningCount: warnings.length, conflictCount: 0 },
 });
 
 describe("canonical risk grouping", () => {

@@ -432,3 +432,24 @@
 **Тесты:** Vitest **1088/1088 passed, 32 файла** (без изменения количества — переписаны существующие тесты 80–82, не добавлены новые); `tsc --noEmit` — чисто; `eslint .` — чисто.
 
 **Осталось:** ничего по этой задаче. Коммит — по отдельному запросу пользователя (ещё не поступил на момент этой записи).
+
+## 2026-07-31 — ADR-025: первые числовые (не категориальные) RISKY-правила (heatResistance, strength)
+
+**Контекст:** аудит по числовым профилям (7 полей ADR-014) вместо категорий нашёл 2 многообещающих кандидата — `heatResistance`-diff (32% охват пар, физически обоснован внешними источниками) и `strength`-diff (95% охват, лучший среди всех 7 полей). Отдельный анализ полной гистограммы Δ (не только топ-20) нашёл структурный разрыв на границе Δ=3→4 у обоих полей независимо (3.19× и 4.02× падение объёма) — порог Δ≥4 обоснован статистически, внешней количественной шкалы жаростойкости не нашлось (проверено отдельно).
+
+**Реализовано (ADR-025):** новый evidence-tier `statisticalThreshold()`/`NUMERIC_RISK_RULES` в новом `src/lib/flavor-knowledge/numeric-risk-rules.ts` (2 правила, `baseScore=-0.4`, порог Δ≥4, evidence-префикс `evidence.statistical-threshold.*` — намеренно НЕ переиспользует HIGH/MEDIUM/LOW). Новая функция `evaluateNumericRiskRules` в `mix-compatibility/analyze-numeric-risk.ts` — отдельный проход по эффективному (`effectiveProfile.profile`, ADR-023 null-safe) профилю компонентов, не смешан с категориальным циклом `analyzeNoteCompatibility`; читает `numericProfiles` (новое опциональное поле `MixCompatibilityInput`, threaded из `calculate-mix-analysis.ts`). Результат вливается в существующий блок `noteCompatibility` (не новый top-level scored-блок — избежало пересчёта `COMPATIBILITY_WEIGHTS`). Новое поле `matchedNumericRisks` на `MixCompatibilityResult`/`MixResultPresentation` (pass-through) + CSS-only tooltip в «Риски» (`page.tsx`, классы `.numeric-risk-*`, паттерн ADR-022/024). Числовое срабатывание автоматически попадает и в обычный список «Риски» — `groupCompatibilityRisks` уже обобщён по `impact<0`, без правок.
+
+Проверено на реальной паре из каталога (Overdose Masala Tea heatResistance=9/strength=8 + Chabacco Mix Апельсин-сливки heatResistance=3/strength=3): оба правила сработали корректно, `matchedNumericRisks` и текст в «Риски» — читаемые, с конкретными значениями.
+
+**Файлы:**
+- создано: `src/lib/flavor-knowledge/numeric-risk-rules.ts`, `src/lib/mix-compatibility/analyze-numeric-risk.ts`, `docs/adr/ADR-025-chislovye-risky-pravila.md`;
+- изменено: `src/lib/flavor-knowledge/index.ts`, `src/lib/mix-compatibility/{types,calculate-compatibility,index}.ts`, `src/lib/mix-analysis/calculate-mix-analysis.ts`, `src/lib/mix-result-presentation/index.ts`, `src/app/result/[id]/page.tsx`, `src/app/globals.css`, `docs/adr/README.md`; тесты — `src/lib/mix-compatibility/compatibility.test.ts` (+5), `src/lib/mix-result-presentation/mix-result-presentation.test.ts` (+1); механические фикстуры под новое обязательное поле — `src/lib/canonical-mix-scoring/{calculate-canonical-mix-score,risk-groups}.test.ts` (`matchedNumericRisks: []`, поведение не менялось);
+- не изменено: `category-relations.ts`, `CATEGORY_RELATIONS`, категориальные правила и их тесты.
+
+**Тесты:** Vitest **1094/1094 passed, 32 файла** (+6); `tsc --noEmit` — чисто; `eslint .` — чисто.
+
+**Осталось:** ничего по этой задаче. Коммит — по отдельному запросу пользователя.
+
+## 2026-07-31 — создан CLAUDE.md: язык чата/документации/ADR/коммитов — русский
+
+По прямому запросу пользователя проверено (несколькими способами: `find`, `dir /s /b`, `git log --all --full-history`) — файл `CLAUDE.md` никогда не существовал в репозитории. Создан `CLAUDE.md` в корне с явным правилом: чат, документация, ADR и сообщения коммитов — на русском (ранее устно применялось «документация на русском, коммиты на английском» — с этого момента отменено, коммиты тоже на русском).

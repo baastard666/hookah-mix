@@ -2,6 +2,8 @@ export { FLAVOR_NOTE_CATEGORIES, KNOWLEDGE_VERSION } from "./constants";
 export { FLAVOR_KNOWLEDGE_REGISTRY } from "./registry";
 export { toKnowledgeCategory, toLegacyCategory } from "./note-taxonomy";
 export { categoryLabels } from "./category-labels";
+export { NUMERIC_RISK_RULES } from "./numeric-risk-rules";
+export type { NumericRiskDirection, NumericRiskField, NumericRiskRule, NumericRiskRuleType } from "./numeric-risk-rules";
 export { calculateKnowledgeConfidence } from "./confidence";
 export { assertValidKnowledgeRegistry, validateEvidence, validateKnowledgeRegistry, KnowledgeValidationError } from "./validation";
 export {

@@ -202,4 +202,12 @@ describe("v0.3.3 corrective public presentation", () => {
     ]);
     expect(result.matchedCategoryPairs).toContainEqual({ left: "CREAMY", right: "FRUIT", ruleId: "category.creamy-fruit" });
   });
+  it("49. ADR-025: exposes a matched numeric risk for a heatResistance mismatch (Overdose Masala Tea heatResistance=9 + Chabacco Mix Апельсин-сливки heatResistance=3)", () => {
+    const result = present([
+      component("Overdose", "Masala Tea", 50, { profile: profile({ heatResistance: 9 }) }),
+      component("Chabacco", "Mix Апельсин-сливки", 50, { profile: profile({ heatResistance: 3 }) }),
+    ]);
+    expect(result.matchedNumericRisks).toContainEqual({ field: "heatResistance", componentAValue: 9, componentBValue: 3, ruleId: "numeric.heat-resistance-diff" });
+    expect(result.risks.some(risk => risk.recommendation.includes("жаростойкостью"))).toBe(true);
+  });
 });

@@ -20,8 +20,10 @@ export const applyIdentityDecisionsToExpertMixKnowledge = (
       if (lookup.status !== "FOUND") return component;
       const decision = lookup.decision.decision;
       if (decision.status === "RESOLVED" && decision.canonicalProductId && decision.manufacturerId && decision.canonicalProductName) {
+        const { productLineId: _previousProductLineId, ...withoutPreviousProductLine } = component;
+        void _previousProductLineId;
         return {
-          ...component,
+          ...withoutPreviousProductLine,
           identityStatus: "RESOLVED" as const,
           canonicalProductId: decision.canonicalProductId,
           manufacturerId: decision.manufacturerId,

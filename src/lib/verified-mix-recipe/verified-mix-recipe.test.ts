@@ -157,13 +157,14 @@ describe("Verified Mix Recipe Registry", () => {
   });
 
   it("накладывает только точные identity decisions на импортированные knowledge records", () => {
-    const source = record({ components: [component("Old Alpha", "legacy-alpha", 1, 60), component("Old Beta", "legacy-beta", 2, 40)] });
+    const source = record({ components: [component("Old Alpha", "legacy-alpha", 1, 60, { productLineId: "legacy-line" }), component("Old Beta", "legacy-beta", 2, 40)] });
     const staged = [
       { componentId: source.components[0]!.componentId, manufacturer: "Brand A", productLine: null, productName: "Alpha" },
       { componentId: source.components[1]!.componentId, manufacturer: "Brand B", productLine: null, productName: "Beta" },
     ] as unknown as readonly NormalizedMixComponentStagingRecord[];
     const applied = applyIdentityDecisionsToExpertMixKnowledge([source], staged, decisionRegistry);
     expect(applied[0]?.components.map(component => component.canonicalProductId)).toEqual([alphaId, betaId]);
+    expect(applied[0]?.components[0]?.productLineId).toBeUndefined();
     expect(createVerifiedMixRecipeRegistry(applied, decisionRegistry).size).toBe(1);
   });
 });

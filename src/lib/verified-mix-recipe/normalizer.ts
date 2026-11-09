@@ -59,7 +59,13 @@ const evaluationFor = (record: ExpertMixKnowledgeRecord): VerifiedMixRecipeEvalu
 export const normalizeVerifiedMixRecipe = (record: ExpertMixKnowledgeRecord): VerifiedMixRecipe => {
   const components = record.components.map(component => {
     if (component.proportion?.type !== "PERCENT" || !component.canonicalProductId) throw new Error(`Нельзя нормализовать неполный verified recipe ${record.id}.`);
-    return { canonicalProductId: component.canonicalProductId, percentage: component.proportion.value, role: component.role ?? null, position: component.position };
+    return {
+      canonicalProductId: component.canonicalProductId,
+      percentage: component.proportion.value,
+      role: component.role ?? null,
+      roleOrigin: component.roleOrigin ?? null,
+      position: component.position,
+    };
   }).sort((left, right) => left.position - right.position || left.canonicalProductId.localeCompare(right.canonicalProductId, "en"));
   const totalPercentage = components.reduce((sum, component) => sum + component.percentage, 0);
   const verification = verificationFor(record);

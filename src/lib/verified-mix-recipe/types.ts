@@ -5,6 +5,7 @@ import type {
   ExpertMixKnowledgeRecord,
   ExpertMixPreparation,
   ExpertMixVerdict,
+  KnowledgeOrigin,
 } from "../expert-mix-knowledge";
 
 export type VerifiedMixRecipeSkipCode =
@@ -38,6 +39,7 @@ export type VerifiedMixRecipeComponent = {
   readonly canonicalProductId: string;
   readonly percentage: number;
   readonly role: ExpertMixComponentRole | null;
+  readonly roleOrigin: KnowledgeOrigin | null;
   readonly position: number;
 };
 

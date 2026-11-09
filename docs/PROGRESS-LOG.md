@@ -463,3 +463,12 @@
 ## 2026-07-31 — создан CLAUDE.md: язык чата/документации/ADR/коммитов — русский
 
 По прямому запросу пользователя проверено (несколькими способами: `find`, `dir /s /b`, `git log --all --full-history`) — файл `CLAUDE.md` никогда не существовал в репозитории. Создан `CLAUDE.md` в корне с явным правилом: чат, документация, ADR и сообщения коммитов — на русском (ранее устно применялось «документация на русском, коммиты на английском» — с этого момента отменено, коммиты тоже на русском).
+## 2026-11-09 — Mix Analysis v2 для Verified Mix Recipes
+
+**Реализовано:** создан `src/lib/verified-mix-analysis/` — DB-independent composition layer поверх существующего `calculateMixAnalysis`. `buildCanonicalMixInputFromVerifiedRecipe` использует только exact `TobaccoIdentityDecisionRegistry` и `ProductFlavorProfileRegistry`; Prisma/source profile отключён. Семь evidence-backed dimensions передаются как `CANONICAL_PRODUCT_PROFILE`, `sourness` мапится в `acidity`, остальные 11 полей остаются `null`. `dominantNoteIds` преобразуются только в generic category notes, без выдумывания конкретных вкусов.
+
+**Честность данных:** `proportionsConfirmed`, independent evidence и numeric smoke score передаются только из recipe. VERIFIED не создаёт quality/confidence bonus. Result разделяет `predicted` и `observed`; public DTO не содержит sourceRecordId, evidence IDs, workbook rows, private URL, decision IDs или debug data. Source-stated role не смешивается с recorded/engine-inferred role.
+
+**Audit:** новый `verify:verified-mix-analysis` read-only прогнал 28 eligible recipes / 71 component. Exact identity и Product Flavor Profile coverage — 100%. SHA-256 workbook до/после `AFBEB062EF5B23AC0340E8D5F15AD9E20FF41A6892146915E8FC8BB1008E2E8B`, размер 317765 bytes. Во всех recipes есть отсутствующие из 18 параметров — они сохраняются как `null`; это не fake neutral 5. Score distribution диагностирован без изменения формул. Reports в `reports/verified-mix-analysis-audit.{json,md}` ignored.
+
+**Документация:** добавлены `docs/architecture/verified-mix-analysis.md` и ADR-027. Следующий продуктовый приоритет — `/mixes` и `/mixes/[slug]`.

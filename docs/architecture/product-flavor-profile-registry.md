@@ -2,7 +2,7 @@
 
 ## Назначение
 
-Product Flavor Profile Registry — независимый read-only справочник числовых вкусовых характеристик для уже разрешённых (`RESOLVED`) канонических продуктов из Tobacco Identity Decision Registry. Он не заменяет и не расширяет Flavor Knowledge Layer: там хранится таксономия категорий и нот, здесь — числовые измерения конкретного товара с evidence и confidence. В v0.3.5 registry не подключён к `calculateMixAnalysis`, scoring или UI.
+Product Flavor Profile Registry — независимый read-only справочник числовых вкусовых характеристик для уже разрешённых (`RESOLVED`) канонических продуктов из Tobacco Identity Decision Registry. Он не заменяет и не расширяет Flavor Knowledge Layer: там хранится таксономия категорий и нот, здесь — числовые измерения конкретного товара с evidence и confidence. С Mix Analysis v2 registry используется как sensory source для read-only analysis `VerifiedMixRecipe`; он по-прежнему не меняет Prisma, scoring weights или UI.
 
 Целевая модель измерений зафиксирована [ADR-014](../adr/ADR-014-product-flavor-profile-dimension-scope.md): ровно 7 измерений (`sweetness`, `sourness`, `freshness`, `intensity`, `strength`, `heatResistance`, `juiciness`) из 18 числовых полей будущей модели Prisma `Flavor` — только те, для которых существует реальный класс evidence (официальные страницы производителей, HTReviews, независимые обзоры). Остальные 11 Prisma-полей (`cooling`, `creaminess`, `bitterness`, `dessertLevel`, `spiceLevel`, `floralLevel`, `herbalLevel`, `smokyLevel`, `dryness`, `naturalness`, `persistence`) намеренно не входят в `FlavorDimensionId` — не как временно неиспользуемая опция, а как явно исключённые: при молчании источника присвоение им значения было бы угадыванием.
 
@@ -58,6 +58,6 @@ ProductFlavorProfile
 
 - Покрыты **все 86 из 86** `RESOLVED` продуктов (батчи 1–6) — регистратура полностью заполнена, очередь приоритизации пуста. Проверено прямой сверкой множества `canonicalProductId` в registry с полным списком `RESOLVED`-решений Tobacco Identity Decision Registry.
 - Целевая модель — 7 из 18 будущих Prisma-полей `Flavor` (ADR-014); остальные 11 явно исключены из registry, а не отложены. Все 86 продуктов доведены до полной 7-полевой модели с учётом реальной доступности evidence (271 из 602 возможных значений заполнено, 45% — доля объясняется отсутствием независимого источника для многих измерений, а не пропуском работы); для Hook и Husky `heatResistance` не найден ни для одного продукта ни в одном батче, `juiciness` заполнен только там, где источник явно использует слово «сочный»/«juicy».
-- Registry не подключён к Mix Profile, Compatibility, Recommendation, Canonical Mix Scoring или UI — это отдельная будущая интеграция.
+- Registry подключён только через `src/lib/verified-mix-analysis/` как `CANONICAL_PRODUCT_PROFILE` candidate для existing Mix Analysis Engine. Обычные Prisma-driven Mix Profile/Compatibility/Recommendation и UI не переписаны; отдельной future работой остаётся их продуктовая подача в `/mixes`.
 - Flavor Knowledge Layer не расширен новыми категориями; `dominantNoteIds` используют только существующий список.
 - Prisma schema, миграции и Tobacco Identity Decision Registry не изменены.

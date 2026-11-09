@@ -1,15 +1,18 @@
 import { FLAVOR_PROFILE_FIELDS } from "../flavors/types";
 import type { FlavorProfile, FlavorProfileField } from "../flavors/types";
 import { resolveTobaccoProfile } from "../tobacco-profile";
-import type { ConfidenceLevel, HeatResistance, StrengthLevel } from "../tobacco-profile";
-import { clamp, PROFILE_SOURCE_PRIORITY, round } from "./constants";
+import type { HeatResistance, StrengthLevel } from "../tobacco-profile";
+import { clamp, PROFILE_CONFIDENCE_RELIABILITY_SCORE, PROFILE_SOURCE_PRIORITY, round } from "./constants";
 import type { CanonicalMixComponentInput, EffectiveParameter, EffectiveProfileCandidate, EffectiveProfileReliability, EffectiveProfileSource, EffectiveTobaccoProfile, MixComponentResolution } from "./types";
 
 const neutralProfile = (): FlavorProfile => Object.fromEntries(FLAVOR_PROFILE_FIELDS.map(field => [field, 5])) as FlavorProfile;
-const confidenceScore: Readonly<Record<ConfidenceLevel, number>> = { LOW: 35, MEDIUM: 65, HIGH: 90 };
 const strengthValue: Readonly<Record<StrengthLevel, number | null>> = { LOW: 2, MEDIUM_LOW: 4, MEDIUM: 6, MEDIUM_HIGH: 8, HIGH: 9, UNKNOWN: null };
 const heatValue: Readonly<Record<HeatResistance, number | null>> = { LOW: 3, MEDIUM: 6, HIGH: 9, UNKNOWN: null };
 const reliabilityLabel = (score: number): EffectiveProfileReliability => score >= 75 ? "HIGH" : score >= 45 ? "MEDIUM" : "LOW";
+// A low-reliability canonical candidate remains below a stronger external
+// aggregate. Verified recipe analysis supplies no source/aggregate candidate,
+// so its product registry remains the sensory source-of-truth there; this
+// general precedence rule keeps the existing engine contract intact.
 const sourcePriority = (source: EffectiveProfileSource, reliabilityScore: number): number =>
   source === "CANONICAL_PRODUCT_PROFILE" && reliabilityScore < 75 ? PROFILE_SOURCE_PRIORITY.PRELIMINARY_PROFILE : PROFILE_SOURCE_PRIORITY[source];
 
@@ -28,7 +31,7 @@ const technicalCandidate = (resolution: MixComponentResolution): EffectiveProfil
   if (strength !== null) profile.strength = strength;
   if (heat !== null) profile.heatResistance = heat;
   if (!Object.keys(profile).length) return null;
-  return { type: "CANONICAL_TECHNICAL_PROFILE", profileId: `technical:${technical.manufacturer}:${technical.productLine ?? "manufacturer"}`, profile, reliabilityScore: confidenceScore[technical.dataConfidence] };
+  return { type: "CANONICAL_TECHNICAL_PROFILE", profileId: `technical:${technical.manufacturer}:${technical.productLine ?? "manufacturer"}`, profile, reliabilityScore: PROFILE_CONFIDENCE_RELIABILITY_SCORE[technical.dataConfidence] };
 };
 
 const fallbackNote = (component: CanonicalMixComponentInput) => {

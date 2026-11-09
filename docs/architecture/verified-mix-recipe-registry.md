@@ -10,10 +10,11 @@ Excel (read-only)
   -> exact Tobacco Identity Decisions adapter
   -> strict eligibility
   -> VerifiedMixRecipeRegistry
-  -> будущие analysis/scoring/UI consumers
+  -> Verified Mix Analysis composition layer
+  -> будущие /mixes UI consumers
 ```
 
-На текущем этапе реестр **не подключён** к `calculateMixAnalysis`, confidence, scoring, рекомендациям или интерфейсу. Он не меняет ни оценок, ни весов, ни существующих compatibility relations.
+Реестр подключён к существующему `calculateMixAnalysis` только через отдельный read-only composition layer `src/lib/verified-mix-analysis/` (ADR-027). Он не меняет ни оценок, ни весов, ни существующих compatibility relations и не подключён к интерфейсу.
 
 ## Строгая пригодность
 
@@ -69,4 +70,4 @@ Excel (read-only)
 
 ## Границы
 
-Реестр не создаёт Prisma model/migration, не меняет seed, каталог, Product Flavor Profile Registry, Tobacco Identity Decisions, Excel или UI. Future work: отдельное решение о том, когда verified recipes могут влиять на confidence/scoring; затем анализ рецептов, каталог `/mixes`, страницы рецептов, similar mixes и feedback.
+Реестр не создаёт Prisma model/migration, не меняет seed, каталог, Tobacco Identity Decisions, Excel или UI. Product Flavor Profile Registry используется новым analysis adapter как canonical sensory source; сам registry не переписывается. Future work: каталог `/mixes`, страницы рецептов, similar mixes и feedback.

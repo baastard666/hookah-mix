@@ -1,5 +1,29 @@
 # CODEX HANDOFF — hookah-mix
 
+## CURRENT STATE — 2026-11-09
+
+Завершён Mix Analysis v2 для Verified Mix Recipes: `src/lib/verified-mix-analysis/` адаптирует 28 exact `VerifiedMixRecipe` к существующему `calculateMixAnalysis` без Prisma/PostgreSQL как sensory source-of-truth. Числовые данные приходят из Product Flavor Profile Registry (7 evidence-backed dimensions), остальные 11 полей `FlavorProfile` остаются `null`. VERIFIED не создаёт quality/confidence/evidence/smoke-score bonus; predicted и observed разделены.
+
+## CURRENT BRANCH
+
+`feature/mix-analysis-v2`. Точный HEAD всегда проверять через `git rev-parse HEAD`.
+
+## CURRENT BASELINE
+
+`pnpm verify:verified-mix-analysis` анализирует 28 recipes и 71 component без ошибок, 100% exact identity + product profile coverage, SHA workbook `AFBEB062EF5B23AC0340E8D5F15AD9E20FF41A6892146915E8FC8BB1008E2E8B`, 317765 bytes до/после. Reports в `reports/` ignored.
+
+## COMPLETED
+
+После исторических v0.3.3/v0.3.5 завершены Verified Mix Recipe Registry (ADR-026) и Verified Recipe → Mix Analysis wiring (ADR-027). `main` не менялся этой feature-итерацией.
+
+## NEXT TASK
+
+При отсутствии отдельного решения об изменении scoring — каталог `/mixes` и `/mixes/[slug]` на public-safe `VerifiedRecipeAnalysis` DTO.
+
+## HISTORICAL NOTES
+
+Блоки ниже сохранены для контекста, но не заменяют current state, branch и baseline выше.
+
 ## 1. Назначение и текущее состояние
 
 `hookah-mix` — MVP веб-приложения для составления и детерминированного анализа кальянных миксов. Пользователь выбирает 2–5 табаков, задаёт проценты, чашу, угли и прогрев; приложение показывает рассчитанный профиль, совместимость, конфликты, риск перегрева и рекомендации.

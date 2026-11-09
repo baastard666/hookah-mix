@@ -2,6 +2,10 @@ import type { EffectiveProfileSource } from "./types";
 
 export const CANONICAL_MIX_SCORING_VERSION = "canonical-mix-scoring-v1" as const;
 export const MIX_SCORE_WEIGHTS = Object.freeze({ compatibility: 0.25, proportions: 0.2, componentQuality: 0.2, balance: 0.15, risks: 0.1, confirmations: 0.1 });
+// A single conversion table for evidence confidence used by both technical and
+// product-sensory canonical profiles. It deliberately expresses confidence,
+// not a recipe-specific bonus.
+export const PROFILE_CONFIDENCE_RELIABILITY_SCORE = Object.freeze({ LOW: 35, MEDIUM: 65, HIGH: 90 });
 export const PROFILE_SOURCE_PRIORITY: Readonly<Record<EffectiveProfileSource, number>> = Object.freeze({
   USER_SMOKE: 7,
   INTERNAL_TEST: 6,

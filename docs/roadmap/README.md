@@ -15,14 +15,13 @@
 - v0.3.3 Canonical Mix Scoring Integration
 - v0.3.5 Product Flavor Profile Registry (батчи 1–6 — 86 из 86 `RESOLVED` продуктов, регистратура полностью заполнена, не подключена к scoring/UI)
 - Verified Mix Recipe Registry — exact-only runtime-проекция 28 реальных VERIFIED рецептов поверх ExpertMixKnowledge; без UI и без scoring wiring
+- Mix Analysis v2 для Verified Mix Recipes — read-only adapter 28 exact recipes к существующему Mix Analysis Engine через Product Flavor Profile Registry; predicted/observed разделены, UI не добавлен
 
 ## In progress
 
-Следующий приоритет: отдельное Verified recipe → Mix Analysis wiring на основании аудита registry; до этого реестр не влияет на score/confidence.
+Следующий приоритет: каталог готовых рецептов `/mixes` и страницы `/mixes/[slug]` поверх public-safe `VerifiedRecipeAnalysis` DTO.
 
 ## Planned directions
-- Verified recipe → Mix Analysis wiring (после отдельного решения о качестве evidence);
-- Mix Flavor Analysis v2;
 - каталог готовых миксов `/mixes` и страницы `/mixes/[slug]`;
 - страницы продуктов, похожие миксы и замены компонентов;
 - feedback / smoke observations;

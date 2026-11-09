@@ -22,6 +22,7 @@
 - финальный интеграционный аудит v0.3.2 зафиксирован в `docs/engine-changelog/v0.3.2-canonical-tobacco-catalog-expansion-release-summary.md`;
 - canonicalProductId стандартизирован как ASCII-only: 12 authoritative Unicode ID мигрированы, а immutable legacy registry содержит 18 compatibility mappings;
 - v0.3.3 подключает authoritative decision Registry к `calculateMixAnalysis`, API создания микса и Result UI;
+- создан Verified Mix Recipe Registry: immutable exact-only runtime-проекция поверх `ExpertMixKnowledge`, без UI и без подключения к scoring/confidence;
 - predicted quality, confidence, data quality и verified smoke score теперь разделены;
 - decision Registry по-прежнему не сохраняется как отдельная PostgreSQL-модель; Prisma schema не менялась.
 
@@ -128,6 +129,7 @@ ASCII-представление canonical ID дополнительно зак�
 | Identity Decisions | `src/lib/tobacco-identity-decisions/` | Manual review, immutable decisions, apply/coverage/filter |
 | Canonical Mix Scoring | `src/lib/canonical-mix-scoring/` | Resolution, effective profile, duplicate aggregation, confidence и scoring |
 | Mix Result Presentation | `src/lib/mix-result-presentation/` | Public-safe объяснения score, confidence, качества данных, локализация и риски |
+| Verified Mix Recipe Registry | `src/lib/verified-mix-recipe/` | Exact-only runtime-проекция проверенных рецептов поверх ExpertMixKnowledge |
 | Public-safe mapping | `src/lib/expert-mix-knowledge/public-mapper.ts`, `src/lib/tobacco-identity-decisions/public-safe-mapper.ts` | Удаление private/internal полей |
 | Privacy audit | `src/lib/expert-mix-knowledge-import/privacy-auditor.ts`, decision public audit | Проверка утечек |
 
@@ -178,6 +180,8 @@ Prisma Flavor / workbook component
 ```
 
 Decision layer подключён к анализу и Result UI, но не записывается отдельными строками в PostgreSQL. Product sensory registry пока отсутствует; source profile/fallback остаётся основным числовым источником.
+
+Verified recipe layer строится read-only после import и exact decisions: 37 VERIFIED MIX candidates из последнего workbook дали 28 eligible recipes. `APPROXIMATE_PERCENT`, parts, unresolved/ambiguous/manufacturer-only identity и duplicate canonical component не превращаются в runtime recipes. В текущей source model evidence принадлежат единственному top-level source, поэтому `independentEvidenceCount` честно равен 0; `proportionsConfirmed` также 0 без `PROPORTION_STATEMENT`/`INTERNAL_TEST_RESULT`. Подробности: `docs/architecture/verified-mix-recipe-registry.md` и ADR-026.
 
 ## 7. Workbook
 
@@ -302,6 +306,8 @@ Public output не должен содержать:
 - `reports/tobacco-identity-review-p0-p1.csv`;
 - `reports/v0.3.3-canonical-mix-scoring-audit.json`;
 - будущие review/audit reports;
+- `reports/verified-mix-recipe-audit.json`;
+- `reports/verified-mix-recipe-audit.md`;
 - `.env` — только приватно, содержимое не публиковать.
 
 `reports/`, `data/*.xlsx` и `.env` исключены из Git. Зависимости, `.next` и generated Prisma Client переносить не нужно.
@@ -534,3 +540,9 @@ ASCII migration baseline после успешной проверки следу
 Обновлённый baseline: targeted `143/143`; full Vitest `898/898`, 27 files; Prisma validate/generate, lint, typecheck, production build и 12 `verify:*` passed; Registry 96; P0/P1 не менялись; scoring/privacy errors `0/0`; conflicts/collisions/invalid decisions `0/0/0`; HTTP `/`, `/catalog`, `/builder`, `/result/20`, `/result/39` — 200; desktop/mobile без overflow, badges не переносятся; workbook SHA до/после `AFBEB062EF5B23AC0340E8D5F15AD9E20FF41A6892146915E8FC8BB1008E2E8B`.
 
 Ограничения сохранены: Prisma schema/migrations/seed, Registry и identity decisions не менялись; новые табаки не импортировались; v0.3.4 не начиналась; merge в `main` не выполнялся. Локальные `data/hookah_mix_database.xlsx` и `reports/` не должны попадать в Git.
+
+## 21. Verified Mix Recipe Registry
+
+Новый canonical runtime layer построен поверх `ExpertMixKnowledgeRecord`, а не из ручного batch. Для cookbook/UI наружу доступна public-safe проекция без `sourceRecordId`, source/evidence IDs, excerpts, private URLs, workbook rows и локальных путей. Выполнять проверку: `pnpm verify:verified-mix-recipes "data/hookah_mix_database.xlsx"`; она читает workbook, сверяет SHA/размер до и после и пишет только ignored reports.
+
+Ближайшая задача — отдельный review о wiring verified recipes в Mix Analysis/scoring. Не подставлять `proportionsConfirmed`, `independentEvidenceCount` или rating в существующий score без этого отдельного решения. `/mixes` и страницы рецептов пока не существуют.

@@ -2,6 +2,16 @@
 
 Здесь фиксируется история выполненных задач: дата, что сделано, какие файлы затронуты, статус тестов, что осталось.
 
+## 2026-11-09 — Verified Mix Recipe Registry
+
+**Сделано:** создан отдельный immutable read-only модуль `src/lib/verified-mix-recipe/`, который строит runtime-рецепты только из существующих `ExpertMixKnowledgeRecord` после строгой exact-only проверки. Отдельный adapter накладывает подтверждённые `TobaccoIdentityDecision` на imported staging components без fuzzy matching. Добавлены typed skip reasons, validation, public-safe mapper, query API, normalizer rating 5/10/100 и audit/verify script. UI, Prisma, seed, каталог, Product Flavor Profile Registry, scoring и recommendation formulas не менялись.
+
+**Реальный workbook audit:** SHA-256 и размер до/после совпали (`AFBEB062…E2E8B`, 317765 bytes). Из 41 knowledge records: 37 VERIFIED MIX candidates, 28 eligible recipes, 9 skipped; 71 recipe component / 71 unique canonical product. Причины пропуска: 7 ambiguous, 2 unresolved, 1 manufacturer-only component, 3 approximate proportions, 1 total mismatch. В eligible recipes нет preparation/evaluation/rating, proportion evidence, independent evidence, internal test evidence или observed reaction evidence — значения не подставлялись.
+
+**Файлы:** создано `src/lib/verified-mix-recipe/*`, `scripts/verify-verified-mix-recipes.ts`, `docs/architecture/verified-mix-recipe-registry.md`, `docs/adr/ADR-026-verified-mix-recipe-runtime-projection.md`; изменено `package.json`, ADR index, roadmap и handoff. Локальные `reports/verified-mix-recipe-audit.{json,md}` остаются ignored.
+
+**Осталось:** отдельное доказательное решение о Verified recipe → Mix Analysis wiring; только затем возможны scoring/confidence integration, `/mixes`, страницы рецептов и similar recipes.
+
 ## 2026-07-23 — v0.3.5 Product Flavor Profile Registry (первый батч)
 
 **Сделано:** создан независимый read-only модуль `src/lib/product-flavor-profile/` (registry числовых вкусовых характеристик `sweetness`/`sourness`/`freshness`/`richness` для `RESOLVED`-продуктов из Tobacco Identity Decision Registry). Заполнен первый приоритетный батч — 15 продуктов, отобранных по очереди `verifiedMixCount → componentOccurrenceCount → occurrenceCount` (убывание), с evidence (`MANUFACTURER_CLAIM` / `REVIEW_AGGREGATE` / `EDITORIAL_ASSESSMENT`) и confidence на каждое значение. Registry не подключён к scoring/UI — отдельная будущая итерация.

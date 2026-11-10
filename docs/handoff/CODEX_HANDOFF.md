@@ -4,9 +4,11 @@
 
 Завершён каталог готовых миксов: `/mixes` и статические `/mixes/[slug]` читают только committed public-safe `src/data/verified-mix-catalog.generated.json` с 28 рецептами. Generator читает private workbook только локально и отдельно; runtime не зависит от Excel или PostgreSQL. Mix Analysis v2, predicted/observed boundary и existing scoring не менялись.
 
+Запущен research-only этап **Popular Tobacco Expansion v1**. Результат — `docs/research/popular-tobacco-expansion-v1.md`: read-only audit 93 публичных Prisma-продуктов, 86 RESOLVED identities/profiles и 28 ready mixes, tiering и план первой batch из 24 позиций. Эта итерация не меняет production data, Registry, profiles, recipes, scoring или UI. Следующая implementation-задача должна начинаться только с повторного evidence review этих кандидатов.
+
 ## CURRENT BRANCH
 
-`feature/mixes-catalog`. Точный HEAD всегда проверять через `git rev-parse HEAD`.
+`feature/popular-tobacco-expansion-v1`. Точный HEAD всегда проверять через `git rev-parse HEAD`.
 
 ## CURRENT BASELINE
 
@@ -18,7 +20,7 @@
 
 ## NEXT TASK
 
-Страницы конкретных табаков и сценарий «у меня есть эти табаки»; затем улучшение similar/substitution, feedback/smoke observations и расширение базы рецептов.
+Подтверждение и реализация первой малой batch Popular Tobacco Expansion; затем страницы конкретных табаков, сценарий «у меня есть эти табаки» и Builder UX v2.
 
 ## HISTORICAL NOTES
 

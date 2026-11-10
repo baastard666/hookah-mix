@@ -467,6 +467,12 @@
 
 Создан deterministic public-safe snapshot `src/data/verified-mix-catalog.generated.json` (28 recipes) и static pages `/mixes`, `/mixes/[slug]`. Runtime не читает private workbook; generator и privacy check выполняются отдельно. Добавлены поиск, фильтры, сортировка, related mixes и predicted/observed presentation boundary. Следующий приоритет: product pages и сценарий «у меня есть эти табаки».
 
+## 2026-11-10 — Popular Tobacco Expansion v1 (research-only)
+
+Проведён read-only audit Prisma, identity decisions, Product Flavor Profiles, ExpertMixKnowledge, Verified Mix Recipe Registry и committed `/mixes` snapshot. Зафиксировано 93 публичных Prisma-продукта, 86 RESOLVED canonical products/profiles и 28 ready mixes; выявлены нулевые working-coverage gaps Darkside, Sebero, Spectrum и JENT. Добавлен `audit:popular-tobacco-coverage`, который читает PostgreSQL и immutable registries, а JSON вывод при необходимости записывает только в ignored `reports/`.
+
+Создан public-safe план `docs/research/popular-tobacco-expansion-v1.md`: Tier A/B, category/mix gaps и первая balanced batch из 24 кандидатов MustHave, Darkside, Spectrum и Sebero. Не изменялись Prisma/seed/migrations, Registry, Product Flavor Profiles, ready recipes, scoring, UI или исходный workbook. Local research-agent найден лишь через ignored scratch-скрипты: он пригоден для source discovery и черновых observations, но не имеет права автоматически изменять production facts.
+
 ## 2026-11-09 — Mix Analysis v2 для Verified Mix Recipes
 
 **Реализовано:** создан `src/lib/verified-mix-analysis/` — DB-independent composition layer поверх существующего `calculateMixAnalysis`. `buildCanonicalMixInputFromVerifiedRecipe` использует только exact `TobaccoIdentityDecisionRegistry` и `ProductFlavorProfileRegistry`; Prisma/source profile отключён. Семь evidence-backed dimensions передаются как `CANONICAL_PRODUCT_PROFILE`, `sourness` мапится в `acidity`, остальные 11 полей остаются `null`. `dominantNoteIds` преобразуются только в generic category notes, без выдумывания конкретных вкусов.

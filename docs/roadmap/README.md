@@ -20,11 +20,13 @@
 
 ## In progress
 
-Следующий приоритет: страницы конкретных табаков и сценарий «у меня есть эти табаки».
+Popular Tobacco Expansion v1 — research-only аудит покрытия, market tiering и первая evidence-backed batch из 24 позиций. См. `docs/research/popular-tobacco-expansion-v1.md`. До отдельной implementation-задачи новые canonical products, Prisma data и Product Flavor Profiles не создаются.
 
 ## Planned directions
 - каталог готовых миксов `/mixes` и страницы `/mixes/[slug]`;
 - страницы продуктов, похожие миксы и замены компонентов;
+- реализация утверждённой первой batch Popular Tobacco Expansion с отдельным identity/profile review;
+- Builder UX v2 после расширения каталога: searchable selector, фильтр бренда, карточки и mobile UX;
 - feedback / smoke observations;
 - Product Flavor Taxonomy Foundation — номер итерации `unknown`;
 - Expert Observation Aggregation — номер итерации `unknown`;

@@ -270,8 +270,8 @@ describe("canonical aggregation and scoring integration", () => {
 describe("registry and workbook integration", () => {
   it("does not alter the v0.3.2 authoritative registry", () => {
     const statuses = TOBACCO_IDENTITY_DECISIONS.reduce<Record<string, number>>((counts, item) => ({ ...counts, [item.decision.status]: (counts[item.decision.status] ?? 0) + 1 }), {});
-    expect(TOBACCO_IDENTITY_DECISIONS).toHaveLength(96);
-    expect(statuses).toEqual({ RESOLVED: 86, MANUFACTURER_ONLY: 1, AMBIGUOUS: 7, UNRESOLVED: 2 });
+    expect(TOBACCO_IDENTITY_DECISIONS).toHaveLength(109);
+    expect(statuses).toEqual({ RESOLVED: 99, MANUFACTURER_ONLY: 1, AMBIGUOUS: 7, UNRESOLVED: 2 });
     expect(auditTobaccoIdentityDecisions(TOBACCO_IDENTITY_DECISIONS).filter(item => item.severity === "ERROR")).toEqual([]);
   });
 
@@ -285,7 +285,7 @@ describe("registry and workbook integration", () => {
       ...P0_IDENTITY_DECISIONS_BATCH_5,
       ...P0_IDENTITY_DECISIONS_BATCH_6,
     ];
-    expect(TOBACCO_IDENTITY_DECISIONS).toEqual(expected);
+    expect(TOBACCO_IDENTITY_DECISIONS.slice(0, expected.length)).toEqual(expected);
   });
 
   it("scores verified mixes from a synthetic workbook deterministically and privacy-safely", async () => {

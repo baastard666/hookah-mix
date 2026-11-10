@@ -479,6 +479,10 @@
 
 `verify:canonical-catalog-identity` приведён к правильному направлению registry → persisted catalog: старый generic consistency-check сверял modern authoritative IDs с legacy Product Line Registry и давал ложные errors. Новая проверка не скрывает unsafe строки: она выводит typed remaining issues и завершается успешно только при нуле safe updates и collisions. Prisma schema/migrations, Decision Registry, Product Flavor Profiles, recipes, scoring, UI и workbook не менялись.
 
+## 2026-11-10 — Popular Tobacco Expansion Batch 1A
+
+Проведён review 14 кандидатов. Добавлены 13 новых exact RESOLVED продуктов: восемь JENT (Classic, Alcohol, Herbal), Green Tonic и Greendizer Musthave, два Sebero GID и Spectrum Mix Line Цветочный микс. Musthave Sour Berries уже был exact resolved и не дублировался. Новые profiles намеренно sparse: числовые dimensions не выведены из названий и остались null; у Sebero GID не добавлены categories без exact flavor evidence. Recipes, scoring, UI, schema, migrations и workbook не менялись.
+
 ## 2026-11-09 — Mix Analysis v2 для Verified Mix Recipes
 
 **Реализовано:** создан `src/lib/verified-mix-analysis/` — DB-independent composition layer поверх существующего `calculateMixAnalysis`. `buildCanonicalMixInputFromVerifiedRecipe` использует только exact `TobaccoIdentityDecisionRegistry` и `ProductFlavorProfileRegistry`; Prisma/source profile отключён. Семь evidence-backed dimensions передаются как `CANONICAL_PRODUCT_PROFILE`, `sourness` мапится в `acidity`, остальные 11 полей остаются `null`. `dominantNoteIds` преобразуются только в generic category notes, без выдумывания конкретных вкусов.

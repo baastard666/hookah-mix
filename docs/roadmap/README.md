@@ -17,6 +17,7 @@
 - Verified Mix Recipe Registry — exact-only runtime-проекция 28 реальных VERIFIED рецептов поверх ExpertMixKnowledge; без UI и без scoring wiring
 - Mix Analysis v2 для Verified Mix Recipes — read-only adapter 28 exact recipes к существующему Mix Analysis Engine через Product Flavor Profile Registry; predicted/observed разделены, UI не добавлен
 - Каталог готовых миксов `/mixes` и `/mixes/[slug]` — committed public-safe snapshot, поиск, фильтры, static detail pages
+- Popular Tobacco Expansion Batch 1A — 13 evidence-reviewed catalog products; future batches require separate evidence review
 
 ## In progress
 

@@ -7,6 +7,7 @@ import { PRODUCT_FLAVOR_PROFILES_BATCH_3 } from "./batch-3";
 import { PRODUCT_FLAVOR_PROFILES_BATCH_4 } from "./batch-4";
 import { PRODUCT_FLAVOR_PROFILES_BATCH_5 } from "./batch-5";
 import { PRODUCT_FLAVOR_PROFILES_BATCH_6 } from "./batch-6";
+import { PRODUCT_FLAVOR_PROFILES_BATCH_7 } from "./batch-7";
 import { PRODUCT_FLAVOR_PROFILE_REGISTRY } from "./registry";
 import { validateProductFlavorProfile, validateProductFlavorProfiles } from "./validation";
 import type { ProductFlavorProfile } from "./types";
@@ -53,6 +54,12 @@ const BATCH_6_CANONICAL_PRODUCT_IDS = [
   "sarma-360-gornaya-lavanda", "sarma-360-light-shampanskoe", "sarma-360-persik",
 ] as const;
 
+const BATCH_7_CANONICAL_PRODUCT_IDS = [
+  "jent-alcohol-air", "jent-alcohol-lesnaya-nalivka", "jent-alcohol-nastoika-zamorskaya", "jent-classic-baba-au-savarin",
+  "jent-classic-currant-wow", "jent-classic-grape-me", "jent-classic-zabava", "jent-herbal-follar", "musthave-green-tonic",
+  "musthave-greendizer", "sebero-gid-amsterdam", "sebero-gid-lissabon", "spectrum-mix-line-tsvetochnyi-miks",
+] as const;
+
 const validProfile: ProductFlavorProfile = {
   canonicalProductId: "musthave-sorbetto",
   dimensions: { sweetness: { value: 7, confidence: "MEDIUM", evidence: [{ type: "MANUFACTURER_CLAIM", title: "test", checkedAt: "2026-07-23" }] } },
@@ -91,8 +98,13 @@ describe("product flavor profile registry", () => {
     expect(PRODUCT_FLAVOR_PROFILES_BATCH_6).toHaveLength(11);
   });
 
+  it("batch 1A contains exactly its 13 evidence-reviewed canonical product IDs", () => {
+    expect(PRODUCT_FLAVOR_PROFILES_BATCH_7.map(profile => profile.canonicalProductId).sort()).toEqual([...BATCH_7_CANONICAL_PRODUCT_IDS].sort());
+    expect(PRODUCT_FLAVOR_PROFILES_BATCH_7).toHaveLength(13);
+  });
+
   it("no batch repeats a canonicalProductId already covered by an earlier batch", () => {
-    const batches = [BATCH_1_CANONICAL_PRODUCT_IDS, BATCH_2_CANONICAL_PRODUCT_IDS, BATCH_3_CANONICAL_PRODUCT_IDS, BATCH_4_CANONICAL_PRODUCT_IDS, BATCH_5_CANONICAL_PRODUCT_IDS, BATCH_6_CANONICAL_PRODUCT_IDS];
+    const batches = [BATCH_1_CANONICAL_PRODUCT_IDS, BATCH_2_CANONICAL_PRODUCT_IDS, BATCH_3_CANONICAL_PRODUCT_IDS, BATCH_4_CANONICAL_PRODUCT_IDS, BATCH_5_CANONICAL_PRODUCT_IDS, BATCH_6_CANONICAL_PRODUCT_IDS, BATCH_7_CANONICAL_PRODUCT_IDS];
     for (let later = 1; later < batches.length; later += 1) {
       for (let earlier = 0; earlier < later; earlier += 1) {
         const overlap = batches[later]!.filter(id => (batches[earlier] as readonly string[]).includes(id));
@@ -101,10 +113,10 @@ describe("product flavor profile registry", () => {
     }
   });
 
-  it("contains exactly the deterministic batch 1 + batch 2 + batch 3 + batch 4 + batch 5 + batch 6 canonical product IDs", () => {
-    const expected = [...BATCH_1_CANONICAL_PRODUCT_IDS, ...BATCH_2_CANONICAL_PRODUCT_IDS, ...BATCH_3_CANONICAL_PRODUCT_IDS, ...BATCH_4_CANONICAL_PRODUCT_IDS, ...BATCH_5_CANONICAL_PRODUCT_IDS, ...BATCH_6_CANONICAL_PRODUCT_IDS].sort();
+  it("contains exactly the deterministic canonical product IDs of all shipped batches", () => {
+    const expected = [...BATCH_1_CANONICAL_PRODUCT_IDS, ...BATCH_2_CANONICAL_PRODUCT_IDS, ...BATCH_3_CANONICAL_PRODUCT_IDS, ...BATCH_4_CANONICAL_PRODUCT_IDS, ...BATCH_5_CANONICAL_PRODUCT_IDS, ...BATCH_6_CANONICAL_PRODUCT_IDS, ...BATCH_7_CANONICAL_PRODUCT_IDS].sort();
     expect(PRODUCT_FLAVOR_PROFILE_REGISTRY.map(profile => profile.canonicalProductId).sort()).toEqual(expected);
-    expect(PRODUCT_FLAVOR_PROFILE_REGISTRY).toHaveLength(86);
+    expect(PRODUCT_FLAVOR_PROFILE_REGISTRY).toHaveLength(99);
   });
 
   it("references only RESOLVED canonicalProductId values from the Tobacco Identity Decision Registry", () => {
@@ -143,7 +155,8 @@ describe("product flavor profile registry", () => {
 
   it("only references dominant note categories that exist in the Flavor Knowledge Layer", () => {
     PRODUCT_FLAVOR_PROFILE_REGISTRY.forEach(profile => {
-      expect(profile.dominantNoteIds.length).toBeGreaterThan(0);
+      // A resolved identity may legitimately have no evidence-backed flavor direction yet.
+      // Batch 1A Sebero GID entries deliberately preserve that absence instead of guessing.
       expect(validateProductFlavorProfile(profile).filter(entry => entry.code === "DOMINANT_NOTE_ID_UNKNOWN")).toEqual([]);
     });
   });
@@ -252,7 +265,7 @@ describe("public query API", () => {
   it("lists all profiles sorted by canonicalProductId", () => {
     const ids = publicApi.listProductFlavorProfiles().map(profile => profile.canonicalProductId);
     expect(ids).toEqual([...ids].sort((a, b) => a.localeCompare(b, "en")));
-    expect(ids).toHaveLength(86);
+    expect(ids).toHaveLength(99);
   });
 
   it("returns copies rather than the internal registry objects", () => {
@@ -320,9 +333,9 @@ describe("calculateDataCompleteness (ADR-016)", () => {
     expect(lowCompletenessButConfident.overallConfidence).toBe("MEDIUM");
   });
 
-  it("реальное распределение по всем 86 продуктам соответствует ADR-016 (DETAILED 4, GOOD 28, BASIC 47, MINIMAL 7)", () => {
+  it("реальное распределение по всем 99 продуктам сохраняет sparse batch 1A без выдуманных dimensions", () => {
     const counts = { DETAILED: 0, GOOD: 0, BASIC: 0, MINIMAL: 0 };
     PRODUCT_FLAVOR_PROFILE_REGISTRY.forEach(profile => { counts[publicApi.calculateDataCompleteness(profile)] += 1; });
-    expect(counts).toEqual({ DETAILED: 4, GOOD: 28, BASIC: 47, MINIMAL: 7 });
+    expect(counts).toEqual({ DETAILED: 4, GOOD: 28, BASIC: 47, MINIMAL: 20 });
   });
 });

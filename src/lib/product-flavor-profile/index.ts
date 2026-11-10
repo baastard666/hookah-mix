@@ -4,6 +4,7 @@ export { PRODUCT_FLAVOR_PROFILES_BATCH_3 } from "./batch-3";
 export { PRODUCT_FLAVOR_PROFILES_BATCH_4 } from "./batch-4";
 export { PRODUCT_FLAVOR_PROFILES_BATCH_5 } from "./batch-5";
 export { PRODUCT_FLAVOR_PROFILES_BATCH_6 } from "./batch-6";
+export { PRODUCT_FLAVOR_PROFILES_BATCH_7 } from "./batch-7";
 export { CONFIDENCE_LEVELS, DATA_COMPLETENESS_LABELS_RU, DATA_COMPLETENESS_LEVELS, EVIDENCE_ORIGINS, FLAVOR_DIMENSION_IDS, FLAVOR_DIMENSION_MAX_VALUE, FLAVOR_DIMENSION_MIN_VALUE, PRODUCT_FLAVOR_PROFILE_VERSION } from "./constants";
 export { calculateDataCompleteness, countFilledDimensions } from "./data-completeness";
 export { ProductFlavorProfileError } from "./errors";

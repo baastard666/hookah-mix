@@ -15,6 +15,7 @@ export { P0_IDENTITY_DECISIONS_BATCH_3 } from "./p0-decisions-batch-3";
 export { P0_IDENTITY_DECISIONS_BATCH_4 } from "./p0-decisions-batch-4";
 export { P0_IDENTITY_DECISIONS_BATCH_5 } from "./p0-decisions-batch-5";
 export { P0_IDENTITY_DECISIONS_BATCH_6 } from "./p0-decisions-batch-6";
+export { POPULAR_TOBACCO_IDENTITY_DECISIONS_BATCH_1A } from "./popular-tobacco-batch-1a";
 export { TOBACCO_IDENTITY_DECISIONS, TOBACCO_IDENTITY_DECISION_REGISTRY } from "./verified-decisions";
 export { createLegacyCanonicalProductIdAliasRegistry, LEGACY_CANONICAL_PRODUCT_ID_ALIASES, LEGACY_CANONICAL_PRODUCT_ID_ALIAS_REGISTRY, validateLegacyCanonicalProductIdAliases } from "./legacy-canonical-product-id-aliases";
 export { adaptExpertMixImportForIdentityDecisions } from "./import-adapter";

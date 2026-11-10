@@ -6,6 +6,8 @@
 
 Запущен research-only этап **Popular Tobacco Expansion v1**. Результат — `docs/research/popular-tobacco-expansion-v1.md`: read-only audit 93 публичных Prisma-продуктов, 86 RESOLVED identities/profiles и 28 ready mixes, tiering и план первой batch из 24 позиций. Эта итерация не меняет production data, Registry, profiles, recipes, scoring или UI. Следующая implementation-задача должна начинаться только с повторного evidence review этих кандидатов.
 
+В Batch 1A добавлены 13 новых exact RESOLVED catalog products (8 JENT, 2 Musthave, 2 Sebero GID, 1 Spectrum Mix Line); Musthave Sour Berries уже существовал и не дублировался. Product Flavor Profiles sparse: неподтверждённые numeric dimensions не заполняются. Подробности: `docs/engine-changelog/popular-tobacco-expansion-batch-1a.md`.
+
 После неё выполнена corrective-проверка persisted identity. `reconcile:canonical-catalog-identity` делает dry-run по умолчанию и применяет только exact-safe решения из authoritative Decision Registry. На текущей локальной базе 86 RESOLVED строк уже совпадают, safe mismatch = 0; 13 строк остаются `UNRESOLVED_SOURCE_IDENTITY` (четыре реальные и девять TEST), ещё 3 — `MANUFACTURER_ONLY_SOURCE_IDENTITY`. Для них нет authoritative exact `RESOLVED` decision, поэтому они сознательно не угадываются. Детальный отчёт — только ignored `reports/canonical-catalog-persistence-reconciliation.json`.
 
 ## CURRENT BRANCH

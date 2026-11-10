@@ -102,7 +102,7 @@ describe("P0 identity decision batch 6", () => {
   it("is included after P1 and P0 batches 1-5 without changing them", () => {
     const previous = [P1_IDENTITY_DECISIONS_BATCH_1, P0_IDENTITY_DECISIONS_BATCH_1, P0_IDENTITY_DECISIONS_BATCH_2, P0_IDENTITY_DECISIONS_BATCH_3, P0_IDENTITY_DECISIONS_BATCH_4, P0_IDENTITY_DECISIONS_BATCH_5].flat();
     expect(TOBACCO_IDENTITY_DECISIONS.slice(0, previous.length)).toEqual(previous);
-    expect(TOBACCO_IDENTITY_DECISIONS.slice(previous.length)).toEqual(P0_IDENTITY_DECISIONS_BATCH_6);
+    expect(TOBACCO_IDENTITY_DECISIONS.slice(previous.length, previous.length + P0_IDENTITY_DECISIONS_BATCH_6.length)).toEqual(P0_IDENTITY_DECISIONS_BATCH_6);
   });
 
   it("maps to privacy-safe public output", () => {

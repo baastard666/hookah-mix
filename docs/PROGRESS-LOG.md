@@ -463,6 +463,10 @@
 ## 2026-07-31 — создан CLAUDE.md: язык чата/документации/ADR/коммитов — русский
 
 По прямому запросу пользователя проверено (несколькими способами: `find`, `dir /s /b`, `git log --all --full-history`) — файл `CLAUDE.md` никогда не существовал в репозитории. Создан `CLAUDE.md` в корне с явным правилом: чат, документация, ADR и сообщения коммитов — на русском (ранее устно применялось «документация на русском, коммиты на английском» — с этого момента отменено, коммиты тоже на русском).
+## 2026-11-10 — Каталог готовых миксов
+
+Создан deterministic public-safe snapshot `src/data/verified-mix-catalog.generated.json` (28 recipes) и static pages `/mixes`, `/mixes/[slug]`. Runtime не читает private workbook; generator и privacy check выполняются отдельно. Добавлены поиск, фильтры, сортировка, related mixes и predicted/observed presentation boundary. Следующий приоритет: product pages и сценарий «у меня есть эти табаки».
+
 ## 2026-11-09 — Mix Analysis v2 для Verified Mix Recipes
 
 **Реализовано:** создан `src/lib/verified-mix-analysis/` — DB-independent composition layer поверх существующего `calculateMixAnalysis`. `buildCanonicalMixInputFromVerifiedRecipe` использует только exact `TobaccoIdentityDecisionRegistry` и `ProductFlavorProfileRegistry`; Prisma/source profile отключён. Семь evidence-backed dimensions передаются как `CANONICAL_PRODUCT_PROFILE`, `sourness` мапится в `acidity`, остальные 11 полей остаются `null`. `dominantNoteIds` преобразуются только в generic category notes, без выдумывания конкретных вкусов.

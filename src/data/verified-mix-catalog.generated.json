@@ -1,0 +1,5219 @@
+{
+  "schemaVersion": "verified-mix-catalog-v1",
+  "items": [
+    {
+      "recipeId": "vmr.18aqqoi1wjfnh2",
+      "slug": "abrikosovyi-dzhem-s-yablochnym-shtrudelem-vmr-18aqqoi1wjfnh2",
+      "title": "Абрикосовый джем с яблочным штруделем",
+      "componentCount": 2,
+      "components": [
+        {
+          "canonicalProductId": "banger-apricot-jam",
+          "manufacturer": "Banger",
+          "productLine": null,
+          "productName": "Apricot Jam",
+          "percentage": 60,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 52.7,
+          "influenceShare": 60,
+          "dominantCategories": [
+            "FRUIT",
+            "CITRUS"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 4,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "sapphire-crown-apple-strudel",
+          "manufacturer": "Sapphire Crown",
+          "productLine": null,
+          "productName": "Apple Strudel",
+          "percentage": 40,
+          "sourceStatedRole": "TEXTURE",
+          "recordedRole": "TEXTURE",
+          "influenceScore": 35.13,
+          "influenceShare": 40,
+          "dominantCategories": [
+            "FRUIT",
+            "BAKERY",
+            "SPICE"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "десертный"
+      ],
+      "dominantCategories": [
+        "FRUIT",
+        "CITRUS"
+      ],
+      "secondaryCategories": [
+        "BAKERY",
+        "SPICE"
+      ],
+      "profile": {
+        "sweetness": 6.4,
+        "sourness": 3.6,
+        "freshness": null,
+        "intensity": null,
+        "strength": 3.8,
+        "heatResistance": 8,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "banger-apricot-jam",
+        "influenceShare": 60,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 8,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 60.9,
+        "compatibilityScore": 8.2,
+        "riskScore": 10
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Цитрус",
+            "description": "Эти вкусовые направления хорошо поддерживают друг друга.",
+            "impact": 0.7
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "PROFILE_BALANCE",
+            "title": "Кисло-сладкий баланс",
+            "description": "Сладость и кислотность поддерживают друг друга",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Специи",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.21
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.0bx3hmi0r1vc0e",
+      "slug": "ananasovaya-gazirovka-vmr-0bx3hmi0r1vc0e",
+      "title": "Ананасовая газировка",
+      "componentCount": 2,
+      "components": [
+        {
+          "canonicalProductId": "sapphire-crown-pineapple-fanta",
+          "manufacturer": "Sapphire Crown",
+          "productLine": null,
+          "productName": "Pineapple Fanta",
+          "percentage": 70,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 61.48,
+          "influenceShare": 70,
+          "dominantCategories": [
+            "TROPICAL",
+            "DESSERT"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "juiciness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "urban-soul-pineapple",
+          "manufacturer": "Urban Soul",
+          "productLine": null,
+          "productName": "Pineapple",
+          "percentage": 30,
+          "sourceStatedRole": "SUPPORT",
+          "recordedRole": "SUPPORT",
+          "influenceScore": 26.35,
+          "influenceShare": 30,
+          "dominantCategories": [
+            "FRUIT",
+            "TROPICAL"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "напиточный фруктовый"
+      ],
+      "dominantCategories": [
+        "TROPICAL",
+        "DESSERT"
+      ],
+      "secondaryCategories": [
+        "FRUIT"
+      ],
+      "profile": {
+        "sweetness": 6,
+        "sourness": null,
+        "freshness": null,
+        "intensity": null,
+        "strength": 5,
+        "heatResistance": 7.4,
+        "juiciness": 7
+      },
+      "dominance": {
+        "canonicalProductId": "sapphire-crown-pineapple-fanta",
+        "influenceShare": 70,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 7.5,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 59.9,
+        "compatibilityScore": 7.7,
+        "riskScore": 9
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Десерт и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.19
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Тропики",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.19
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.0ciq5kc08pflts",
+      "slug": "arbuz-ananas-i-marakui-ya-vmr-0ciq5kc08pflts",
+      "title": "Арбуз, ананас и маракуйя",
+      "componentCount": 3,
+      "components": [
+        {
+          "canonicalProductId": "nash-black-line-arbuz",
+          "manufacturer": "НАШ",
+          "productLine": "Black Line",
+          "productName": "Арбуз",
+          "percentage": 30,
+          "sourceStatedRole": "SUPPORT",
+          "recordedRole": "SUPPORT",
+          "influenceScore": 26.35,
+          "influenceShare": 30,
+          "dominantCategories": [
+            "FRUIT",
+            "FRESH"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "husky-pineapple",
+          "manufacturer": "Husky",
+          "productLine": null,
+          "productName": "Pineapple",
+          "percentage": 40,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 35.13,
+          "influenceShare": 40,
+          "dominantCategories": [
+            "FRUIT",
+            "TROPICAL"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 4,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "husky-passion-fruit",
+          "manufacturer": "Husky",
+          "productLine": null,
+          "productName": "Passion Fruit",
+          "percentage": 30,
+          "sourceStatedRole": "ACCENT",
+          "recordedRole": "ACCENT",
+          "influenceScore": 26.35,
+          "influenceShare": 30,
+          "dominantCategories": [
+            "TROPICAL",
+            "FRUIT"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 4,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 1,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "тропический фруктовый"
+      ],
+      "dominantCategories": [
+        "FRUIT",
+        "TROPICAL"
+      ],
+      "secondaryCategories": [
+        "FRESH"
+      ],
+      "profile": {
+        "sweetness": null,
+        "sourness": 1,
+        "freshness": null,
+        "intensity": null,
+        "strength": 4.6,
+        "heatResistance": null,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "husky-pineapple",
+        "influenceShare": 40,
+        "level": "MODERATE"
+      },
+      "predicted": {
+        "qualityScore": 7.8,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 58.5,
+        "compatibilityScore": 7.9,
+        "riskScore": 9
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "PROPORTION_BALANCE",
+            "title": "Все компоненты различимы",
+            "description": "Все компоненты должны оставаться заметными",
+            "impact": 0.4
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Свежесть",
+            "description": "Эти вкусовые направления сочетаются в текущих пропорциях.",
+            "impact": 0.3
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Тропики",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.25
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.1cqrsl60fnbygu",
+      "slug": "arbuzno-marakui-evaya-konfeta-vmr-1cqrsl60fnbygu",
+      "title": "Арбузно-маракуйевая конфета",
+      "componentCount": 2,
+      "components": [
+        {
+          "canonicalProductId": "jam-arbuznyi-rondo",
+          "manufacturer": "JAM",
+          "productLine": null,
+          "productName": "Арбузный рондо",
+          "percentage": 40,
+          "sourceStatedRole": "SUPPORT",
+          "recordedRole": "SUPPORT",
+          "influenceScore": 35.13,
+          "influenceShare": 40,
+          "dominantCategories": [
+            "FRUIT",
+            "MINT",
+            "CANDY"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 2,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "freshness",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "jam-spelaya-marakuiya",
+          "manufacturer": "JAM",
+          "productLine": null,
+          "productName": "Спелая маракуйя",
+          "percentage": 60,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 52.7,
+          "influenceShare": 60,
+          "dominantCategories": [
+            "TROPICAL"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 2,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "тропическо-конфетный"
+      ],
+      "dominantCategories": [
+        "TROPICAL",
+        "CANDY",
+        "FRUIT"
+      ],
+      "secondaryCategories": [
+        "MINT"
+      ],
+      "profile": {
+        "sweetness": 6,
+        "sourness": null,
+        "freshness": 5,
+        "intensity": null,
+        "strength": 2,
+        "heatResistance": 5,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "jam-spelaya-marakuiya",
+        "influenceShare": 60,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 7.4,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 59.1,
+        "compatibilityScore": 8,
+        "riskScore": 10
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Мята и Тропики",
+            "description": "Эти вкусовые направления сочетаются в текущих пропорциях.",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Тропики",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.25
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.1do4o9u18qzeta",
+      "slug": "bananovoe-sufle-s-klyukvennym-morsom-vmr-1do4o9u18qzeta",
+      "title": "Банановое суфле с клюквенным морсом",
+      "componentCount": 2,
+      "components": [
+        {
+          "canonicalProductId": "blackburn-na-rasslabone",
+          "manufacturer": "BlackBurn",
+          "productLine": null,
+          "productName": "На расслабоне",
+          "percentage": 50,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 49.08,
+          "influenceShare": 52.8,
+          "dominantCategories": [
+            "FRUIT",
+            "DESSERT",
+            "CREAMY"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "intensity",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "freshness",
+              "value": 1,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "blackburn-klyukvennyi-mors",
+          "manufacturer": "BlackBurn",
+          "productLine": null,
+          "productName": "Клюквенный морс",
+          "percentage": 50,
+          "sourceStatedRole": null,
+          "recordedRole": null,
+          "influenceScore": 43.92,
+          "influenceShare": 47.2,
+          "dominantCategories": [
+            "BERRY",
+            "BEVERAGE"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 9,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "десертно-ягодный"
+      ],
+      "dominantCategories": [
+        "CREAMY",
+        "DESSERT",
+        "FRUIT"
+      ],
+      "secondaryCategories": [
+        "BERRY",
+        "BEVERAGE"
+      ],
+      "profile": {
+        "sweetness": 8,
+        "sourness": 6,
+        "freshness": 1,
+        "intensity": 7,
+        "strength": 7,
+        "heatResistance": 8,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "blackburn-na-rasslabone",
+        "influenceShare": 52.8,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 8.1,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 62.7,
+        "compatibilityScore": 8.4,
+        "riskScore": 9
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и Сливочность",
+            "description": "Эти вкусовые направления хорошо поддерживают друг друга.",
+            "impact": 0.56
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "PROFILE_BALANCE",
+            "title": "Кисло-сладкий баланс",
+            "description": "Сладость и кислотность поддерживают друг друга",
+            "impact": 0.4
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и молочная нота",
+            "description": "Молочная нота может смягчить ягодный профиль.",
+            "impact": 0.32
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и десерт",
+            "description": "Десертная основа может связать ягодные ноты.",
+            "impact": 0.32
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и Десерт",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.2
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.2
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.1qvsbzu0lleka6",
+      "slug": "belgii-skii-sidr-s-inzhirom-i-apelsinovoi-tsedroi-vmr-1qvsbzu0lleka6",
+      "title": "Бельгийский сидр с инжиром и апельсиновой цедрой",
+      "componentCount": 3,
+      "components": [
+        {
+          "canonicalProductId": "chabacco-medium-belgian-cider",
+          "manufacturer": "Chabacco",
+          "productLine": "Medium",
+          "productName": "Belgian Cider",
+          "percentage": 60,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 46.5,
+          "influenceShare": 57,
+          "dominantCategories": [
+            "FRUIT",
+            "ALCOHOL"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 4,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "intensity",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "hook-inzhirnyi",
+          "manufacturer": "HOOK by Chabacco",
+          "productLine": null,
+          "productName": "Инжирный",
+          "percentage": 10,
+          "sourceStatedRole": "ACCENT",
+          "recordedRole": "ACCENT",
+          "influenceScore": 8.78,
+          "influenceShare": 10.8,
+          "dominantCategories": [
+            "FRUIT",
+            "WOODY"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "duft-solo-orange-zest",
+          "manufacturer": "Duft",
+          "productLine": "Solo",
+          "productName": "Orange Zest",
+          "percentage": 30,
+          "sourceStatedRole": "SUPPORT",
+          "recordedRole": "SUPPORT",
+          "influenceScore": 26.35,
+          "influenceShare": 32.3,
+          "dominantCategories": [
+            "CITRUS"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "freshness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "напиточно-фруктовый"
+      ],
+      "dominantCategories": [
+        "FRUIT",
+        "ALCOHOL",
+        "CITRUS"
+      ],
+      "secondaryCategories": [
+        "WOODY"
+      ],
+      "profile": {
+        "sweetness": 6.3,
+        "sourness": 5,
+        "freshness": 6,
+        "intensity": 3,
+        "strength": 5.1,
+        "heatResistance": 7,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "chabacco-medium-belgian-cider",
+        "influenceShare": 57,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 7.8,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 62.4,
+        "compatibilityScore": 8.3,
+        "riskScore": 10
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Цитрус",
+            "description": "Эти вкусовые направления хорошо поддерживают друг друга.",
+            "impact": 0.7
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Алкогольное направление и Фрукты",
+            "description": "Эти вкусовые направления сочетаются в текущих пропорциях.",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "PROFILE_BALANCE",
+            "title": "Кисло-сладкий баланс",
+            "description": "Сладость и кислотность поддерживают друг друга",
+            "impact": 0.4
+          },
+          {
+            "category": "PROPORTION_BALANCE",
+            "title": "Все компоненты различимы",
+            "description": "Все компоненты должны оставаться заметными",
+            "impact": 0.4
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.15747py087001e",
+      "slug": "black-afgano-s-ananasom-vmr-15747py087001e",
+      "title": "Black Afgano с ананасом",
+      "componentCount": 2,
+      "components": [
+        {
+          "canonicalProductId": "deus-perfume-black-afgano",
+          "manufacturer": "Deus",
+          "productLine": "Perfume",
+          "productName": "Black Afgano",
+          "percentage": 52.38,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 54.13,
+          "influenceShare": 56.4,
+          "dominantCategories": [
+            "WOODY",
+            "SMOKY",
+            "HERBAL"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "intensity",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "take-pineapple",
+          "manufacturer": "Take",
+          "productLine": null,
+          "productName": "Pineapple",
+          "percentage": 47.62,
+          "sourceStatedRole": null,
+          "recordedRole": null,
+          "influenceScore": 41.83,
+          "influenceShare": 43.6,
+          "dominantCategories": [
+            "FRUIT",
+            "TROPICAL"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "парфюмерно-фруктовый"
+      ],
+      "dominantCategories": [
+        "HERBAL",
+        "SMOKY",
+        "WOODY"
+      ],
+      "secondaryCategories": [
+        "FRUIT",
+        "TROPICAL"
+      ],
+      "profile": {
+        "sweetness": null,
+        "sourness": null,
+        "freshness": null,
+        "intensity": 8,
+        "strength": 6,
+        "heatResistance": null,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "deus-perfume-black-afgano",
+        "influenceShare": 56.4,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 7.7,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 59.7,
+        "compatibilityScore": 7.5,
+        "riskScore": 8
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.0kzjqhl0486n59",
+      "slug": "chai-masala-s-holodkom-vmr-0kzjqhl0486n59",
+      "title": "Чай масала с холодком",
+      "componentCount": 2,
+      "components": [
+        {
+          "canonicalProductId": "fake-mumbai-tea",
+          "manufacturer": "FAKE",
+          "productLine": null,
+          "productName": "Mumbai Tea",
+          "percentage": 71.5,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 62.8,
+          "influenceShare": 71.5,
+          "dominantCategories": [
+            "TEA",
+            "SPICE",
+            "CREAMY"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "fake-holod",
+          "manufacturer": "FAKE",
+          "productLine": null,
+          "productName": "Holod",
+          "percentage": 28.5,
+          "sourceStatedRole": null,
+          "recordedRole": null,
+          "influenceScore": 25.03,
+          "influenceShare": 28.5,
+          "dominantCategories": [
+            "MINT",
+            "COOLING"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "freshness",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "чайно-пряный свежий"
+      ],
+      "dominantCategories": [
+        "CREAMY",
+        "SPICE",
+        "TEA"
+      ],
+      "secondaryCategories": [
+        "COOLING",
+        "MINT"
+      ],
+      "profile": {
+        "sweetness": null,
+        "sourness": null,
+        "freshness": 8,
+        "intensity": null,
+        "strength": 5,
+        "heatResistance": null,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "fake-mumbai-tea",
+        "influenceShare": 71.5,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 7.2,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 59.3,
+        "compatibilityScore": 7.3,
+        "riskScore": 7
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Чай и Мята",
+            "description": "Эти вкусовые направления сочетаются в текущих пропорциях.",
+            "impact": 0.21
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.0m4vzsa1o7imyu",
+      "slug": "chernichnaya-granola-s-bananom-vmr-0m4vzsa1o7imyu",
+      "title": "Черничная гранола с бананом",
+      "componentCount": 2,
+      "components": [
+        {
+          "canonicalProductId": "sapphire-crown-blueberry-granola",
+          "manufacturer": "Sapphire Crown",
+          "productLine": null,
+          "productName": "Blueberry Granola",
+          "percentage": 50,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 43.92,
+          "influenceShare": 50,
+          "dominantCategories": [
+            "BERRY",
+            "BAKERY"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "sapphire-crown-go-bananas",
+          "manufacturer": "Sapphire Crown",
+          "productLine": null,
+          "productName": "Go Bananas!",
+          "percentage": 50,
+          "sourceStatedRole": "SUPPORT",
+          "recordedRole": "SUPPORT",
+          "influenceScore": 43.92,
+          "influenceShare": 50,
+          "dominantCategories": [
+            "FRUIT",
+            "TROPICAL"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "десертно-ягодный"
+      ],
+      "dominantCategories": [
+        "BAKERY",
+        "BERRY",
+        "FRUIT"
+      ],
+      "secondaryCategories": [
+        "TROPICAL"
+      ],
+      "profile": {
+        "sweetness": 7,
+        "sourness": null,
+        "freshness": null,
+        "intensity": null,
+        "strength": 5,
+        "heatResistance": 8,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "sapphire-crown-blueberry-granola",
+        "influenceShare": 50,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 7.8,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 58.9,
+        "compatibilityScore": 7.8,
+        "riskScore": 9
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.25
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и Тропики",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.25
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.14xqeoo1gyloj0",
+      "slug": "dzhin-s-limon-lai-mom-i-lavandoi-vmr-14xqeoo1gyloj0",
+      "title": "Джин с лимон-лаймом и лавандой",
+      "componentCount": 3,
+      "components": [
+        {
+          "canonicalProductId": "hook-limon-laim",
+          "manufacturer": "HOOK by Chabacco",
+          "productLine": null,
+          "productName": "Лимон Лайм",
+          "percentage": 40,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 35.13,
+          "influenceShare": 40,
+          "dominantCategories": [
+            "CITRUS",
+            "CANDY"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "sarma-360-dzhin",
+          "manufacturer": "Sarma",
+          "productLine": "360 Крепкая",
+          "productName": "Джин",
+          "percentage": 35,
+          "sourceStatedRole": "SUPPORT",
+          "recordedRole": "SUPPORT",
+          "influenceScore": 30.74,
+          "influenceShare": 35,
+          "dominantCategories": [
+            "ALCOHOL",
+            "HERBAL"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "sarma-360-gornaya-lavanda",
+          "manufacturer": "Sarma",
+          "productLine": "360 Крепкая",
+          "productName": "Горная лаванда",
+          "percentage": 25,
+          "sourceStatedRole": "ACCENT",
+          "recordedRole": "ACCENT",
+          "influenceScore": 21.96,
+          "influenceShare": 25,
+          "dominantCategories": [
+            "FLORAL"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "freshness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "алкогольно-цитрусовый цветочный"
+      ],
+      "dominantCategories": [
+        "CANDY",
+        "CITRUS",
+        "ALCOHOL"
+      ],
+      "secondaryCategories": [
+        "HERBAL",
+        "FLORAL"
+      ],
+      "profile": {
+        "sweetness": null,
+        "sourness": 5,
+        "freshness": 6,
+        "intensity": null,
+        "strength": 6.4,
+        "heatResistance": null,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "hook-limon-laim",
+        "influenceShare": 40,
+        "level": "MODERATE"
+      },
+      "predicted": {
+        "qualityScore": 7.8,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 59.2,
+        "compatibilityScore": 7.8,
+        "riskScore": 9
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "PROPORTION_BALANCE",
+            "title": "Все компоненты различимы",
+            "description": "Все компоненты должны оставаться заметными",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Цветы и Алкогольное направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.18
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.0jj9h2v0iqrn9v",
+      "slug": "granat-s-pryanostyami-vmr-0jj9h2v0iqrn9v",
+      "title": "Гранат с пряностями",
+      "componentCount": 5,
+      "components": [
+        {
+          "canonicalProductId": "element-air-milky-mouse",
+          "manufacturer": "Element",
+          "productLine": "Air",
+          "productName": "Milky Mouse",
+          "percentage": 10,
+          "sourceStatedRole": "TEXTURE",
+          "recordedRole": "TEXTURE",
+          "influenceScore": 8.78,
+          "influenceShare": 10,
+          "dominantCategories": [
+            "CREAMY",
+            "DESSERT",
+            "CHOCOLATE"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "juiciness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "smoke-angels-firestarter",
+          "manufacturer": "Smoke Angels",
+          "productLine": null,
+          "productName": "Firestarter",
+          "percentage": 15,
+          "sourceStatedRole": "SPICE",
+          "recordedRole": "SPICE",
+          "influenceScore": 13.18,
+          "influenceShare": 15,
+          "dominantCategories": [
+            "SPICE",
+            "CANDY"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "freshness",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "mattpear-ginger-feel",
+          "manufacturer": "MattPear",
+          "productLine": null,
+          "productName": "Ginger Feel",
+          "percentage": 15,
+          "sourceStatedRole": "SPICE",
+          "recordedRole": "SPICE",
+          "influenceScore": 13.18,
+          "influenceShare": 15,
+          "dominantCategories": [
+            "SPICE",
+            "WOODY"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "freshness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "chabacco-mix-grenadin-drops",
+          "manufacturer": "Chabacco",
+          "productLine": "Mix",
+          "productName": "Гренадин Дропс",
+          "percentage": 30,
+          "sourceStatedRole": "SUPPORT",
+          "recordedRole": "SUPPORT",
+          "influenceScore": 26.35,
+          "influenceShare": 30,
+          "dominantCategories": [
+            "FRUIT",
+            "COOLING",
+            "CANDY"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "freshness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "jam-granatovyi-sok",
+          "manufacturer": "JAM",
+          "productLine": null,
+          "productName": "Гранатовый сок",
+          "percentage": 30,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 26.35,
+          "influenceShare": 30,
+          "dominantCategories": [
+            "FRUIT",
+            "SOUR"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 2,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 4,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "пряно-фруктовый"
+      ],
+      "dominantCategories": [
+        "FRUIT"
+      ],
+      "secondaryCategories": [
+        "CANDY",
+        "COOLING",
+        "SOUR",
+        "SPICE"
+      ],
+      "profile": {
+        "sweetness": 5.8,
+        "sourness": 6,
+        "freshness": 6.3,
+        "intensity": null,
+        "strength": 3.3,
+        "heatResistance": 3,
+        "juiciness": 7
+      },
+      "dominance": {
+        "canonicalProductId": "chabacco-mix-grenadin-drops",
+        "influenceShare": 30,
+        "level": "BALANCED"
+      },
+      "predicted": {
+        "qualityScore": 7.2,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 61,
+        "compatibilityScore": 8.1,
+        "riskScore": 9
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "PROFILE_BALANCE",
+            "title": "Кисло-сладкий баланс",
+            "description": "Сладость и кислотность поддерживают друг друга",
+            "impact": 0.4
+          },
+          {
+            "category": "PROPORTION_BALANCE",
+            "title": "Все компоненты различимы",
+            "description": "Все компоненты должны оставаться заметными",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Конфеты и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.24
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Конфеты и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.16
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Холод и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.16
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.16
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Специи",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.16
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Сливочность и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.06
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Десерт и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.06
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Десерт и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.06
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.134uijt1poho11",
+      "slug": "kislyi-yagodnyi-tic-tac-vmr-134uijt1poho11",
+      "title": "Кислый ягодный Tic Tac",
+      "componentCount": 2,
+      "components": [
+        {
+          "canonicalProductId": "musthave-sour-berries",
+          "manufacturer": "Musthave",
+          "productLine": null,
+          "productName": "Sour Berries",
+          "percentage": 35,
+          "sourceStatedRole": null,
+          "recordedRole": null,
+          "influenceScore": 30.74,
+          "influenceShare": 35,
+          "dominantCategories": [
+            "BERRY",
+            "SOUR"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "blackburn-tic-tac",
+          "manufacturer": "BlackBurn",
+          "productLine": null,
+          "productName": "Tic Tac",
+          "percentage": 65,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 57.09,
+          "influenceShare": 65,
+          "dominantCategories": [
+            "CITRUS",
+            "MINT",
+            "CANDY"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 9,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "freshness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "конфетно-ягодный"
+      ],
+      "dominantCategories": [
+        "CANDY",
+        "CITRUS",
+        "MINT"
+      ],
+      "secondaryCategories": [
+        "BERRY",
+        "SOUR"
+      ],
+      "profile": {
+        "sweetness": 7,
+        "sourness": 7,
+        "freshness": 6,
+        "intensity": null,
+        "strength": 5.7,
+        "heatResistance": 7.6,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "blackburn-tic-tac",
+        "influenceShare": 65,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 7.7,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 61.5,
+        "compatibilityScore": 7.9,
+        "riskScore": 8.5
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "PROFILE_BALANCE",
+            "title": "Кисло-сладкий баланс",
+            "description": "Сладость и кислотность поддерживают друг друга",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Цитрус и Ягоды",
+            "description": "Эти вкусовые направления сочетаются в текущих пропорциях.",
+            "impact": 0.26
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Конфеты и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.17
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Цитрус и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.17
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Мята и Ягоды",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.17
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.1nidbir0iqf9tb",
+      "slug": "kivi-s-ogurechnym-limonadom-i-myatoi-vmr-1nidbir0iqf9tb",
+      "title": "Киви с огуречным лимонадом и мятой",
+      "componentCount": 3,
+      "components": [
+        {
+          "canonicalProductId": "chabacco-moroznaya-myata",
+          "manufacturer": "Chabacco",
+          "productLine": null,
+          "productName": "Морозная мята",
+          "percentage": 15,
+          "sourceStatedRole": null,
+          "recordedRole": null,
+          "influenceScore": 13.18,
+          "influenceShare": 15,
+          "dominantCategories": [
+            "MINT",
+            "COOLING"
+          ],
+          "contributedParameters": [
+            {
+              "field": "heatResistance",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "freshness",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "sapphire-crown-kiwi-fruit",
+          "manufacturer": "Sapphire Crown",
+          "productLine": null,
+          "productName": "Kiwi Fruit",
+          "percentage": 35,
+          "sourceStatedRole": null,
+          "recordedRole": null,
+          "influenceScore": 30.74,
+          "influenceShare": 35,
+          "dominantCategories": [
+            "FRUIT",
+            "TROPICAL"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "sarma-360-ogurechnyi-limonad",
+          "manufacturer": "Sarma",
+          "productLine": "360",
+          "productName": "Огуречный лимонад",
+          "percentage": 50,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 43.92,
+          "influenceShare": 50,
+          "dominantCategories": [
+            "FRESH",
+            "CITRUS"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 4,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "freshness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "зеленый напиточный"
+      ],
+      "dominantCategories": [
+        "CITRUS",
+        "FRESH"
+      ],
+      "secondaryCategories": [
+        "FRUIT",
+        "TROPICAL"
+      ],
+      "profile": {
+        "sweetness": 6.7,
+        "sourness": 3.6,
+        "freshness": 7.2,
+        "intensity": null,
+        "strength": 6.2,
+        "heatResistance": 7.7,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "sarma-360-ogurechnyi-limonad",
+        "influenceShare": 50,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 8.2,
+        "confidenceLabel": "Предварительная",
+        "dataQuality": 41.9,
+        "compatibilityScore": 8.7,
+        "riskScore": 10
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Цитрус",
+            "description": "Эти вкусовые направления хорошо поддерживают друг друга.",
+            "impact": 0.61
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "PROPORTION_BALANCE",
+            "title": "Все компоненты различимы",
+            "description": "Все компоненты должны оставаться заметными",
+            "impact": 0.4
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Свежесть",
+            "description": "Эти вкусовые направления сочетаются в текущих пропорциях.",
+            "impact": 0.35
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Тропики и цитрус",
+            "description": "Цитрус может освежить тропический профиль.",
+            "impact": 0.35
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Мята и Цитрус",
+            "description": "Эти вкусовые направления хорошо поддерживают друг друга.",
+            "impact": 0.26
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Мята и Фрукты",
+            "description": "Эти вкусовые направления сочетаются в текущих пропорциях.",
+            "impact": 0.15
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Мята и Тропики",
+            "description": "Эти вкусовые направления сочетаются в текущих пропорциях.",
+            "impact": 0.15
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Тропики и Холод",
+            "description": "Эти вкусовые направления сочетаются в текущих пропорциях.",
+            "impact": 0.15
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Цитрус и холод",
+            "description": "Умеренный холод может подчеркнуть цитрус.",
+            "impact": 0.15
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Холод и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.09
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.07jksrs0axldus",
+      "slug": "klubnichno-bananovyi-milkshei-k-s-tropikami-vmr-07jksrs0axldus",
+      "title": "Клубнично-банановый милкшейк с тропиками",
+      "componentCount": 3,
+      "components": [
+        {
+          "canonicalProductId": "overdose-strawberry",
+          "manufacturer": "Overdose",
+          "productLine": null,
+          "productName": "Strawberry",
+          "percentage": 40,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 35.13,
+          "influenceShare": 40,
+          "dominantCategories": [
+            "BERRY",
+            "FRUIT"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 9,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "freshness",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "chabacco-mix-bananovyi-milksheik",
+          "manufacturer": "Chabacco",
+          "productLine": "Mix",
+          "productName": "Банановый милкшейк",
+          "percentage": 40,
+          "sourceStatedRole": "TEXTURE",
+          "recordedRole": "TEXTURE",
+          "influenceScore": 35.13,
+          "influenceShare": 40,
+          "dominantCategories": [
+            "FRUIT",
+            "CREAMY",
+            "DESSERT"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "sapphire-crown-mejumi",
+          "manufacturer": "Sapphire Crown",
+          "productLine": null,
+          "productName": "MeJuMi",
+          "percentage": 20,
+          "sourceStatedRole": "ACCENT",
+          "recordedRole": "ACCENT",
+          "influenceScore": 17.57,
+          "influenceShare": 20,
+          "dominantCategories": [
+            "TROPICAL",
+            "CREAMY",
+            "BEVERAGE"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "десертно-тропический"
+      ],
+      "dominantCategories": [
+        "FRUIT",
+        "CREAMY"
+      ],
+      "secondaryCategories": [
+        "BERRY",
+        "DESSERT"
+      ],
+      "profile": {
+        "sweetness": 6.6,
+        "sourness": null,
+        "freshness": 5,
+        "intensity": null,
+        "strength": 5.4,
+        "heatResistance": 6.4,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "chabacco-mix-bananovyi-milksheik",
+        "influenceShare": 40,
+        "level": "MODERATE"
+      },
+      "predicted": {
+        "qualityScore": 7.8,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 61.7,
+        "compatibilityScore": 8.6,
+        "riskScore": 9
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и Сливочность",
+            "description": "Эти вкусовые направления хорошо поддерживают друг друга.",
+            "impact": 0.54
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Десерт и Сливочность",
+            "description": "Эти вкусовые направления хорошо поддерживают друг друга.",
+            "impact": 0.54
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "PROPORTION_BALANCE",
+            "title": "Все компоненты различимы",
+            "description": "Все компоненты должны оставаться заметными",
+            "impact": 0.4
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и молочная нота",
+            "description": "Молочная нота может смягчить ягодный профиль.",
+            "impact": 0.31
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и десерт",
+            "description": "Десертная основа может связать ягодные ноты.",
+            "impact": 0.31
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Сливочность и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.25
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и Десерт",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.19
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.19
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Десерт и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.19
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и Тропики",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.1
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Сливочность и Тропики",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.1
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Тропики",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.1
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.186mcc51abon0h",
+      "slug": "kofe-s-apelsinom-i-slivkami-vmr-186mcc51abon0h",
+      "title": "Кофе с апельсином и сливками",
+      "componentCount": 2,
+      "components": [
+        {
+          "canonicalProductId": "overdose-coffee",
+          "manufacturer": "Overdose",
+          "productLine": null,
+          "productName": "Coffee",
+          "percentage": 60,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 52.7,
+          "influenceShare": 60,
+          "dominantCategories": [
+            "COFFEE",
+            "CREAMY"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 9,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "chabacco-mix-apelsin-slivki",
+          "manufacturer": "Chabacco",
+          "productLine": "Mix",
+          "productName": "Апельсин-сливки",
+          "percentage": 40,
+          "sourceStatedRole": "TEXTURE",
+          "recordedRole": "TEXTURE",
+          "influenceScore": 35.13,
+          "influenceShare": 40,
+          "dominantCategories": [
+            "CITRUS",
+            "CREAMY"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "кофейно-десертный"
+      ],
+      "dominantCategories": [
+        "CREAMY",
+        "COFFEE",
+        "CITRUS"
+      ],
+      "secondaryCategories": [],
+      "profile": {
+        "sweetness": 6,
+        "sourness": null,
+        "freshness": null,
+        "intensity": null,
+        "strength": 6,
+        "heatResistance": 6.6,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "overdose-coffee",
+        "influenceShare": 60,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 7.5,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 61.1,
+        "compatibilityScore": 7.8,
+        "riskScore": 8.5
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Кофе и Сливочность",
+            "description": "Эти вкусовые направления хорошо поддерживают друг друга.",
+            "impact": 0.7
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Кофе и молочная нота",
+            "description": "Молочная нота может смягчить кофейную основу.",
+            "impact": 0.7
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.14uu8f01ujkh7c",
+      "slug": "martsipan-s-kai-pirinei-vmr-14uu8f01ujkh7c",
+      "title": "Марципан с кайпириньей",
+      "componentCount": 2,
+      "components": [
+        {
+          "canonicalProductId": "husky-marzipan",
+          "manufacturer": "Husky",
+          "productLine": null,
+          "productName": "Marzipan",
+          "percentage": 47.43,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 36.76,
+          "influenceShare": 44.3,
+          "dominantCategories": [
+            "NUT",
+            "CANDY",
+            "DESSERT"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 4,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "intensity",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "husky-caipirinha",
+          "manufacturer": "Husky",
+          "productLine": null,
+          "productName": "Caipirinha",
+          "percentage": 52.57,
+          "sourceStatedRole": null,
+          "recordedRole": null,
+          "influenceScore": 46.17,
+          "influenceShare": 55.7,
+          "dominantCategories": [
+            "CITRUS",
+            "ALCOHOL",
+            "FRUIT"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 4,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "десертно-коктейльный"
+      ],
+      "dominantCategories": [
+        "ALCOHOL",
+        "CITRUS",
+        "FRUIT"
+      ],
+      "secondaryCategories": [
+        "CANDY",
+        "DESSERT",
+        "NUT"
+      ],
+      "profile": {
+        "sweetness": 7,
+        "sourness": 5,
+        "freshness": null,
+        "intensity": 3,
+        "strength": 4,
+        "heatResistance": null,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "husky-caipirinha",
+        "influenceShare": 55.7,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 7.4,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 58.9,
+        "compatibilityScore": 7.9,
+        "riskScore": 9
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "PROFILE_BALANCE",
+            "title": "Кисло-сладкий баланс",
+            "description": "Сладость и кислотность поддерживают друг друга",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Конфеты и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.15
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Цитрус и Десерт",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.15
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Десерт и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.15
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.1kt0vy21ezwh3y",
+      "slug": "mindalnaya-grusha-s-dynei-vmr-1kt0vy21ezwh3y",
+      "title": "Миндальная груша с дыней",
+      "componentCount": 2,
+      "components": [
+        {
+          "canonicalProductId": "blackburn-almond-pear",
+          "manufacturer": "BlackBurn",
+          "productLine": null,
+          "productName": "Almond Pear",
+          "percentage": 60,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 52.7,
+          "influenceShare": 60,
+          "dominantCategories": [
+            "FRUIT",
+            "NUT"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 9,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "overdose-samarkand-melon",
+          "manufacturer": "Overdose",
+          "productLine": null,
+          "productName": "Samarkand Melon",
+          "percentage": 40,
+          "sourceStatedRole": "SUPPORT",
+          "recordedRole": "SUPPORT",
+          "influenceScore": 35.13,
+          "influenceShare": 40,
+          "dominantCategories": [
+            "FRUIT"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 9,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "фруктово-десертный"
+      ],
+      "dominantCategories": [
+        "FRUIT",
+        "NUT"
+      ],
+      "secondaryCategories": [],
+      "profile": {
+        "sweetness": 5,
+        "sourness": null,
+        "freshness": null,
+        "intensity": null,
+        "strength": 6.8,
+        "heatResistance": 9,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "blackburn-almond-pear",
+        "influenceShare": 60,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 8.1,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 59.9,
+        "compatibilityScore": 7.7,
+        "riskScore": 10
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.1sbnof0185i1x4",
+      "slug": "persik-s-zelenym-chaem-vmr-1sbnof0185i1x4",
+      "title": "Персик с зеленым чаем",
+      "componentCount": 2,
+      "components": [
+        {
+          "canonicalProductId": "sapphire-crown-sunny-peach",
+          "manufacturer": "Sapphire Crown",
+          "productLine": null,
+          "productName": "Sunny Peach",
+          "percentage": 80,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 70.27,
+          "influenceShare": 79.1,
+          "dominantCategories": [
+            "FRUIT",
+            "SOUR"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "blackburn-green-tea",
+          "manufacturer": "BlackBurn",
+          "productLine": null,
+          "productName": "Green Tea",
+          "percentage": 20,
+          "sourceStatedRole": "ACCENT",
+          "recordedRole": "ACCENT",
+          "influenceScore": 18.6,
+          "influenceShare": 20.9,
+          "dominantCategories": [
+            "TEA",
+            "HERBAL"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 9,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "intensity",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "freshness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "чайно-фруктовый"
+      ],
+      "dominantCategories": [
+        "FRUIT",
+        "SOUR"
+      ],
+      "secondaryCategories": [
+        "HERBAL",
+        "TEA"
+      ],
+      "profile": {
+        "sweetness": 5.4,
+        "sourness": 3,
+        "freshness": 7,
+        "intensity": 6,
+        "strength": 5.2,
+        "heatResistance": 9,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "sapphire-crown-sunny-peach",
+        "influenceShare": 79.1,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 7.9,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 59.7,
+        "compatibilityScore": 7.6,
+        "riskScore": 9
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "PROFILE_BALANCE",
+            "title": "Кисло-сладкий баланс",
+            "description": "Сладость и кислотность поддерживают друг друга",
+            "impact": 0.4
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.1wau2ku1ws3gre",
+      "slug": "persikovoe-shampanskoe-s-kislym-tsitrusom-vmr-1wau2ku1ws3gre",
+      "title": "Персиковое шампанское с кислым цитрусом",
+      "componentCount": 3,
+      "components": [
+        {
+          "canonicalProductId": "sarma-360-light-shampanskoe",
+          "manufacturer": "Sarma",
+          "productLine": "360 Лёгкая",
+          "productName": "Шампанское",
+          "percentage": 50,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 43.92,
+          "influenceShare": 50,
+          "dominantCategories": [
+            "ALCOHOL"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 2,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "sarma-360-persik",
+          "manufacturer": "Sarma",
+          "productLine": "360 Крепкая",
+          "productName": "Персик",
+          "percentage": 35,
+          "sourceStatedRole": "SUPPORT",
+          "recordedRole": "SUPPORT",
+          "influenceScore": 30.74,
+          "influenceShare": 35,
+          "dominantCategories": [
+            "FRUIT"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "musthave-sour-citrus",
+          "manufacturer": "Musthave",
+          "productLine": null,
+          "productName": "Sour Citrus",
+          "percentage": 15,
+          "sourceStatedRole": "ACCENT",
+          "recordedRole": "ACCENT",
+          "influenceScore": 13.18,
+          "influenceShare": 15,
+          "dominantCategories": [
+            "CITRUS",
+            "SOUR"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 6,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "juiciness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "freshness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "алкогольно-фруктовый"
+      ],
+      "dominantCategories": [
+        "ALCOHOL",
+        "FRUIT"
+      ],
+      "secondaryCategories": [
+        "CITRUS",
+        "SOUR"
+      ],
+      "profile": {
+        "sweetness": 5.9,
+        "sourness": 7,
+        "freshness": 6,
+        "intensity": null,
+        "strength": 4,
+        "heatResistance": 6,
+        "juiciness": 6
+      },
+      "dominance": {
+        "canonicalProductId": "sarma-360-light-shampanskoe",
+        "influenceShare": 50,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 7.6,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 60.7,
+        "compatibilityScore": 8.1,
+        "riskScore": 9.5
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Цитрус",
+            "description": "Эти вкусовые направления хорошо поддерживают друг друга.",
+            "impact": 0.46
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Алкогольное направление и Фрукты",
+            "description": "Эти вкусовые направления сочетаются в текущих пропорциях.",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "PROFILE_BALANCE",
+            "title": "Кисло-сладкий баланс",
+            "description": "Сладость и кислотность поддерживают друг друга",
+            "impact": 0.4
+          },
+          {
+            "category": "PROPORTION_BALANCE",
+            "title": "Все компоненты различимы",
+            "description": "Все компоненты должны оставаться заметными",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.16
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.1gjfv5h1jm912x",
+      "slug": "tropicheskii-kislyi-limonad-vmr-1gjfv5h1jm912x",
+      "title": "Тропический кислый лимонад",
+      "componentCount": 2,
+      "components": [
+        {
+          "canonicalProductId": "blackburn-ice-baby",
+          "manufacturer": "BlackBurn",
+          "productLine": null,
+          "productName": "Ice Baby",
+          "percentage": 70,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 61.48,
+          "influenceShare": 70,
+          "dominantCategories": [
+            "BERRY",
+            "CITRUS",
+            "COOLING"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 9,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "freshness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "musthave-sour-tropic",
+          "manufacturer": "Musthave",
+          "productLine": null,
+          "productName": "Sour Tropic",
+          "percentage": 30,
+          "sourceStatedRole": null,
+          "recordedRole": null,
+          "influenceScore": 26.35,
+          "influenceShare": 30,
+          "dominantCategories": [
+            "TROPICAL",
+            "SOUR"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 6,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "напиточный тропический"
+      ],
+      "dominantCategories": [
+        "BERRY",
+        "CITRUS",
+        "COOLING"
+      ],
+      "secondaryCategories": [
+        "SOUR",
+        "TROPICAL"
+      ],
+      "profile": {
+        "sweetness": 6,
+        "sourness": 5.6,
+        "freshness": 6,
+        "intensity": null,
+        "strength": 6,
+        "heatResistance": 8.1,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "blackburn-ice-baby",
+        "influenceShare": 70,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 7.7,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 61.6,
+        "compatibilityScore": 7.9,
+        "riskScore": 8
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "PROFILE_BALANCE",
+            "title": "Кисло-сладкий баланс",
+            "description": "Сладость и кислотность поддерживают друг друга",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Тропики и Холод",
+            "description": "Эти вкусовые направления сочетаются в текущих пропорциях.",
+            "impact": 0.22
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Тропики и цитрус",
+            "description": "Цитрус может освежить тропический профиль.",
+            "impact": 0.22
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.14
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и Тропики",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.14
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Цитрус и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.14
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.1mnhz0q0j3fvsu",
+      "slug": "tropicheskii-multifrukt-s-ezhevikoi-vmr-1mnhz0q0j3fvsu",
+      "title": "Тропический мультифрукт с ежевикой",
+      "componentCount": 2,
+      "components": [
+        {
+          "canonicalProductId": "blackburn-na-chille",
+          "manufacturer": "BlackBurn",
+          "productLine": null,
+          "productName": "На чилле",
+          "percentage": 60,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 55.8,
+          "influenceShare": 61.4,
+          "dominantCategories": [
+            "TROPICAL",
+            "SOUR"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 9,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "intensity",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "juiciness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "musthave-blackberry",
+          "manufacturer": "Musthave",
+          "productLine": null,
+          "productName": "Blackberry",
+          "percentage": 40,
+          "sourceStatedRole": "ACCENT",
+          "recordedRole": "ACCENT",
+          "influenceScore": 35.13,
+          "influenceShare": 38.6,
+          "dominantCategories": [
+            "BERRY"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 6,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 4,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "juiciness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "фруктово-ягодный"
+      ],
+      "dominantCategories": [
+        "SOUR",
+        "TROPICAL",
+        "BERRY"
+      ],
+      "secondaryCategories": [],
+      "profile": {
+        "sweetness": 6,
+        "sourness": 5.2,
+        "freshness": null,
+        "intensity": 6,
+        "strength": 6,
+        "heatResistance": 7.8,
+        "juiciness": 6.6
+      },
+      "dominance": {
+        "canonicalProductId": "blackburn-na-chille",
+        "influenceShare": 61.4,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 7.9,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 62.3,
+        "compatibilityScore": 8,
+        "riskScore": 10
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "PROFILE_BALANCE",
+            "title": "Кисло-сладкий баланс",
+            "description": "Сладость и кислотность поддерживают друг друга",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.25
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и Тропики",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.25
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.1s8ukte1311pla",
+      "slug": "tsitrusovyi-medovyi-chai-so-smorodinoi-vmr-1s8ukte1311pla",
+      "title": "Цитрусовый медовый чай со смородиной",
+      "componentCount": 3,
+      "components": [
+        {
+          "canonicalProductId": "sapphire-crown-yuzu-honey",
+          "manufacturer": "Sapphire Crown",
+          "productLine": null,
+          "productName": "Yuzu-Honey",
+          "percentage": 30,
+          "sourceStatedRole": "SUPPORT",
+          "recordedRole": "SUPPORT",
+          "influenceScore": 26.35,
+          "influenceShare": 30,
+          "dominantCategories": [
+            "CITRUS",
+            "DESSERT"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "brusko-medium-tsitrusovyi-chai",
+          "manufacturer": "Brusko",
+          "productLine": "Medium",
+          "productName": "Цитрусовый чай",
+          "percentage": 40,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 35.13,
+          "influenceShare": 40,
+          "dominantCategories": [
+            "TEA",
+            "CITRUS"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 4,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 4,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "jam-krasnaya-smorodina",
+          "manufacturer": "JAM",
+          "productLine": null,
+          "productName": "Красная смородина",
+          "percentage": 30,
+          "sourceStatedRole": "ACCENT",
+          "recordedRole": "ACCENT",
+          "influenceScore": 26.35,
+          "influenceShare": 30,
+          "dominantCategories": [
+            "BERRY",
+            "SOUR"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 2,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "чайно-ягодный"
+      ],
+      "dominantCategories": [
+        "CITRUS",
+        "TEA"
+      ],
+      "secondaryCategories": [
+        "BERRY",
+        "DESSERT",
+        "SOUR"
+      ],
+      "profile": {
+        "sweetness": 5.4,
+        "sourness": 4.9,
+        "freshness": null,
+        "intensity": null,
+        "strength": 3.7,
+        "heatResistance": 5,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "brusko-medium-tsitrusovyi-chai",
+        "influenceShare": 40,
+        "level": "MODERATE"
+      },
+      "predicted": {
+        "qualityScore": 7.7,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 60.5,
+        "compatibilityScore": 8.9,
+        "riskScore": 10
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Чай и Цитрус",
+            "description": "Эти вкусовые направления хорошо поддерживают друг друга.",
+            "impact": 0.7
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "PROFILE_BALANCE",
+            "title": "Кисло-сладкий баланс",
+            "description": "Сладость и кислотность поддерживают друг друга",
+            "impact": 0.4
+          },
+          {
+            "category": "PROPORTION_BALANCE",
+            "title": "Все компоненты различимы",
+            "description": "Все компоненты должны оставаться заметными",
+            "impact": 0.4
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Цитрус и Ягоды",
+            "description": "Эти вкусовые направления сочетаются в текущих пропорциях.",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Чай и Ягоды",
+            "description": "Эти вкусовые направления сочетаются в текущих пропорциях.",
+            "impact": 0.3
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и десерт",
+            "description": "Десертная основа может связать ягодные ноты.",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и Десерт",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.19
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Цитрус и Десерт",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.19
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Цитрус и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.19
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Десерт и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.19
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.11gwkcf1akdwib",
+      "slug": "tykvennyi-raf-s-tsitrusom-vmr-11gwkcf1akdwib",
+      "title": "Тыквенный RAF с цитрусом",
+      "componentCount": 3,
+      "components": [
+        {
+          "canonicalProductId": "nash-white-line-karamel-tsitrus",
+          "manufacturer": "НАШ",
+          "productLine": "White Line",
+          "productName": "Карамель цитрус",
+          "percentage": 20,
+          "sourceStatedRole": "ACCENT",
+          "recordedRole": "ACCENT",
+          "influenceScore": 17.57,
+          "influenceShare": 19.7,
+          "dominantCategories": [
+            "DESSERT",
+            "CITRUS"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "sapphire-crown-pumpkin-raf",
+          "manufacturer": "Sapphire Crown",
+          "productLine": null,
+          "productName": "Pumpkin RAF",
+          "percentage": 50,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 43.92,
+          "influenceShare": 49.1,
+          "dominantCategories": [
+            "COFFEE",
+            "CREAMY",
+            "DESSERT"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "daily-hookah-slivochnyi-krem",
+          "manufacturer": "Daily Hookah",
+          "productLine": null,
+          "productName": "Сливочный крем",
+          "percentage": 30,
+          "sourceStatedRole": "TEXTURE",
+          "recordedRole": "TEXTURE",
+          "influenceScore": 27.9,
+          "influenceShare": 31.2,
+          "dominantCategories": [
+            "CREAMY",
+            "DESSERT"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "intensity",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "кофейно-десертный"
+      ],
+      "dominantCategories": [
+        "DESSERT",
+        "CREAMY"
+      ],
+      "secondaryCategories": [
+        "COFFEE"
+      ],
+      "profile": {
+        "sweetness": 6.8,
+        "sourness": null,
+        "freshness": null,
+        "intensity": 6,
+        "strength": 4.6,
+        "heatResistance": 7.4,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "sapphire-crown-pumpkin-raf",
+        "influenceShare": 49.1,
+        "level": "MODERATE"
+      },
+      "predicted": {
+        "qualityScore": 8.2,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 59.9,
+        "compatibilityScore": 8.8,
+        "riskScore": 9.5
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Десерт и Сливочность",
+            "description": "Эти вкусовые направления хорошо поддерживают друг друга.",
+            "impact": 0.7
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Кофе и Сливочность",
+            "description": "Эти вкусовые направления хорошо поддерживают друг друга.",
+            "impact": 0.67
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Кофе и молочная нота",
+            "description": "Молочная нота может смягчить кофейную основу.",
+            "impact": 0.67
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "PROPORTION_BALANCE",
+            "title": "Все компоненты различимы",
+            "description": "Все компоненты должны оставаться заметными",
+            "impact": 0.4
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Кофе и десерт",
+            "description": "Десертная нота может поддержать кофейный профиль.",
+            "impact": 0.38
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Цитрус и Десерт",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.1
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.1utvpbv0kjevxz",
+      "slug": "vishnya-granat-i-bananovoe-sufle-vmr-1utvpbv0kjevxz",
+      "title": "Вишня, гранат и банановое суфле",
+      "componentCount": 3,
+      "components": [
+        {
+          "canonicalProductId": "sapphire-crown-bitter-cherry",
+          "manufacturer": "Sapphire Crown",
+          "productLine": null,
+          "productName": "Bitter Cherry",
+          "percentage": 40,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 37.2,
+          "influenceShare": 41.4,
+          "dominantCategories": [
+            "FRUIT",
+            "NUT"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "intensity",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "hook-granatovyi",
+          "manufacturer": "HOOK by Chabacco",
+          "productLine": null,
+          "productName": "Гранатовый",
+          "percentage": 20,
+          "sourceStatedRole": "ACCENT",
+          "recordedRole": "ACCENT",
+          "influenceScore": 17.57,
+          "influenceShare": 19.5,
+          "dominantCategories": [
+            "FRUIT",
+            "SOUR",
+            "FRESH"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 4,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "freshness",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "sarma-classic-bananovoe-sufle",
+          "manufacturer": "Sarma",
+          "productLine": "Классическая",
+          "productName": "Банановое суфле",
+          "percentage": 40,
+          "sourceStatedRole": "TEXTURE",
+          "recordedRole": "TEXTURE",
+          "influenceScore": 35.13,
+          "influenceShare": 39.1,
+          "dominantCategories": [
+            "FRUIT",
+            "CREAMY",
+            "DESSERT"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "фруктово-десертный"
+      ],
+      "dominantCategories": [
+        "FRUIT"
+      ],
+      "secondaryCategories": [
+        "NUT",
+        "CREAMY",
+        "DESSERT"
+      ],
+      "profile": {
+        "sweetness": 6.4,
+        "sourness": 4,
+        "freshness": 5,
+        "intensity": 6,
+        "strength": 5.2,
+        "heatResistance": 8,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "sapphire-crown-bitter-cherry",
+        "influenceShare": 41.4,
+        "level": "MODERATE"
+      },
+      "predicted": {
+        "qualityScore": 8.1,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 60,
+        "compatibilityScore": 8.1,
+        "riskScore": 9.5
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "PROFILE_BALANCE",
+            "title": "Кисло-сладкий баланс",
+            "description": "Сладость и кислотность поддерживают друг друга",
+            "impact": 0.4
+          },
+          {
+            "category": "PROPORTION_BALANCE",
+            "title": "Все компоненты различимы",
+            "description": "Все компоненты должны оставаться заметными",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Сливочность и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.18
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Десерт и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.18
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Свежесть",
+            "description": "Эти вкусовые направления сочетаются в текущих пропорциях.",
+            "impact": 0.14
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Десерт и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.09
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.09
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.0egl24o1ufpgd8",
+      "slug": "yablochnyi-desert-s-orehom-vmr-0egl24o1ufpgd8",
+      "title": "Яблочный десерт с орехом",
+      "componentCount": 4,
+      "components": [
+        {
+          "canonicalProductId": "endorphin-napoleon",
+          "manufacturer": "Endorphin",
+          "productLine": null,
+          "productName": "Napoleon",
+          "percentage": 20,
+          "sourceStatedRole": "TEXTURE",
+          "recordedRole": "TEXTURE",
+          "influenceScore": 17.57,
+          "influenceShare": 19.8,
+          "dominantCategories": [
+            "VANILLA",
+            "CREAMY",
+            "BAKERY"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "endorphin-apple",
+          "manufacturer": "Endorphin",
+          "productLine": null,
+          "productName": "Apple",
+          "percentage": 40,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 35.13,
+          "influenceShare": 39.5,
+          "dominantCategories": [
+            "FRUIT"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "musthave-vanilla-cream",
+          "manufacturer": "Musthave",
+          "productLine": null,
+          "productName": "Vanilla Cream",
+          "percentage": 20,
+          "sourceStatedRole": "TEXTURE",
+          "recordedRole": "TEXTURE",
+          "influenceScore": 17.57,
+          "influenceShare": 19.8,
+          "dominantCategories": [
+            "VANILLA",
+            "CREAMY"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 6,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "intensity",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "musthave-maple-pecan",
+          "manufacturer": "Musthave",
+          "productLine": null,
+          "productName": "Maple Pecan",
+          "percentage": 20,
+          "sourceStatedRole": "ACCENT",
+          "recordedRole": "ACCENT",
+          "influenceScore": 18.6,
+          "influenceShare": 20.9,
+          "dominantCategories": [
+            "NUT",
+            "BAKERY",
+            "DESSERT"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 6,
+              "source": "CANONICAL_TECHNICAL_PROFILE"
+            },
+            {
+              "field": "intensity",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "десертный"
+      ],
+      "dominantCategories": [
+        "BAKERY"
+      ],
+      "secondaryCategories": [
+        "CREAMY",
+        "FRUIT",
+        "VANILLA",
+        "DESSERT",
+        "NUT"
+      ],
+      "profile": {
+        "sweetness": 6.4,
+        "sourness": 3,
+        "freshness": null,
+        "intensity": 5.5,
+        "strength": 4.2,
+        "heatResistance": 6,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "endorphin-apple",
+        "influenceShare": 39.5,
+        "level": "BALANCED"
+      },
+      "predicted": {
+        "qualityScore": 8,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 61.3,
+        "compatibilityScore": 8.4,
+        "riskScore": 10
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Выпечка и Ваниль",
+            "description": "Эти вкусовые направления хорошо поддерживают друг друга.",
+            "impact": 0.66
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Десерт и Сливочность",
+            "description": "Эти вкусовые направления хорошо поддерживают друг друга.",
+            "impact": 0.4
+          },
+          {
+            "category": "PROPORTION_BALANCE",
+            "title": "Все компоненты различимы",
+            "description": "Все компоненты должны оставаться заметными",
+            "impact": 0.4
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Сливочность и Выпечка",
+            "description": "Эти вкусовые направления сочетаются в текущих пропорциях.",
+            "impact": 0.38
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Сливочность и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.24
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Десерт и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.14
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.1igj7cb0dcyky7",
+      "slug": "yabloko-s-chernoslivom-vmr-1igj7cb0dcyky7",
+      "title": "Яблоко с черносливом",
+      "componentCount": 2,
+      "components": [
+        {
+          "canonicalProductId": "sapphire-crown-dried-plum",
+          "manufacturer": "Sapphire Crown",
+          "productLine": null,
+          "productName": "Dried Plum",
+          "percentage": 30,
+          "sourceStatedRole": "ACCENT",
+          "recordedRole": "ACCENT",
+          "influenceScore": 26.35,
+          "influenceShare": 30,
+          "dominantCategories": [
+            "FRUIT"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "overdose-apple-juicy",
+          "manufacturer": "Overdose",
+          "productLine": null,
+          "productName": "Apple Juicy",
+          "percentage": 70,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 61.48,
+          "influenceShare": 70,
+          "dominantCategories": [
+            "FRUIT",
+            "SOUR",
+            "FRESH"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 9,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "juiciness",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "freshness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "фруктовый"
+      ],
+      "dominantCategories": [
+        "FRUIT",
+        "FRESH",
+        "SOUR"
+      ],
+      "secondaryCategories": [],
+      "profile": {
+        "sweetness": 6.3,
+        "sourness": 5.1,
+        "freshness": 6,
+        "intensity": null,
+        "strength": 7.1,
+        "heatResistance": 8.7,
+        "juiciness": 8
+      },
+      "dominance": {
+        "canonicalProductId": "overdose-apple-juicy",
+        "influenceShare": 70,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 7.9,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 64,
+        "compatibilityScore": 7.9,
+        "riskScore": 9
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Свежесть",
+            "description": "Эти вкусовые направления сочетаются в текущих пропорциях.",
+            "impact": 0.4
+          },
+          {
+            "category": "PROFILE_BALANCE",
+            "title": "Кисло-сладкий баланс",
+            "description": "Сладость и кислотность поддерживают друг друга",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.25
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.1sxhsys1epag0o",
+      "slug": "yagodnyi-marmelad-s-kisloi-malinoi-i-vinogradom-vmr-1sxhsys1epag0o",
+      "title": "Ягодный мармелад с кислой малиной и виноградом",
+      "componentCount": 3,
+      "components": [
+        {
+          "canonicalProductId": "urban-soul-berry-marmalade",
+          "manufacturer": "Urban Soul",
+          "productLine": null,
+          "productName": "Berry Marmalade",
+          "percentage": 30,
+          "sourceStatedRole": "TEXTURE",
+          "recordedRole": "TEXTURE",
+          "influenceScore": 26.35,
+          "influenceShare": 30,
+          "dominantCategories": [
+            "BERRY",
+            "CANDY"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "blackburn-shock-raspberry",
+          "manufacturer": "BlackBurn",
+          "productLine": "Shock",
+          "productName": "Raspberry",
+          "percentage": 40,
+          "sourceStatedRole": null,
+          "recordedRole": null,
+          "influenceScore": 35.13,
+          "influenceShare": 40,
+          "dominantCategories": [
+            "BERRY",
+            "SOUR"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "overdose-jelly-grape",
+          "manufacturer": "Overdose",
+          "productLine": null,
+          "productName": "Jelly Grape",
+          "percentage": 30,
+          "sourceStatedRole": "SUPPORT",
+          "recordedRole": "SUPPORT",
+          "influenceScore": 26.35,
+          "influenceShare": 30,
+          "dominantCategories": [
+            "FRUIT",
+            "CANDY"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 8,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 9,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 3,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "ягодно-конфетный"
+      ],
+      "dominantCategories": [
+        "BERRY",
+        "CANDY",
+        "SOUR"
+      ],
+      "secondaryCategories": [
+        "FRUIT"
+      ],
+      "profile": {
+        "sweetness": 5.1,
+        "sourness": 5.9,
+        "freshness": null,
+        "intensity": null,
+        "strength": 5.9,
+        "heatResistance": 7.7,
+        "juiciness": null
+      },
+      "dominance": {
+        "canonicalProductId": "blackburn-shock-raspberry",
+        "influenceShare": 40,
+        "level": "MODERATE"
+      },
+      "predicted": {
+        "qualityScore": 8.1,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 61.7,
+        "compatibilityScore": 8.3,
+        "riskScore": 10
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "PROFILE_BALANCE",
+            "title": "Кисло-сладкий баланс",
+            "description": "Сладость и кислотность поддерживают друг друга",
+            "impact": 0.4
+          },
+          {
+            "category": "PROPORTION_BALANCE",
+            "title": "Все компоненты различимы",
+            "description": "Все компоненты должны оставаться заметными",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.25
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Конфеты и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.25
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.19
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Конфеты и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.19
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.19
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    },
+    {
+      "recipeId": "vmr.1rz2wcs0hfokvk",
+      "slug": "yagodnyi-mors-so-skittles-vmr-1rz2wcs0hfokvk",
+      "title": "Ягодный морс со Skittles",
+      "componentCount": 2,
+      "components": [
+        {
+          "canonicalProductId": "element-earth-wildberry-mors",
+          "manufacturer": "Element",
+          "productLine": "Earth",
+          "productName": "Wildberry Mors",
+          "percentage": 50,
+          "sourceStatedRole": "BASE",
+          "recordedRole": "BASE",
+          "influenceScore": 43.92,
+          "influenceShare": 50,
+          "dominantCategories": [
+            "BERRY",
+            "FRUIT"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 4,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "juiciness",
+              "value": 5,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        },
+        {
+          "canonicalProductId": "deus-skittles",
+          "manufacturer": "Deus",
+          "productLine": null,
+          "productName": "Skittles",
+          "percentage": 50,
+          "sourceStatedRole": "SUPPORT",
+          "recordedRole": "SUPPORT",
+          "influenceScore": 43.92,
+          "influenceShare": 50,
+          "dominantCategories": [
+            "CANDY",
+            "FRUIT",
+            "SOUR"
+          ],
+          "contributedParameters": [
+            {
+              "field": "strength",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "heatResistance",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "sweetness",
+              "value": 7,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            },
+            {
+              "field": "acidity",
+              "value": 6,
+              "source": "CANONICAL_PRODUCT_PROFILE"
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "ягодно-конфетный"
+      ],
+      "dominantCategories": [
+        "FRUIT",
+        "BERRY",
+        "CANDY"
+      ],
+      "secondaryCategories": [
+        "SOUR"
+      ],
+      "profile": {
+        "sweetness": 6.5,
+        "sourness": 5,
+        "freshness": null,
+        "intensity": null,
+        "strength": 6.5,
+        "heatResistance": 6,
+        "juiciness": 5
+      },
+      "dominance": {
+        "canonicalProductId": "deus-skittles",
+        "influenceShare": 50,
+        "level": "CLEAR"
+      },
+      "predicted": {
+        "qualityScore": 7.5,
+        "confidenceLabel": "Средняя",
+        "dataQuality": 59.7,
+        "compatibilityScore": 8.2,
+        "riskScore": 10
+      },
+      "explainability": {
+        "positiveFactors": [
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Различимая основа",
+            "description": "Один компонент задаёт основу, а дополнительные компоненты должны оставаться различимыми",
+            "impact": 0.4
+          },
+          {
+            "category": "PROFILE_BALANCE",
+            "title": "Кисло-сладкий баланс",
+            "description": "Сладость и кислотность поддерживают друг друга",
+            "impact": 0.4
+          },
+          {
+            "category": "INTENSITY_BALANCE",
+            "title": "Плавное распределение влияния",
+            "description": "Влияние компонентов убывает без резкого провала",
+            "impact": 0.3
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.25
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Ягоды и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.25
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Конфеты и Фрукты",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.25
+          },
+          {
+            "category": "NOTE_COMPATIBILITY",
+            "title": "Фрукты и Кислое направление",
+            "description": "Эти вкусовые направления могут дополнять друг друга в текущих пропорциях.",
+            "impact": 0.25
+          }
+        ],
+        "risks": []
+      },
+      "recommendations": [
+        {
+          "type": "INSUFFICIENT_DATA",
+          "priority": "HIGH",
+          "text": "Для более точной корректировки пока недостаточно профильных данных."
+        }
+      ],
+      "suggestedVariant": null,
+      "observed": {
+        "smokeScore": null,
+        "hasObservedEvaluation": false,
+        "evaluation": null
+      },
+      "preparation": null,
+      "engineVersions": {
+        "canonicalMixScoring": "canonical-mix-scoring-v1",
+        "mixProfile": "mix-profile-v1",
+        "compatibility": "mix-compatibility-v1",
+        "recommendation": "mix-recommendation-v1",
+        "analysis": "verified-mix-analysis-v1"
+      }
+    }
+  ]
+}

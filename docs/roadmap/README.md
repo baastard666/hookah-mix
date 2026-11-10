@@ -16,10 +16,11 @@
 - v0.3.5 Product Flavor Profile Registry (батчи 1–6 — 86 из 86 `RESOLVED` продуктов, регистратура полностью заполнена, не подключена к scoring/UI)
 - Verified Mix Recipe Registry — exact-only runtime-проекция 28 реальных VERIFIED рецептов поверх ExpertMixKnowledge; без UI и без scoring wiring
 - Mix Analysis v2 для Verified Mix Recipes — read-only adapter 28 exact recipes к существующему Mix Analysis Engine через Product Flavor Profile Registry; predicted/observed разделены, UI не добавлен
+- Каталог готовых миксов `/mixes` и `/mixes/[slug]` — committed public-safe snapshot, поиск, фильтры, static detail pages
 
 ## In progress
 
-Следующий приоритет: каталог готовых рецептов `/mixes` и страницы `/mixes/[slug]` поверх public-safe `VerifiedRecipeAnalysis` DTO.
+Следующий приоритет: страницы конкретных табаков и сценарий «у меня есть эти табаки».
 
 ## Planned directions
 - каталог готовых миксов `/mixes` и страницы `/mixes/[slug]`;

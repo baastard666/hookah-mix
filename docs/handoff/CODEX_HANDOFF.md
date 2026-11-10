@@ -1,24 +1,24 @@
 # CODEX HANDOFF — hookah-mix
 
-## CURRENT STATE — 2026-11-09
+## CURRENT STATE — 2026-11-10
 
-Завершён Mix Analysis v2 для Verified Mix Recipes: `src/lib/verified-mix-analysis/` адаптирует 28 exact `VerifiedMixRecipe` к существующему `calculateMixAnalysis` без Prisma/PostgreSQL как sensory source-of-truth. Числовые данные приходят из Product Flavor Profile Registry (7 evidence-backed dimensions), остальные 11 полей `FlavorProfile` остаются `null`. VERIFIED не создаёт quality/confidence/evidence/smoke-score bonus; predicted и observed разделены.
+Завершён каталог готовых миксов: `/mixes` и статические `/mixes/[slug]` читают только committed public-safe `src/data/verified-mix-catalog.generated.json` с 28 рецептами. Generator читает private workbook только локально и отдельно; runtime не зависит от Excel или PostgreSQL. Mix Analysis v2, predicted/observed boundary и existing scoring не менялись.
 
 ## CURRENT BRANCH
 
-`feature/mix-analysis-v2`. Точный HEAD всегда проверять через `git rev-parse HEAD`.
+`feature/mixes-catalog`. Точный HEAD всегда проверять через `git rev-parse HEAD`.
 
 ## CURRENT BASELINE
 
-`pnpm verify:verified-mix-analysis` анализирует 28 recipes и 71 component без ошибок, 100% exact identity + product profile coverage, SHA workbook `AFBEB062EF5B23AC0340E8D5F15AD9E20FF41A6892146915E8FC8BB1008E2E8B`, 317765 bytes до/после. Reports в `reports/` ignored.
+Полный Vitest: 1130 tests / 35 files. Prisma validate/generate, lint, typecheck, production build и безопасные verify-скрипты проходят. `verify:mix-profile`, `verify:mix-compatibility` и `verify:canonical-catalog-identity`, а также DB-dependent HTTP routes требуют доступный PostgreSQL; на этой машине Docker Engine был выключен. SHA workbook `AFBEB062EF5B23AC0340E8D5F15AD9E20FF41A6892146915E8FC8BB1008E2E8B`, размер 317765 bytes до/после. Reports в `reports/` ignored.
 
 ## COMPLETED
 
-После исторических v0.3.3/v0.3.5 завершены Verified Mix Recipe Registry (ADR-026) и Verified Recipe → Mix Analysis wiring (ADR-027). `main` не менялся этой feature-итерацией.
+После исторических v0.3.3/v0.3.5 завершены Verified Mix Recipe Registry (ADR-026), Verified Recipe → Mix Analysis wiring (ADR-027) и Catalog snapshot boundary (ADR-028). `main` не менялся этой feature-итерацией.
 
 ## NEXT TASK
 
-При отсутствии отдельного решения об изменении scoring — каталог `/mixes` и `/mixes/[slug]` на public-safe `VerifiedRecipeAnalysis` DTO.
+Страницы конкретных табаков и сценарий «у меня есть эти табаки»; затем улучшение similar/substitution, feedback/smoke observations и расширение базы рецептов.
 
 ## HISTORICAL NOTES
 
@@ -53,7 +53,7 @@
 ## 2. Git baseline
 
 - Репозиторий: `https://github.com/baastard666/hookah-mix`.
-- Текущая feature-ветка: `feature/v0.3.3-canonical-mix-scoring-integration`.
+- Текущая feature-ветка: `feature/mixes-catalog`.
 - Начальный HEAD v0.3.3: `4186ae8ef1e7b994ed25f62885f4043969f6b192` (`main`).
 - Release source branch: `feature/v0.3.2-canonical-tobacco-catalog-expansion`; после интеграции рабочей веткой становится `main`.
 - Baseline перед ASCII-стандартизацией: `8b727298c9470bda73ba9e0e2b6133dc2434e675`.
@@ -342,7 +342,7 @@ Public output не должен содержать:
 git clone https://github.com/baastard666/hookah-mix.git
 cd hookah-mix
 git fetch --all
-git switch feature/v0.3.3-canonical-mix-scoring-integration
+git switch feature/mixes-catalog
 git pull --ff-only
 git rev-parse HEAD
 git status
@@ -377,22 +377,21 @@ pnpm verify:tobacco-identity-decisions "data/hookah_mix_database.xlsx"
 
 ```text
 Проект: hookah-mix
-Ветка: feature/v0.3.3-canonical-mix-scoring-integration
-Начальный HEAD: 4186ae8ef1e7b994ed25f62885f4043969f6b192
+Ветка: feature/mixes-catalog
+Начальный HEAD: проверить через git rev-parse HEAD
 
-Задача: провести отдельный финальный review v0.3.3 и решить, готова ли feature-ветка к merge.
+Задача: создать страницы конкретных табаков и сценарий «у меня есть эти табаки» поверх exact canonical identity и public-safe catalog snapshot.
 
 Проверить:
-- authoritative Registry остался 96 решений со статусами 86/1/7/2;
-- exact-only resolution, profile precedence и duplicate aggregation;
-- predicted score/confidence/data quality/verified score не смешиваются;
-- real-workbook diagnostic и SHA;
-- 863 tests, build, 12 verify scripts и HTTP smoke baseline;
-- public privacy и отсутствие workbook/reports в Git.
+- `/mixes` и `/mixes/[slug]` остаются независимыми от workbook и PostgreSQL;
+- exact-only product identity, null-preserving profiles и predicted/observed boundary;
+- публичные DTO не раскрывают source/evidence/provenance, локальные пути и workbook;
+- existing catalog snapshot регенерируется только отдельной developer-командой;
+- product pages не создают fuzzy matching и не меняют scoring.
 
-Не менять identity decisions, Prisma schema и workbook без отдельного задания.
+Не менять identity decisions, Prisma schema, workbook или существующие scoring formulas без отдельного задания.
 Не выполнять merge в main без явного подтверждения владельца.
-Следующая продуктовая итерация после review: unknown.
+Следующая продуктовая итерация после product pages: similar/substitution improvements, feedback/smoke observations и расширение базы рецептов.
 ```
 
 Исторический блок v0.3.2 ниже оставлен только для трассировки и не является текущим заданием:
@@ -569,4 +568,4 @@ ASCII migration baseline после успешной проверки следу
 
 Новый canonical runtime layer построен поверх `ExpertMixKnowledgeRecord`, а не из ручного batch. Для cookbook/UI наружу доступна public-safe проекция без `sourceRecordId`, source/evidence IDs, excerpts, private URLs, workbook rows и локальных путей. Выполнять проверку: `pnpm verify:verified-mix-recipes "data/hookah_mix_database.xlsx"`; она читает workbook, сверяет SHA/размер до и после и пишет только ignored reports.
 
-Ближайшая задача — отдельный review о wiring verified recipes в Mix Analysis/scoring. Не подставлять `proportionsConfirmed`, `independentEvidenceCount` или rating в существующий score без этого отдельного решения. `/mixes` и страницы рецептов пока не существуют.
+Каталог готовых миксов реализован на `feature/mixes-catalog`: snapshot содержит 28 рецептов, `/mixes` поддерживает поиск/фильтры/сортировку, detail pages статически генерируются, а переход в builder разрешён только через exact `Flavor.canonicalProductId`. Следующая задача — product pages и сценарий «у меня есть эти табаки»; не подставлять `proportionsConfirmed`, `independentEvidenceCount` или rating в существующий score без отдельного решения.

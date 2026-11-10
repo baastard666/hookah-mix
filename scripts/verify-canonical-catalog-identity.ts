@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { createCatalogIdentityBackfillPlan, createManufacturerOnlyCanonicalProductId, createPrismaCatalogIdentityStore, mapIdentityResolutionToPersistedIdentity, readCatalogTobaccoIdentities, runCatalogIdentityBackfill, updateCatalogTobaccoIdentity, verifyPersistedCatalogIdentities } from "../src/lib/catalog-identity";
+import { createCatalogIdentityBackfillPlan, createManufacturerOnlyCanonicalProductId, createPrismaCatalogIdentityStore, mapIdentityResolutionToPersistedIdentity, readCatalogTobaccoIdentities, runCatalogIdentityBackfill, updateCatalogTobaccoIdentity } from "../src/lib/catalog-identity";
+import { runCatalogPersistenceReconciliation } from "../src/lib/catalog-identity-reconciliation";
 import { prisma } from "../src/lib/prisma";
 import { resolveCatalogTobaccoIdentity } from "../src/lib/tobacco-product-identity";
 
@@ -25,9 +26,11 @@ const main = async (): Promise<void> => {
   const invalidLine = await updateCatalogTobaccoIdentity({ catalogId: verified.catalogId, manufacturerId: "darkside", productLineId: "hooligan-medium", canonicalProductName: "Кокос", identityVerified: true }, { list: async () => [], transaction: async () => { throw new Error("transaction must not start"); } });
   assert.deepEqual(invalidLine, { success: false, errors: [{ code: "PRODUCT_LINE_DOES_NOT_BELONG_TO_MANUFACTURER", message: "hooligan-medium does not belong to darkside" }] });
 
-  const consistency = verifyPersistedCatalogIdentities(records);
-  assert.equal(consistency.valid, true, JSON.stringify(consistency.issues));
-  console.log(JSON.stringify({ checked: records.length, dryRun: dryRun.counters, consistency }, null, 2));
+  const reconciliation = await runCatalogPersistenceReconciliation(store);
+  assert.equal(reconciliation.plan.summary.SAFE_UPDATE, 0, JSON.stringify(reconciliation.plan.items.filter(item => item.safeToApply)));
+  assert.equal(reconciliation.plan.summary.DUPLICATE_CANONICAL_BINDING, 0, JSON.stringify(reconciliation.plan.items.filter(item => item.issueCode === "DUPLICATE_CANONICAL_BINDING")));
+  const remaining = reconciliation.plan.items.filter(item => item.issueCode && !item.safeToApply);
+  console.log(JSON.stringify({ checked: records.length, dryRun: dryRun.counters, reconciliation: { summary: reconciliation.plan.summary, remaining: remaining.map(item => ({ catalogId: item.catalogId, code: item.issueCode })) } }, null, 2));
 };
 
 main().catch(error => { console.error(error instanceof Error ? error.message : String(error)); process.exitCode = 1; }).finally(async () => prisma.$disconnect());

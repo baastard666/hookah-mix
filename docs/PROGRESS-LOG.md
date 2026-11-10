@@ -473,6 +473,12 @@
 
 Создан public-safe план `docs/research/popular-tobacco-expansion-v1.md`: Tier A/B, category/mix gaps и первая balanced batch из 24 кандидатов MustHave, Darkside, Spectrum и Sebero. Не изменялись Prisma/seed/migrations, Registry, Product Flavor Profiles, ready recipes, scoring, UI или исходный workbook. Local research-agent найден лишь через ignored scratch-скрипты: он пригоден для source discovery и черновых observations, но не имеет права автоматически изменять production facts.
 
+## 2026-11-10 — Reconciliation persisted canonical identity
+
+Добавлен идемпотентный `reconcile:canonical-catalog-identity`: default — dry-run, `--apply` — только exact-safe обновления из confirmed authoritative Tobacco Identity Decision Registry. Local detailed JSON остаётся в ignored `reports/`. Реальный diagnostic нашёл 86 совпадающих `RESOLVED` строк и 0 safe mismatches, поэтому `--apply` не изменил ни одной записи. Остались 13 `UNRESOLVED_SOURCE_IDENTITY` (четыре реальные позиции и девять `TEST`) и 3 `MANUFACTURER_ONLY_SOURCE_IDENTITY`; у них нет exact authoritative `RESOLVED` decision, поэтому guessed IDs им не присваиваются.
+
+`verify:canonical-catalog-identity` приведён к правильному направлению registry → persisted catalog: старый generic consistency-check сверял modern authoritative IDs с legacy Product Line Registry и давал ложные errors. Новая проверка не скрывает unsafe строки: она выводит typed remaining issues и завершается успешно только при нуле safe updates и collisions. Prisma schema/migrations, Decision Registry, Product Flavor Profiles, recipes, scoring, UI и workbook не менялись.
+
 ## 2026-11-09 — Mix Analysis v2 для Verified Mix Recipes
 
 **Реализовано:** создан `src/lib/verified-mix-analysis/` — DB-independent composition layer поверх существующего `calculateMixAnalysis`. `buildCanonicalMixInputFromVerifiedRecipe` использует только exact `TobaccoIdentityDecisionRegistry` и `ProductFlavorProfileRegistry`; Prisma/source profile отключён. Семь evidence-backed dimensions передаются как `CANONICAL_PRODUCT_PROFILE`, `sourness` мапится в `acidity`, остальные 11 полей остаются `null`. `dominantNoteIds` преобразуются только в generic category notes, без выдумывания конкретных вкусов.

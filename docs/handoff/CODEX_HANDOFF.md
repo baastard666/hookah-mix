@@ -6,13 +6,15 @@
 
 Запущен research-only этап **Popular Tobacco Expansion v1**. Результат — `docs/research/popular-tobacco-expansion-v1.md`: read-only audit 93 публичных Prisma-продуктов, 86 RESOLVED identities/profiles и 28 ready mixes, tiering и план первой batch из 24 позиций. Эта итерация не меняет production data, Registry, profiles, recipes, scoring или UI. Следующая implementation-задача должна начинаться только с повторного evidence review этих кандидатов.
 
+После неё выполнена corrective-проверка persisted identity. `reconcile:canonical-catalog-identity` делает dry-run по умолчанию и применяет только exact-safe решения из authoritative Decision Registry. На текущей локальной базе 86 RESOLVED строк уже совпадают, safe mismatch = 0; 13 строк остаются `UNRESOLVED_SOURCE_IDENTITY` (четыре реальные и девять TEST), ещё 3 — `MANUFACTURER_ONLY_SOURCE_IDENTITY`. Для них нет authoritative exact `RESOLVED` decision, поэтому они сознательно не угадываются. Детальный отчёт — только ignored `reports/canonical-catalog-persistence-reconciliation.json`.
+
 ## CURRENT BRANCH
 
-`feature/popular-tobacco-expansion-v1`. Точный HEAD всегда проверять через `git rev-parse HEAD`.
+`feature/catalog-persistence-reconciliation`. Точный HEAD всегда проверять через `git rev-parse HEAD`.
 
 ## CURRENT BASELINE
 
-Полный Vitest: 1130 tests / 35 files. Prisma validate/generate, lint, typecheck, production build и безопасные verify-скрипты проходят. `verify:mix-profile`, `verify:mix-compatibility` и `verify:canonical-catalog-identity`, а также DB-dependent HTTP routes требуют доступный PostgreSQL; на этой машине Docker Engine был выключен. SHA workbook `AFBEB062EF5B23AC0340E8D5F15AD9E20FF41A6892146915E8FC8BB1008E2E8B`, размер 317765 bytes до/после. Reports в `reports/` ignored.
+Полный Vitest: 1135 tests / 36 files. Prisma validate, lint, typecheck, production build и все `verify:*` проходят; Docker PostgreSQL healthy. Prisma generate на этой Windows-машине повторно завершается `EPERM` при rename `query_engine-windows.dll.node` даже после остановки Next server — это environment lock, не code issue. SHA workbook `AFBEB062EF5B23AC0340E8D5F15AD9E20FF41A6892146915E8FC8BB1008E2E8B`, размер 317765 bytes до/после. Reports в `reports/` ignored.
 
 ## COMPLETED
 
@@ -20,7 +22,7 @@
 
 ## NEXT TASK
 
-Подтверждение и реализация первой малой batch Popular Tobacco Expansion; затем страницы конкретных табаков, сценарий «у меня есть эти табаки» и Builder UX v2.
+Popular Tobacco Expansion Batch 1: подтверждение evidence и реализация первой малой batch; затем страницы конкретных табаков, сценарий «у меня есть эти табаки» и Builder UX v2.
 
 ## HISTORICAL NOTES
 

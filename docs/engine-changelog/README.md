@@ -1,5 +1,9 @@
 # Engine changelog
 
+- [Engine null-data correctness](engine-null-data-correctness.md) — `profile.flat` больше не
+  срабатывает при пустом или частично измеренном sensory-наборе; зафиксирован отдельный
+  finding о product-misleading baseline `confirmations = 5` без evidence.
+
 - [v0.3.3 Canonical Mix Scoring Integration](v0.3.3-canonical-mix-scoring-integration.md)
 - [v0.3.2 ASCII Canonical Product IDs](v0.3.2-ascii-canonical-product-ids.md)
 - [v0.3.2 Canonical Tobacco Catalog Expansion & Identity Decisions](v0.3.2-canonical-tobacco-catalog-expansion.md)

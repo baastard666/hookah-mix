@@ -186,6 +186,25 @@ describe("effective profile precedence", () => {
 });
 
 describe("canonical aggregation and scoring integration", () => {
+  it("does not infer a flat profile from two exactly resolved products without sensory measurements", () => {
+    const unknownProfile = Object.fromEntries(FLAVOR_PROFILE_FIELDS.map(field => [field, null])) as FlavorProfile;
+    const alcohol = {
+      ...component("JENT", "Настойка Заморская", 40, { sourceId: "jent-alcohol", profile: unknownProfile }),
+      notes: [{ noteId: "alcohol", noteName: "настойка", noteSlug: "nastoika", category: "ALCOHOL" as const, intensity: 10, noteType: "DOMINANT" as const }],
+      identity: { sourceComponentId: "jent-alcohol", rawManufacturer: "JENT", rawProductLine: "Alcohol", rawProductName: "Настойка Заморская", canonicalProductId: "jent-alcohol-nastoika-zamorskaya" },
+    };
+    const currant = {
+      ...component("JENT", "Currant WOW", 60, { sourceId: "jent-currant", profile: unknownProfile }),
+      notes: [{ noteId: "currant", noteName: "смородина", noteSlug: "currant", category: "BERRY" as const, intensity: 10, noteType: "DOMINANT" as const }],
+      identity: { sourceComponentId: "jent-currant", rawManufacturer: "JENT", rawProductLine: "Classic", rawProductName: "Currant WOW", canonicalProductId: "jent-classic-currant-wow" },
+    };
+    const result = calculateMixAnalysis({ components: [alcohol, currant] });
+    expect(result.canonicalMix.components.every(item => item.resolution.status === "RESOLVED")).toBe(true);
+    expect(["sweetness", "acidity", "bitterness", "creaminess", "cooling", "freshness", "juiciness"].every(field => result.mixProfile.profile[field as keyof FlavorProfile] === null)).toBe(true);
+    expect(result.compatibility.warnings.some(item => item.ruleId === "profile.flat")).toBe(false);
+    expect(result.compatibility.conflicts).toEqual([]);
+  });
+
   it("aggregates exact and alias forms of one canonical product", () => {
     const mix = prepareCanonicalMix([
       ticTac(20, { sourceId: "tic-exact" }),

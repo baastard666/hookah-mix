@@ -20,7 +20,13 @@ export function analyzeProfileBalance(result:MixProfileResult):AnalysisBlock{
   if(p.dryness!==null&&p.freshness!==null&&p.juiciness!==null&&p.freshness>=T.moderateFreshness&&p.juiciness>=T.moderateJuiciness&&p.dryness<=T.maxComfortableDryness)add("profile.fresh-juicy","positive",.4,"Свежий сочный профиль","Профиль должен ощущаться сочным и свежим",["freshness","juiciness","dryness"]);
   if(p.dessertLevel!==null&&p.creaminess!==null&&p.bitterness!==null&&p.dessertLevel>=5&&p.creaminess>=4&&p.bitterness<=6)add("profile.dessert-balance","positive",.4,"Десертный баланс","Сливочность поддерживает десертную основу",["dessertLevel","creaminess","bitterness"]);
   if(Object.entries(p).filter(([,value])=>value!==null&&value>=8).length>=4)add("profile.many-extremes","caution",-.6,"Много ярких направлений","Профиль может быть перегружен слишком большим количеством ярких направлений",[]);
-  if([p.sweetness,p.acidity,p.bitterness,p.creaminess,p.cooling,p.freshness,p.juiciness].filter((value):value is number=>value!==null).every(value=>value<3))add("profile.flat","caution",-.6,"Плоский профиль","Микс может получиться недостаточно выраженным",[]);
+  // A "flat" conclusion is about the whole sensory group, not merely the fields that happen to be
+  // available.  `[].every(...)` is true in JavaScript, and filtering unknown measurements used to
+  // turn a completely unknown profile into a false low-profile signal.  A partial low profile is not
+  // enough either: the remaining unmeasured fields may still be expressive, so every field used by
+  // this rule must be measured before it can apply.
+  const flatProfileFields=[p.sweetness,p.acidity,p.bitterness,p.creaminess,p.cooling,p.freshness,p.juiciness];
+  if(flatProfileFields.every((value):value is number=>value!==null)&&flatProfileFields.every(value=>value<3))add("profile.flat","caution",-.6,"Плоский профиль","Микс может получиться недостаточно выраженным",[]);
   if(p.creaminess!==null&&p.acidity!==null&&p.acidity>=8&&p.creaminess>=7)add("profile.acidity-creaminess","caution",-.5,"Кислотность и сливочность","Высокая кислотность может спорить со сливочной основой",["acidity","creaminess"]);
   if(p.bitterness!==null&&p.acidity!==null&&p.bitterness>=7&&p.acidity>=7)add("profile.bitterness-acidity","conflict",-.8,"Горечь и кислотность","Есть риск резкого сочетания высокой горечи и кислотности",["bitterness","acidity"]);
   if(p.sweetness!==null&&p.acidity!==null&&p.freshness!==null&&p.sweetness>=8&&p.acidity<=3&&p.freshness<=3)add("profile.sweet-low-freshness","caution",-.3,"Сладость без свежести","Высокая сладость при низкой кислотности и свежести может утяжелить профиль",["sweetness","acidity","freshness"]);

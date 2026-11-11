@@ -52,6 +52,16 @@ describe("баланс профиля",()=>{
  it("22. определяет сильный cold",()=>hasRule(altered({cooling:9},[note("coffee","COFFEE")]),"profile.strong-cooling"));
  it("23. определяет плоский профиль",()=>hasRule(altered({sweetness:2,acidity:2,bitterness:2,creaminess:2,cooling:2,freshness:2,juiciness:2}),"profile.flat"));
 
+ it("не определяет плоский профиль для полностью неизмеренного sensory-профиля",()=>{
+   const unknown:Partial<FlavorProfile>={sweetness:null,acidity:null,bitterness:null,creaminess:null,cooling:null,freshness:null,juiciness:null};
+   const result=altered(unknown,[note("alcohol","DRINK"),note("currant","BERRY")]);
+   expect(rules(result)).not.toContain("profile.flat");
+   expect(result.warnings.some(item=>item.ruleId==="profile.flat")).toBe(false);
+   expect(result.conflicts).toHaveLength(0);
+ });
+
+ it("не определяет плоский профиль по частично измеренному низкому набору",()=>expect(rules(altered({sweetness:2,acidity:2,bitterness:null,creaminess:null,cooling:null,freshness:null,juiciness:null}))).not.toContain("profile.flat"));
+
  // ADR-015: bitterness/dryness/creaminess/cooling/dessertLevel/spiceLevel/floralLevel/herbalLevel/smokyLevel
  // are secondary fields and may be null ("не измерено"). null must never silently satisfy or fail a rule.
  it("не определяет сухую горечь, если bitterness не измерен (null), даже при высокой dryness",()=>expect(rules(altered({bitterness:null,dryness:8}))).not.toContain("profile.dry-bitterness"));

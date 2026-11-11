@@ -1,9 +1,9 @@
 import type { FlavorNoteCategory } from "../flavor-knowledge";
 import type { FlavorProfileField } from "../flavors/types";
+import type { PredictionReadiness } from "../prediction-readiness";
 
 export const MIX_CATALOG_SCHEMA_VERSION = "verified-mix-catalog-v1" as const;
 export type MixCatalogSchemaVersion = typeof MIX_CATALOG_SCHEMA_VERSION;
-export type MixCatalogConfidenceLabel = "Предварительная" | "Средняя" | "Высокая" | "Подтверждённая";
 export type MixCatalogStrengthBucket = "LIGHT" | "MEDIUM" | "STRONG";
 export type MixCatalogSort = "default" | "quality-desc" | "quality-asc" | "strength-desc" | "strength-asc" | "components-desc" | "components-asc";
 export type MixCatalogComponentCountFilter = "2" | "3" | "4+";
@@ -54,11 +54,10 @@ export type MixCatalogItem = {
   readonly profile: MixCatalogMetricSummary;
   readonly dominance: { readonly canonicalProductId: string; readonly influenceShare: number; readonly level: "CLEAR" | "MODERATE" | "BALANCED" };
   readonly predicted: {
-    readonly qualityScore: number;
-    readonly confidenceLabel: MixCatalogConfidenceLabel;
-    readonly dataQuality: number;
+    /** Nullable public quality prediction. Internal diagnostics never enter the catalog snapshot. */
+    readonly qualityScore: number | null;
+    readonly predictionReadiness: PredictionReadiness;
     readonly compatibilityScore: number;
-    readonly riskScore: number;
   };
   readonly explainability: {
     readonly positiveFactors: readonly { readonly category: string; readonly title: string; readonly description: string; readonly impact: number }[];
@@ -78,9 +77,8 @@ export type MixCatalogSnapshot = {
 
 export type MixCatalogCard = Pick<MixCatalogItem, "slug" | "title" | "componentCount" | "tags" | "dominantCategories"> & {
   readonly components: readonly Pick<MixCatalogComponent, "manufacturer" | "productName" | "percentage">[];
-  readonly predictedQualityScore: number;
-  readonly predictionConfidenceLabel: MixCatalogConfidenceLabel;
-  readonly dataQuality: number;
+  readonly predictedQualityScore: number | null;
+  readonly predictionReadiness: PredictionReadiness["status"];
   readonly strength: number | null;
   readonly sourness: number | null;
   readonly sweetness: number | null;

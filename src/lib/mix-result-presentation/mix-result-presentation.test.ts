@@ -5,6 +5,7 @@ import { calculateMixAnalysis } from "../mix-analysis";
 import type { MixAnalysis } from "../mix-analyzer";
 import type { CanonicalMixComponentInput } from "../canonical-mix-scoring";
 import { buildMixResultPresentation, deduplicateRecommendations, localizeTasteTag } from ".";
+import { GOLD_SET_V1_SCENARIOS } from "../mix-scoring-audit";
 
 const profile = (overrides: Partial<FlavorProfile> = {}): FlavorProfile => ({ ...Object.fromEntries(FLAVOR_PROFILE_FIELDS.map(field => [field, 5])) as FlavorProfile, ...overrides });
 const component = (manufacturer: string, name: string, percentage: number, options: { line?: string | null; profile?: FlavorProfile; note?: string; category?: CanonicalMixComponentInput["notes"][number]["category"]; sourceProfileAvailable?: boolean } = {}): CanonicalMixComponentInput => ({
@@ -209,5 +210,38 @@ describe("v0.3.3 corrective public presentation", () => {
     ]);
     expect(result.matchedNumericRisks).toContainEqual({ field: "heatResistance", componentAValue: 9, componentBValue: 3, ruleId: "numeric.heat-resistance-diff" });
     expect(result.risks.some(risk => risk.recommendation.includes("жаростойкостью"))).toBe(true);
+  });
+});
+
+describe("ADR-026: evidence-aware public result", () => {
+  const sparseJent = () => {
+    const scenario = GOLD_SET_V1_SCENARIOS.find(item => item.id === "jent-nastoika-currant");
+    if (!scenario) throw new Error("Sparse JENT fixture missing");
+    return buildMixResultPresentation({
+      analysis: calculateMixAnalysis({ components: scenario.components }),
+      legacyAnalysis: legacy({ heatRecommendations: ["Текущий режим жара подходит."] }),
+      preparation: { bowlType: "фанел", coalCount: 3, warmupMinutes: 6 },
+    });
+  };
+  it("50. suppresses sparse JENT quality while retaining category compatibility", () => {
+    const result = sparseJent();
+    expect(result.predictedScore.value).toBeNull();
+    expect(result.compatibility).toMatchObject({ title: "Совместимость вкусовых направлений", value: 8 });
+    expect(result.evidence.sensory).toMatchObject({ readiness: "INSUFFICIENT", coverage: 0 });
+  });
+  it("51. does not turn zero known risks or baseline confirmations into evidence", () => {
+    const result = sparseJent();
+    expect(result.evidence.knownRisks.summary).toContain("профиль изучен не полностью");
+    expect(result.evidence.confirmations).toMatchObject({ proportionsConfirmed: false, independentEvidenceCount: 0, verifiedSmokeAvailable: false });
+  });
+  it("52. replaces unsupported heat approval with a cautious baseline", () => {
+    const result = sparseJent();
+    expect(result.preparation.evidenceLabel).toContain("Недостаточно данных о жаростойкости");
+    expect(JSON.stringify(result.preparation)).not.toContain("Текущий режим жара подходит");
+  });
+  it("53. keeps engine vocabulary out of public presentation labels", () => {
+    const result = sparseJent();
+    expect(localizeTasteTag("mint-generic")).toBe("Мята");
+    expect(JSON.stringify(result)).not.toMatch(/COMPLEMENTARY_CONTRAST|mint-generic|Category relation/);
   });
 });

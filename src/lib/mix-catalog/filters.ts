@@ -25,8 +25,8 @@ const compareNullable = (left: number | null, right: number | null, direction: 1
 };
 export const sortMixCatalogItems = (items: readonly MixCatalogItem[], sort: MixCatalogSort = "default"): readonly MixCatalogItem[] => [...items].sort((left, right) => {
   const tie = () => left.title.localeCompare(right.title, "ru") || left.slug.localeCompare(right.slug, "en");
-  if (sort === "quality-desc" || sort === "default") return right.predicted.qualityScore - left.predicted.qualityScore || right.predicted.dataQuality - left.predicted.dataQuality || tie();
-  if (sort === "quality-asc") return left.predicted.qualityScore - right.predicted.qualityScore || tie();
+  if (sort === "quality-desc" || sort === "default") return compareNullable(left.predicted.qualityScore, right.predicted.qualityScore, -1) || right.predicted.compatibilityScore - left.predicted.compatibilityScore || tie();
+  if (sort === "quality-asc") return compareNullable(left.predicted.qualityScore, right.predicted.qualityScore, 1) || tie();
   if (sort === "strength-desc") return compareNullable(left.profile.strength, right.profile.strength, -1) || tie();
   if (sort === "strength-asc") return compareNullable(left.profile.strength, right.profile.strength, 1) || tie();
   if (sort === "components-desc") return right.componentCount - left.componentCount || tie();
@@ -49,6 +49,6 @@ export const filterMixCatalogItems = (items: readonly MixCatalogItem[], filters:
 export const toMixCatalogCard = (item: MixCatalogItem): MixCatalogCard => ({
   slug: item.slug, title: item.title, componentCount: item.componentCount, tags: item.tags, dominantCategories: item.dominantCategories,
   components: item.components.map(component => ({ manufacturer: component.manufacturer, productName: component.productName, percentage: component.percentage })),
-  predictedQualityScore: item.predicted.qualityScore, predictionConfidenceLabel: item.predicted.confidenceLabel, dataQuality: item.predicted.dataQuality,
+  predictedQualityScore: item.predicted.qualityScore, predictionReadiness: item.predicted.predictionReadiness.status,
   strength: item.profile.strength, sourness: item.profile.sourness, sweetness: item.profile.sweetness, freshness: item.profile.freshness,
 });

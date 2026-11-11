@@ -104,11 +104,44 @@
         "level": "CLEAR"
       },
       "predicted": {
-        "qualityScore": 8,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 60.9,
-        "compatibilityScore": 8.2,
-        "riskScore": 10
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "LIMITED",
+          "sensoryEvidenceCoverage": 48.6,
+          "scoreEvidenceCoverage": 48.6,
+          "componentEvidence": [
+            {
+              "flavorId": "banger-apricot-jam",
+              "percentage": 60,
+              "measuredFields": [
+                "strength",
+                "sweetness",
+                "acidity"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            },
+            {
+              "flavorId": "sapphire-crown-apple-strudel",
+              "percentage": 40,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness",
+                "acidity"
+              ],
+              "measuredFieldCount": 4,
+              "fieldCoverage": 57.1
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 8.2
       },
       "explainability": {
         "positiveFactors": [
@@ -263,11 +296,43 @@
         "level": "CLEAR"
       },
       "predicted": {
-        "qualityScore": 7.5,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 59.9,
-        "compatibilityScore": 7.7,
-        "riskScore": 9
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "LIMITED",
+          "sensoryEvidenceCoverage": 48.6,
+          "scoreEvidenceCoverage": 48.6,
+          "componentEvidence": [
+            {
+              "flavorId": "sapphire-crown-pineapple-fanta",
+              "percentage": 70,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness",
+                "juiciness"
+              ],
+              "measuredFieldCount": 4,
+              "fieldCoverage": 57.1
+            },
+            {
+              "flavorId": "urban-soul-pineapple",
+              "percentage": 30,
+              "measuredFields": [
+                "strength",
+                "heatResistance"
+              ],
+              "measuredFieldCount": 2,
+              "fieldCoverage": 28.6
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 7.7
       },
       "explainability": {
         "positiveFactors": [
@@ -417,11 +482,52 @@
         "level": "MODERATE"
       },
       "predicted": {
-        "qualityScore": 7.8,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 58.5,
-        "compatibilityScore": 7.9,
-        "riskScore": 9
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "INSUFFICIENT",
+          "sensoryEvidenceCoverage": 18.6,
+          "scoreEvidenceCoverage": 18.6,
+          "componentEvidence": [
+            {
+              "flavorId": "nash-black-line-arbuz",
+              "percentage": 30,
+              "measuredFields": [
+                "strength"
+              ],
+              "measuredFieldCount": 1,
+              "fieldCoverage": 14.3
+            },
+            {
+              "flavorId": "husky-pineapple",
+              "percentage": 40,
+              "measuredFields": [
+                "strength"
+              ],
+              "measuredFieldCount": 1,
+              "fieldCoverage": 14.3
+            },
+            {
+              "flavorId": "husky-passion-fruit",
+              "percentage": 30,
+              "measuredFields": [
+                "strength",
+                "acidity"
+              ],
+              "measuredFieldCount": 2,
+              "fieldCoverage": 28.6
+            }
+          ],
+          "missingCriticalScoreDimensions": [
+            "componentQuality"
+          ],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Потенциал компонентов не рассчитан из-за отсутствующих измерений.",
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 8
       },
       "explainability": {
         "positiveFactors": [
@@ -577,11 +683,43 @@
         "level": "CLEAR"
       },
       "predicted": {
-        "qualityScore": 7.4,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 59.1,
-        "compatibilityScore": 8,
-        "riskScore": 10
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "LIMITED",
+          "sensoryEvidenceCoverage": 40,
+          "scoreEvidenceCoverage": 40,
+          "componentEvidence": [
+            {
+              "flavorId": "jam-arbuznyi-rondo",
+              "percentage": 40,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness",
+                "freshness"
+              ],
+              "measuredFieldCount": 4,
+              "fieldCoverage": 57.1
+            },
+            {
+              "flavorId": "jam-spelaya-marakuiya",
+              "percentage": 60,
+              "measuredFields": [
+                "strength",
+                "heatResistance"
+              ],
+              "measuredFieldCount": 2,
+              "fieldCoverage": 28.6
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 8
       },
       "explainability": {
         "positiveFactors": [
@@ -744,10 +882,42 @@
       },
       "predicted": {
         "qualityScore": 8.1,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 62.7,
-        "compatibilityScore": 8.4,
-        "riskScore": 9
+        "predictionReadiness": {
+          "status": "READY",
+          "sensoryEvidenceCoverage": 57.2,
+          "scoreEvidenceCoverage": 57.2,
+          "componentEvidence": [
+            {
+              "flavorId": "blackburn-na-rasslabone",
+              "percentage": 50,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "intensity",
+                "sweetness",
+                "freshness"
+              ],
+              "measuredFieldCount": 5,
+              "fieldCoverage": 71.4
+            },
+            {
+              "flavorId": "blackburn-klyukvennyi-mors",
+              "percentage": 50,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "acidity"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": []
+        },
+        "compatibilityScore": 8.4
       },
       "explainability": {
         "positiveFactors": [
@@ -958,10 +1128,52 @@
       },
       "predicted": {
         "qualityScore": 7.8,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 62.4,
-        "compatibilityScore": 8.3,
-        "riskScore": 10
+        "predictionReadiness": {
+          "status": "READY",
+          "sensoryEvidenceCoverage": 50,
+          "scoreEvidenceCoverage": 50,
+          "componentEvidence": [
+            {
+              "flavorId": "chabacco-medium-belgian-cider",
+              "percentage": 60,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "intensity"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            },
+            {
+              "flavorId": "hook-inzhirnyi",
+              "percentage": 10,
+              "measuredFields": [
+                "strength",
+                "sweetness"
+              ],
+              "measuredFieldCount": 2,
+              "fieldCoverage": 28.6
+            },
+            {
+              "flavorId": "duft-solo-orange-zest",
+              "percentage": 30,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness",
+                "acidity",
+                "freshness"
+              ],
+              "measuredFieldCount": 5,
+              "fieldCoverage": 71.4
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": []
+        },
+        "compatibilityScore": 8.3
       },
       "explainability": {
         "positiveFactors": [
@@ -1104,11 +1316,40 @@
         "level": "CLEAR"
       },
       "predicted": {
-        "qualityScore": 7.7,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 59.7,
-        "compatibilityScore": 7.5,
-        "riskScore": 8
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "LIMITED",
+          "sensoryEvidenceCoverage": 21.8,
+          "scoreEvidenceCoverage": 21.8,
+          "componentEvidence": [
+            {
+              "flavorId": "deus-perfume-black-afgano",
+              "percentage": 52.38,
+              "measuredFields": [
+                "strength",
+                "intensity"
+              ],
+              "measuredFieldCount": 2,
+              "fieldCoverage": 28.6
+            },
+            {
+              "flavorId": "take-pineapple",
+              "percentage": 47.62,
+              "measuredFields": [
+                "strength"
+              ],
+              "measuredFieldCount": 1,
+              "fieldCoverage": 14.3
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 7.6
       },
       "explainability": {
         "positiveFactors": [
@@ -1233,11 +1474,43 @@
         "level": "CLEAR"
       },
       "predicted": {
-        "qualityScore": 7.2,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 59.3,
-        "compatibilityScore": 7.3,
-        "riskScore": 7
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "INSUFFICIENT",
+          "sensoryEvidenceCoverage": 18.4,
+          "scoreEvidenceCoverage": 18.4,
+          "componentEvidence": [
+            {
+              "flavorId": "fake-mumbai-tea",
+              "percentage": 71.5,
+              "measuredFields": [
+                "strength"
+              ],
+              "measuredFieldCount": 1,
+              "fieldCoverage": 14.3
+            },
+            {
+              "flavorId": "fake-holod",
+              "percentage": 28.5,
+              "measuredFields": [
+                "strength",
+                "freshness"
+              ],
+              "measuredFieldCount": 2,
+              "fieldCoverage": 28.6
+            }
+          ],
+          "missingCriticalScoreDimensions": [
+            "componentQuality"
+          ],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Потенциал компонентов не рассчитан из-за отсутствующих измерений.",
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 7.3
       },
       "explainability": {
         "positiveFactors": [
@@ -1364,11 +1637,42 @@
         "level": "CLEAR"
       },
       "predicted": {
-        "qualityScore": 7.8,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 58.9,
-        "compatibilityScore": 7.8,
-        "riskScore": 9
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "LIMITED",
+          "sensoryEvidenceCoverage": 35.8,
+          "scoreEvidenceCoverage": 35.8,
+          "componentEvidence": [
+            {
+              "flavorId": "sapphire-crown-blueberry-granola",
+              "percentage": 50,
+              "measuredFields": [
+                "strength",
+                "heatResistance"
+              ],
+              "measuredFieldCount": 2,
+              "fieldCoverage": 28.6
+            },
+            {
+              "flavorId": "sapphire-crown-go-bananas",
+              "percentage": 50,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 7.8
       },
       "explainability": {
         "positiveFactors": [
@@ -1530,11 +1834,53 @@
         "level": "MODERATE"
       },
       "predicted": {
-        "qualityScore": 7.8,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 59.2,
-        "compatibilityScore": 7.8,
-        "riskScore": 9
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "INSUFFICIENT",
+          "sensoryEvidenceCoverage": 23.6,
+          "scoreEvidenceCoverage": 23.6,
+          "componentEvidence": [
+            {
+              "flavorId": "hook-limon-laim",
+              "percentage": 40,
+              "measuredFields": [
+                "strength",
+                "acidity"
+              ],
+              "measuredFieldCount": 2,
+              "fieldCoverage": 28.6
+            },
+            {
+              "flavorId": "sarma-360-dzhin",
+              "percentage": 35,
+              "measuredFields": [
+                "strength"
+              ],
+              "measuredFieldCount": 1,
+              "fieldCoverage": 14.3
+            },
+            {
+              "flavorId": "sarma-360-gornaya-lavanda",
+              "percentage": 25,
+              "measuredFields": [
+                "strength",
+                "freshness"
+              ],
+              "measuredFieldCount": 2,
+              "fieldCoverage": 28.6
+            }
+          ],
+          "missingCriticalScoreDimensions": [
+            "componentQuality"
+          ],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Потенциал компонентов не рассчитан из-за отсутствующих измерений.",
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 7.8
       },
       "explainability": {
         "positiveFactors": [
@@ -1788,11 +2134,77 @@
         "level": "BALANCED"
       },
       "predicted": {
-        "qualityScore": 7.2,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 61,
-        "compatibilityScore": 8.1,
-        "riskScore": 9
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "LIMITED",
+          "sensoryEvidenceCoverage": 47.2,
+          "scoreEvidenceCoverage": 47.2,
+          "componentEvidence": [
+            {
+              "flavorId": "element-air-milky-mouse",
+              "percentage": 10,
+              "measuredFields": [
+                "strength",
+                "sweetness",
+                "juiciness"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            },
+            {
+              "flavorId": "smoke-angels-firestarter",
+              "percentage": 15,
+              "measuredFields": [
+                "strength",
+                "sweetness",
+                "freshness"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            },
+            {
+              "flavorId": "mattpear-ginger-feel",
+              "percentage": 15,
+              "measuredFields": [
+                "strength",
+                "sweetness",
+                "freshness"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            },
+            {
+              "flavorId": "chabacco-mix-grenadin-drops",
+              "percentage": 30,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness",
+                "freshness"
+              ],
+              "measuredFieldCount": 4,
+              "fieldCoverage": 57.1
+            },
+            {
+              "flavorId": "jam-granatovyi-sok",
+              "percentage": 30,
+              "measuredFields": [
+                "strength",
+                "sweetness",
+                "acidity"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 8.1
       },
       "explainability": {
         "positiveFactors": [
@@ -1992,10 +2404,41 @@
       },
       "predicted": {
         "qualityScore": 7.7,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 61.5,
-        "compatibilityScore": 7.9,
-        "riskScore": 8.5
+        "predictionReadiness": {
+          "status": "READY",
+          "sensoryEvidenceCoverage": 52.1,
+          "scoreEvidenceCoverage": 52.1,
+          "componentEvidence": [
+            {
+              "flavorId": "musthave-sour-berries",
+              "percentage": 35,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "acidity"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            },
+            {
+              "flavorId": "blackburn-tic-tac",
+              "percentage": 65,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness",
+                "freshness"
+              ],
+              "measuredFieldCount": 4,
+              "fieldCoverage": 57.1
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": []
+        },
+        "compatibilityScore": 7.9
       },
       "explainability": {
         "positiveFactors": [
@@ -2200,11 +2643,55 @@
         "level": "CLEAR"
       },
       "predicted": {
-        "qualityScore": 8.2,
-        "confidenceLabel": "Предварительная",
-        "dataQuality": 41.9,
-        "compatibilityScore": 8.7,
-        "riskScore": 10
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "LIMITED",
+          "sensoryEvidenceCoverage": 47.9,
+          "scoreEvidenceCoverage": 47.9,
+          "componentEvidence": [
+            {
+              "flavorId": "chabacco-moroznaya-myata",
+              "percentage": 15,
+              "measuredFields": [
+                "heatResistance",
+                "sweetness",
+                "freshness"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            },
+            {
+              "flavorId": "sapphire-crown-kiwi-fruit",
+              "percentage": 35,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness",
+                "acidity"
+              ],
+              "measuredFieldCount": 4,
+              "fieldCoverage": 57.1
+            },
+            {
+              "flavorId": "sarma-360-ogurechnyi-limonad",
+              "percentage": 50,
+              "measuredFields": [
+                "strength",
+                "acidity",
+                "freshness"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 8.7
       },
       "explainability": {
         "positiveFactors": [
@@ -2441,11 +2928,55 @@
         "level": "MODERATE"
       },
       "predicted": {
-        "qualityScore": 7.8,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 61.7,
-        "compatibilityScore": 8.6,
-        "riskScore": 9
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "LIMITED",
+          "sensoryEvidenceCoverage": 48.6,
+          "scoreEvidenceCoverage": 48.6,
+          "componentEvidence": [
+            {
+              "flavorId": "overdose-strawberry",
+              "percentage": 40,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness",
+                "freshness"
+              ],
+              "measuredFieldCount": 4,
+              "fieldCoverage": 57.1
+            },
+            {
+              "flavorId": "chabacco-mix-bananovyi-milksheik",
+              "percentage": 40,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            },
+            {
+              "flavorId": "sapphire-crown-mejumi",
+              "percentage": 20,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 8.6
       },
       "explainability": {
         "positiveFactors": [
@@ -2648,11 +3179,42 @@
         "level": "CLEAR"
       },
       "predicted": {
-        "qualityScore": 7.5,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 61.1,
-        "compatibilityScore": 7.8,
-        "riskScore": 8.5
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "LIMITED",
+          "sensoryEvidenceCoverage": 37.2,
+          "scoreEvidenceCoverage": 37.2,
+          "componentEvidence": [
+            {
+              "flavorId": "overdose-coffee",
+              "percentage": 60,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            },
+            {
+              "flavorId": "chabacco-mix-apelsin-slivki",
+              "percentage": 40,
+              "measuredFields": [
+                "strength",
+                "heatResistance"
+              ],
+              "measuredFieldCount": 2,
+              "fieldCoverage": 28.6
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 7.8
       },
       "explainability": {
         "positiveFactors": [
@@ -2801,11 +3363,42 @@
         "level": "CLEAR"
       },
       "predicted": {
-        "qualityScore": 7.4,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 58.9,
-        "compatibilityScore": 7.9,
-        "riskScore": 9
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "LIMITED",
+          "sensoryEvidenceCoverage": 35.4,
+          "scoreEvidenceCoverage": 35.4,
+          "componentEvidence": [
+            {
+              "flavorId": "husky-marzipan",
+              "percentage": 47.43,
+              "measuredFields": [
+                "strength",
+                "intensity",
+                "sweetness"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            },
+            {
+              "flavorId": "husky-caipirinha",
+              "percentage": 52.57,
+              "measuredFields": [
+                "strength",
+                "acidity"
+              ],
+              "measuredFieldCount": 2,
+              "fieldCoverage": 28.6
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 7.9
       },
       "explainability": {
         "positiveFactors": [
@@ -2958,11 +3551,42 @@
         "level": "CLEAR"
       },
       "predicted": {
-        "qualityScore": 8.1,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 59.9,
-        "compatibilityScore": 7.7,
-        "riskScore": 10
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "LIMITED",
+          "sensoryEvidenceCoverage": 34.3,
+          "scoreEvidenceCoverage": 34.3,
+          "componentEvidence": [
+            {
+              "flavorId": "blackburn-almond-pear",
+              "percentage": 60,
+              "measuredFields": [
+                "strength",
+                "heatResistance"
+              ],
+              "measuredFieldCount": 2,
+              "fieldCoverage": 28.6
+            },
+            {
+              "flavorId": "overdose-samarkand-melon",
+              "percentage": 40,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 7.7
       },
       "explainability": {
         "positiveFactors": [
@@ -3110,11 +3734,45 @@
         "level": "CLEAR"
       },
       "predicted": {
-        "qualityScore": 7.9,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 59.7,
-        "compatibilityScore": 7.6,
-        "riskScore": 9
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "LIMITED",
+          "sensoryEvidenceCoverage": 48.6,
+          "scoreEvidenceCoverage": 48.6,
+          "componentEvidence": [
+            {
+              "flavorId": "sapphire-crown-sunny-peach",
+              "percentage": 80,
+              "measuredFields": [
+                "strength",
+                "sweetness",
+                "acidity"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            },
+            {
+              "flavorId": "blackburn-green-tea",
+              "percentage": 20,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "intensity",
+                "sweetness",
+                "freshness"
+              ],
+              "measuredFieldCount": 5,
+              "fieldCoverage": 71.4
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 7.6
       },
       "explainability": {
         "positiveFactors": [
@@ -3281,11 +3939,55 @@
         "level": "CLEAR"
       },
       "predicted": {
-        "qualityScore": 7.6,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 60.7,
-        "compatibilityScore": 8.1,
-        "riskScore": 9.5
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "LIMITED",
+          "sensoryEvidenceCoverage": 37.2,
+          "scoreEvidenceCoverage": 37.2,
+          "componentEvidence": [
+            {
+              "flavorId": "sarma-360-light-shampanskoe",
+              "percentage": 50,
+              "measuredFields": [
+                "strength",
+                "sweetness"
+              ],
+              "measuredFieldCount": 2,
+              "fieldCoverage": 28.6
+            },
+            {
+              "flavorId": "sarma-360-persik",
+              "percentage": 35,
+              "measuredFields": [
+                "strength",
+                "sweetness"
+              ],
+              "measuredFieldCount": 2,
+              "fieldCoverage": 28.6
+            },
+            {
+              "flavorId": "musthave-sour-citrus",
+              "percentage": 15,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness",
+                "acidity",
+                "juiciness",
+                "freshness"
+              ],
+              "measuredFieldCount": 6,
+              "fieldCoverage": 85.7
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 8.1
       },
       "explainability": {
         "positiveFactors": [
@@ -3466,10 +4168,42 @@
       },
       "predicted": {
         "qualityScore": 7.7,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 61.6,
-        "compatibilityScore": 7.9,
-        "riskScore": 8
+        "predictionReadiness": {
+          "status": "READY",
+          "sensoryEvidenceCoverage": 62.9,
+          "scoreEvidenceCoverage": 62.9,
+          "componentEvidence": [
+            {
+              "flavorId": "blackburn-ice-baby",
+              "percentage": 70,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness",
+                "acidity",
+                "freshness"
+              ],
+              "measuredFieldCount": 5,
+              "fieldCoverage": 71.4
+            },
+            {
+              "flavorId": "musthave-sour-tropic",
+              "percentage": 30,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "acidity"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": []
+        },
+        "compatibilityScore": 7.9
       },
       "explainability": {
         "positiveFactors": [
@@ -3660,10 +4394,45 @@
       },
       "predicted": {
         "qualityScore": 7.9,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 62.3,
-        "compatibilityScore": 8,
-        "riskScore": 10
+        "predictionReadiness": {
+          "status": "READY",
+          "sensoryEvidenceCoverage": 80,
+          "scoreEvidenceCoverage": 80,
+          "componentEvidence": [
+            {
+              "flavorId": "blackburn-na-chille",
+              "percentage": 60,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "intensity",
+                "sweetness",
+                "acidity",
+                "juiciness"
+              ],
+              "measuredFieldCount": 6,
+              "fieldCoverage": 85.7
+            },
+            {
+              "flavorId": "musthave-blackberry",
+              "percentage": 40,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness",
+                "acidity",
+                "juiciness"
+              ],
+              "measuredFieldCount": 5,
+              "fieldCoverage": 71.4
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": []
+        },
+        "compatibilityScore": 8
       },
       "explainability": {
         "positiveFactors": [
@@ -3852,11 +4621,54 @@
         "level": "MODERATE"
       },
       "predicted": {
-        "qualityScore": 7.7,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 60.5,
-        "compatibilityScore": 8.9,
-        "riskScore": 10
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "LIMITED",
+          "sensoryEvidenceCoverage": 44.3,
+          "scoreEvidenceCoverage": 44.3,
+          "componentEvidence": [
+            {
+              "flavorId": "sapphire-crown-yuzu-honey",
+              "percentage": 30,
+              "measuredFields": [
+                "strength",
+                "sweetness",
+                "acidity"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            },
+            {
+              "flavorId": "brusko-medium-tsitrusovyi-chai",
+              "percentage": 40,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness",
+                "acidity"
+              ],
+              "measuredFieldCount": 4,
+              "fieldCoverage": 57.1
+            },
+            {
+              "flavorId": "jam-krasnaya-smorodina",
+              "percentage": 30,
+              "measuredFields": [
+                "strength",
+                "acidity"
+              ],
+              "measuredFieldCount": 2,
+              "fieldCoverage": 28.6
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 8.9
       },
       "explainability": {
         "positiveFactors": [
@@ -4086,11 +4898,54 @@
         "level": "MODERATE"
       },
       "predicted": {
-        "qualityScore": 8.2,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 59.9,
-        "compatibilityScore": 8.8,
-        "riskScore": 9.5
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "LIMITED",
+          "sensoryEvidenceCoverage": 40,
+          "scoreEvidenceCoverage": 40,
+          "componentEvidence": [
+            {
+              "flavorId": "nash-white-line-karamel-tsitrus",
+              "percentage": 20,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            },
+            {
+              "flavorId": "sapphire-crown-pumpkin-raf",
+              "percentage": 50,
+              "measuredFields": [
+                "strength",
+                "sweetness"
+              ],
+              "measuredFieldCount": 2,
+              "fieldCoverage": 28.6
+            },
+            {
+              "flavorId": "daily-hookah-slivochnyi-krem",
+              "percentage": 30,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "intensity",
+                "sweetness"
+              ],
+              "measuredFieldCount": 4,
+              "fieldCoverage": 57.1
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 8.8
       },
       "explainability": {
         "positiveFactors": [
@@ -4303,11 +5158,55 @@
         "level": "MODERATE"
       },
       "predicted": {
-        "qualityScore": 8.1,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 60,
-        "compatibilityScore": 8.1,
-        "riskScore": 9.5
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "LIMITED",
+          "sensoryEvidenceCoverage": 45.7,
+          "scoreEvidenceCoverage": 45.7,
+          "componentEvidence": [
+            {
+              "flavorId": "sapphire-crown-bitter-cherry",
+              "percentage": 40,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "intensity",
+                "sweetness"
+              ],
+              "measuredFieldCount": 4,
+              "fieldCoverage": 57.1
+            },
+            {
+              "flavorId": "hook-granatovyi",
+              "percentage": 20,
+              "measuredFields": [
+                "strength",
+                "sweetness",
+                "acidity",
+                "freshness"
+              ],
+              "measuredFieldCount": 4,
+              "fieldCoverage": 57.1
+            },
+            {
+              "flavorId": "sarma-classic-bananovoe-sufle",
+              "percentage": 40,
+              "measuredFields": [
+                "strength",
+                "sweetness"
+              ],
+              "measuredFieldCount": 2,
+              "fieldCoverage": 28.6
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 8.1
       },
       "explainability": {
         "positiveFactors": [
@@ -4559,11 +5458,66 @@
         "level": "BALANCED"
       },
       "predicted": {
-        "qualityScore": 8,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 61.3,
-        "compatibilityScore": 8.4,
-        "riskScore": 10
+        "qualityScore": null,
+        "predictionReadiness": {
+          "status": "LIMITED",
+          "sensoryEvidenceCoverage": 45.7,
+          "scoreEvidenceCoverage": 45.7,
+          "componentEvidence": [
+            {
+              "flavorId": "endorphin-napoleon",
+              "percentage": 20,
+              "measuredFields": [
+                "strength",
+                "sweetness"
+              ],
+              "measuredFieldCount": 2,
+              "fieldCoverage": 28.6
+            },
+            {
+              "flavorId": "endorphin-apple",
+              "percentage": 40,
+              "measuredFields": [
+                "strength",
+                "sweetness",
+                "acidity"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            },
+            {
+              "flavorId": "musthave-vanilla-cream",
+              "percentage": 20,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "intensity",
+                "sweetness"
+              ],
+              "measuredFieldCount": 4,
+              "fieldCoverage": 57.1
+            },
+            {
+              "flavorId": "musthave-maple-pecan",
+              "percentage": 20,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "intensity",
+                "sweetness"
+              ],
+              "measuredFieldCount": 4,
+              "fieldCoverage": 57.1
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": [
+            "Сенсорные данные покрывают только часть состава."
+          ]
+        },
+        "compatibilityScore": 8.4
       },
       "explainability": {
         "positiveFactors": [
@@ -4750,10 +5704,44 @@
       },
       "predicted": {
         "qualityScore": 7.9,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 64,
-        "compatibilityScore": 7.9,
-        "riskScore": 9
+        "predictionReadiness": {
+          "status": "READY",
+          "sensoryEvidenceCoverage": 77.1,
+          "scoreEvidenceCoverage": 77.1,
+          "componentEvidence": [
+            {
+              "flavorId": "sapphire-crown-dried-plum",
+              "percentage": 30,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness",
+                "acidity"
+              ],
+              "measuredFieldCount": 4,
+              "fieldCoverage": 57.1
+            },
+            {
+              "flavorId": "overdose-apple-juicy",
+              "percentage": 70,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness",
+                "acidity",
+                "juiciness",
+                "freshness"
+              ],
+              "measuredFieldCount": 6,
+              "fieldCoverage": 85.7
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": []
+        },
+        "compatibilityScore": 7.9
       },
       "explainability": {
         "positiveFactors": [
@@ -4946,10 +5934,53 @@
       },
       "predicted": {
         "qualityScore": 8.1,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 61.7,
-        "compatibilityScore": 8.3,
-        "riskScore": 10
+        "predictionReadiness": {
+          "status": "READY",
+          "sensoryEvidenceCoverage": 52.8,
+          "scoreEvidenceCoverage": 52.8,
+          "componentEvidence": [
+            {
+              "flavorId": "urban-soul-berry-marmalade",
+              "percentage": 30,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness"
+              ],
+              "measuredFieldCount": 3,
+              "fieldCoverage": 42.9
+            },
+            {
+              "flavorId": "blackburn-shock-raspberry",
+              "percentage": 40,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness",
+                "acidity"
+              ],
+              "measuredFieldCount": 4,
+              "fieldCoverage": 57.1
+            },
+            {
+              "flavorId": "overdose-jelly-grape",
+              "percentage": 30,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness",
+                "acidity"
+              ],
+              "measuredFieldCount": 4,
+              "fieldCoverage": 57.1
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": []
+        },
+        "compatibilityScore": 8.3
       },
       "explainability": {
         "positiveFactors": [
@@ -5141,10 +6172,42 @@
       },
       "predicted": {
         "qualityScore": 7.5,
-        "confidenceLabel": "Средняя",
-        "dataQuality": 59.7,
-        "compatibilityScore": 8.2,
-        "riskScore": 10
+        "predictionReadiness": {
+          "status": "READY",
+          "sensoryEvidenceCoverage": 57.1,
+          "scoreEvidenceCoverage": 57.1,
+          "componentEvidence": [
+            {
+              "flavorId": "element-earth-wildberry-mors",
+              "percentage": 50,
+              "measuredFields": [
+                "strength",
+                "sweetness",
+                "acidity",
+                "juiciness"
+              ],
+              "measuredFieldCount": 4,
+              "fieldCoverage": 57.1
+            },
+            {
+              "flavorId": "deus-skittles",
+              "percentage": 50,
+              "measuredFields": [
+                "strength",
+                "heatResistance",
+                "sweetness",
+                "acidity"
+              ],
+              "measuredFieldCount": 4,
+              "fieldCoverage": 57.1
+            }
+          ],
+          "missingCriticalScoreDimensions": [],
+          "hasMeaningfulSensoryEvidence": true,
+          "verifiedSmokeAvailable": false,
+          "reasons": []
+        },
+        "compatibilityScore": 8.2
       },
       "explainability": {
         "positiveFactors": [

@@ -7,6 +7,8 @@ import type { MixRecommendation, MixRecommendationResult, SuggestedMixVariant } 
 import { calculateMixProfile } from "../mix-profile";
 import { toKnowledgeCategory } from "../flavor-knowledge";
 import type { FlavorNoteCategory } from "../flavor-knowledge";
+import { PUBLIC_TECHNICAL_LABELS, humanizeCategoryRelation } from "../public-presentation-labels";
+import { calculatePredictionReadiness } from "../prediction-readiness";
 
 // ADR-024: which two categories fired a given category.* rule, in knowledge-space (CREAMY/BEVERAGE,
 // not the legacy DAIRY/DRINK names createKnowledgeCategoryRule was actually called with) - built once
@@ -44,7 +46,7 @@ const normalizeTag = (value: string): string => value.trim().replace(/([a-zа-я
 export const localizeTasteTag = (value: string): string => {
   const normalized = normalizeTag(value);
   if (!normalized) return "другая вкусовая нота";
-  return TASTE_LABELS[normalized] ?? normalized;
+  return PUBLIC_TECHNICAL_LABELS[normalized as keyof typeof PUBLIC_TECHNICAL_LABELS] ?? TASTE_LABELS[normalized] ?? normalized;
 };
 
 const formatList = (items: readonly string[]): string => {
@@ -93,6 +95,14 @@ export const actualMixRoleFor = (component: PreparedCanonicalComponent, dominant
   return cooling ? "ACCENT_COOLING" : "ACCENT";
 };
 const actualRoleLabel = (role: ActualMixRole): string => ({ DOMINANT_BASE: "основа и доминирующий компонент", DOMINANT: "доминирующий компонент", BASE: "основа", SUPPORT: "поддержка", SUPPORT_COOLING: "поддержка и холодящий компонент", ACCENT: "акцент", ACCENT_COOLING: "холодящий акцент" }[role]);
+const publicActualRoleLabel = (component: PreparedCanonicalComponent, dominantId: string): string => {
+  if (component.effectiveProfile.parameters.intensity.value === null) {
+    if (component.percentage >= 45) return "по доле смеси задаёт основу";
+    if (String(component.flavorId) === dominantId) return "по доле смеси выделяется";
+    return component.percentage >= 20 ? "по доле смеси поддерживает профиль" : "по доле смеси работает как акцент";
+  }
+  return actualRoleLabel(actualMixRoleFor(component, dominantId));
+};
 const recommendedRoleLabel = (role: PreparedCanonicalComponent["effectiveProfile"]["recommendedRole"]): string | null => role ? ({ BASE: "основа", SUPPORT: "поддержка", ACCENT: "акцент", COOLING: "холодящий компонент", ACIDIFIER: "кислотный акцент", SWEETENER: "подсластитель", TEXTURE: "текстура", SPICE: "пряный акцент" }[role]) : null;
 
 const recommendationKey = (item: MixRecommendation): string => {
@@ -154,7 +164,7 @@ const toPublicRecommendation = (item: MixRecommendation, mix: EffectivePresentat
     action: item.action, reasons: [...new Map(item.reasons.map(reason => [reason.code, { code: reason.code }])).values()],
     directionLabels: effectiveDirectionLabels(mix),
     rangeLabel: actionHasRange(item) ? (component?.profileStatus === "CONFIRMED" ? "Рабочий диапазон" : "Предварительный диапазон") : null,
-    proposedActualMixRole: proposed && component ? actualRoleLabel(actualMixRoleFor(component, dominantId)) : null,
+    proposedActualMixRole: proposed && component ? publicActualRoleLabel(component, dominantId) : null,
   };
 };
 
@@ -234,6 +244,12 @@ export const buildMixResultPresentation = (input: {
   readonly preparation: { readonly bowlType: string; readonly coalCount: number; readonly warmupMinutes: number };
 }) => {
   const { analysis, legacyAnalysis, preparation } = input;
+  const predictionReadiness = calculatePredictionReadiness({
+    canonicalMix: analysis.canonicalMix,
+    componentQuality: analysis.scoring.scoreBreakdown.componentQuality,
+    balance: analysis.scoring.scoreBreakdown.balance,
+    verifiedSmokeAvailable: analysis.scoring.isVerifiedSmokeScore,
+  });
   const resolutions = analysis.canonicalMix.componentResolutions;
   const counts = { RESOLVED: 0, MANUFACTURER_ONLY: 0, AMBIGUOUS: 0, UNRESOLVED: 0 };
   for (const item of resolutions) counts[item.resolution.status] += 1;
@@ -261,14 +277,15 @@ export const buildMixResultPresentation = (input: {
   if (!analysis.scoring.isVerifiedSmokeScore) qualityReasons.push("Оценка реального покура ещё не добавлена.");
   if (!qualityReasons.length) qualityReasons.push("Идентичность и профильные данные компонентов подтверждены.");
 
-  const heatRisk = buildHeatRisk(legacyAnalysis, preparation, analysis.mixProfile.profile.heatResistance);
+  const hasHeatEvidence = analysis.canonicalMix.components.every(component => component.effectiveProfile.parameters.heatResistance.value !== null);
+  const heatRisk = hasHeatEvidence ? buildHeatRisk(legacyAnalysis, preparation, analysis.mixProfile.profile.heatResistance) : null;
   const risks = [...(heatRisk ? [heatRisk] : []), ...compatibilityPublicRisks(analysis)];
   const profileNotes = meaningfulProfileNotes(analysis);
   const dominantNotes = profileNotes.dominant;
   const backgroundNotes = profileNotes.background;
   const profileTitle = dominantNotes.slice(0, 2).map((note, index) => index === 0 ? note[0].toLocaleUpperCase("ru-RU") + note.slice(1) : note).join(" + ");
   const profileSummary = `${profileTitle}. ${analysis.mixProfile.dominantComponent.brandName} ${analysis.mixProfile.dominantComponent.flavorName} задаёт ${analysis.mixProfile.dominanceLevel === "CLEAR" ? "ясную основу" : "заметную основу"} смеси.`;
-  const strengths = [...new Map(analysis.compatibility.positiveFactors.map(item => [item.category, item.description])).values()].slice(0, 3);
+  const strengths = [...new Map(analysis.compatibility.positiveFactors.map(item => [item.category, item.ruleId.startsWith("category.") ? humanizeCategoryRelation(item.description.replace("Category relation ", "")) : item.description])).values()].slice(0, 3);
   // ADR-024: independent of `strengths` above on purpose - that list dedupes by AnalysisCategory (all
   // category.* rules share the single "NOTE_COMPATIBILITY" bucket), so a mix firing 2+ category rules
   // would silently lose all but one before reaching this point. Scan the full, undeduped positiveFactors
@@ -294,7 +311,9 @@ export const buildMixResultPresentation = (input: {
   const proposalChange = acceptedProposal?.variant.components.find(component => component.suggestedPercentage < component.currentPercentage)
     ?? acceptedProposal?.variant.components.find(component => component.currentPercentage !== component.suggestedPercentage);
   const proposalComponent = proposalChange ? analysis.canonicalMix.components.find(component => String(component.flavorId) === proposalChange.componentId) : undefined;
-  const summary = mainRisk
+  const summary = predictionReadiness.status === "INSUFFICIENT"
+    ? `Недостаточно данных для оценки качества. ${analysis.compatibility.compatibilityScore >= 6 ? "По известным вкусовым направлениям сочетание выглядит совместимым." : "Совместимость вкусовых направлений рассчитана отдельно."}`
+    : mainRisk
     ? `${hasPreliminary ? "Предварительно рабочее" : "Рабочее"} сочетание, но ${mainRisk.reason}`
     : `${hasPreliminary ? "Предварительно " : ""}сочетание выглядит рабочим; значимых вкусовых рисков не выявлено.`;
   const changedProposalComponents = acceptedProposal?.variant.components.filter(component => component.currentPercentage !== component.suggestedPercentage) ?? [];
@@ -313,11 +332,22 @@ export const buildMixResultPresentation = (input: {
 
   return {
     summary: { text: summary, primaryAction },
-    predictedScore: { title: displayReliability === "LOW" ? "Ориентировочная прогнозная оценка" : "Прогнозная оценка", value: analysis.scoring.predictedQualityScore, description: "Оценка рассчитана на основе состава, пропорций и известных характеристик табаков." },
+    predictedScore: predictionReadiness.status === "READY"
+      ? { title: "Прогнозная оценка", value: analysis.scoring.predictedQualityScore as number | null, description: "Оценка рассчитана на основе состава, пропорций и измеренных характеристик табаков." }
+      : { title: predictionReadiness.status === "LIMITED" ? "Осторожный прогноз качества" : "Прогноз качества", value: null as number | null, description: "Данных о сенсорных характеристиках пока недостаточно для публичной числовой оценки качества." },
+    compatibility: { title: "Совместимость вкусовых направлений", value: analysis.compatibility.compatibilityScore, description: "Это отдельная оценка того, как известные вкусовые направления сочетаются между собой." },
     verifiedSmoke: analysis.scoring.verifiedSmokeScore === null ? { title: "Реальный покур", value: null, description: "Реальный покур ещё не добавлен." } : { title: "Оценка после покура", value: analysis.scoring.verifiedSmokeScore, description: "Практическая оценка хранится отдельно от прогноза." },
-    breakdown: (Object.keys(breakdownLabels) as BreakdownKey[]).map(key => ({ key, label: breakdownLabels[key], value: analysis.scoring.scoreBreakdown[key], explanation: scoreExplanation(key, analysis.scoring.scoreBreakdown[key], key === "risks" ? groupCompatibilityRisks(analysis.compatibility).length : 0) })),
-    confidence: { label: analysis.scoring.predictionConfidence.finalConfidenceLabel, score: analysis.scoring.predictionConfidence.score, summary: `Уверенность ${analysis.scoring.predictionConfidence.finalConfidenceLabel.toLocaleLowerCase("ru-RU")}: ${confidenceReasons.slice(0, 4).join(" ")}`, reasons: confidenceReasons.slice(0, 4) },
+    breakdown: (Object.keys(breakdownLabels) as BreakdownKey[])
+      .filter(key => predictionReadiness.status !== "INSUFFICIENT" || !["risks", "confirmations"].includes(key))
+      .map(key => ({ key, label: key === "compatibility" ? "Совместимость вкусовых направлений" : breakdownLabels[key], value: analysis.scoring.scoreBreakdown[key], explanation: scoreExplanation(key, analysis.scoring.scoreBreakdown[key], key === "risks" ? groupCompatibilityRisks(analysis.compatibility).length : 0) })),
+    confidence: { label: analysis.scoring.predictionConfidence.finalConfidenceLabel, score: analysis.scoring.predictionConfidence.score, summary: `Внутренняя диагностическая уверенность: ${confidenceReasons.slice(0, 4).join(" ")}`, reasons: confidenceReasons.slice(0, 4) },
     dataQuality: { value: analysis.scoring.dataQuality, reasons: qualityReasons.slice(0, 3) },
+    evidence: {
+      recognition: { resolved, total, summary: resolved === total ? `Точно распознано ${resolved} из ${total} компонентов.` : `Точно распознано ${resolved} из ${total} компонентов.` },
+      sensory: { readiness: predictionReadiness.status, coverage: predictionReadiness.sensoryEvidenceCoverage, summary: predictionReadiness.status === "READY" ? "Сенсорных характеристик достаточно для числового прогноза." : predictionReadiness.status === "LIMITED" ? "Сенсорные характеристики известны только частично." : "Недостаточно измеренных характеристик для оценки качества." },
+      confirmations: { proportionsConfirmed: analysis.canonicalMix.components.every(component => component.proportionConfirmed), independentEvidenceCount: analysis.canonicalMix.components.reduce((sum, component) => sum + component.independentEvidenceCount, 0), verifiedSmokeAvailable: analysis.scoring.isVerifiedSmokeScore },
+      knownRisks: { count: risks.length, summary: risks.length ? "Есть известные риски, описанные ниже." : predictionReadiness.status === "READY" ? "По доступным данным явные риски не выявлены." : "По доступным данным явные риски не выявлены, но профиль изучен не полностью." },
+    },
     resolution: {
       total, resolved, manufacturerOnly: counts.MANUFACTURER_ONLY, ambiguous: counts.AMBIGUOUS, unresolved: counts.UNRESOLVED,
       summary: resolved === total ? `Все компоненты распознаны точно: ${resolved} из ${total}.` : `Точно распознано ${resolved} из ${total}; требуют уточнения — ${uncertain}.`,
@@ -331,7 +361,7 @@ export const buildMixResultPresentation = (input: {
         status: statusLabel(item.resolution.status, effective?.catalogStatus === "FOUND"),
         profileStatus: profileStatusLabel(effective?.profileStatus ?? "MISSING"),
         profileReliability: reliability === "HIGH" ? "Высокая надёжность профиля" : reliability === "MEDIUM" ? "Средняя надёжность профиля" : "Низкая надёжность профиля",
-        actualMixRole: effective ? actualRoleLabel(actualMixRoleFor(effective, dominantId)) : "роль не определена",
+        actualMixRole: effective ? publicActualRoleLabel(effective, dominantId) : "роль не определена",
         recommendedCatalogRole: effective?.profileStatus === "CONFIRMED" ? recommendedRoleLabel(effective.effectiveProfile.recommendedRole) : null,
       }; }),
     },
@@ -358,7 +388,9 @@ export const buildMixResultPresentation = (input: {
       proposed: acceptedProposal.proposed,
       changes: acceptedProposal.variant.components,
     } : undefined,
-    preparation: { sourceLabel: "Параметры исходного рецепта", recommendations: [...new Set(legacyAnalysis.heatRecommendations)] },
+    preparation: hasHeatEvidence
+      ? { sourceLabel: "Параметры исходного рецепта", evidenceLabel: "Рекомендация использует известные данные о жаростойкости.", recommendations: [...new Set(legacyAnalysis.heatRecommendations)] }
+      : { sourceLabel: "Параметры, указанные пользователем", evidenceLabel: "Недостаточно данных о жаростойкости для уверенной рекомендации по жару.", recommendations: ["Базовый режим: следите за горечью и корректируйте жар постепенно."] },
   } as const;
 };
 

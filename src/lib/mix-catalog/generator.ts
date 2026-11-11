@@ -66,7 +66,7 @@ const itemFromAnalysis = (analysis: VerifiedRecipeAnalysis): MixCatalogItem => {
       juiciness: analysis.flavorSummary.juiciness,
     },
     dominance: { canonicalProductId: analysis.flavorSummary.dominantComponentId, influenceShare: analysis.flavorSummary.dominantInfluenceShare, level: analysis.flavorSummary.dominanceLevel },
-    predicted: { qualityScore: analysis.predicted.qualityScore, confidenceLabel: analysis.analysis.predictionConfidenceLabel, dataQuality: analysis.analysis.dataQuality, compatibilityScore: analysis.predicted.compatibilityScore, riskScore: analysis.predicted.riskScore },
+    predicted: { qualityScore: analysis.predicted.publicQualityScore, predictionReadiness: analysis.predicted.predictionReadiness, compatibilityScore: analysis.predicted.compatibilityScore },
     explainability: {
       positiveFactors: analysis.explainability.positiveFactors.map(factor => ({ ...factor, ...publicCategoryPair(factor.title, factor.description) })),
       risks: analysis.explainability.risks,

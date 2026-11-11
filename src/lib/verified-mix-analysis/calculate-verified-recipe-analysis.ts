@@ -3,6 +3,7 @@ import { toKnowledgeCategory } from "../flavor-knowledge/note-taxonomy";
 import type { FlavorNoteCategory } from "../flavor-knowledge";
 import { FLAVOR_PROFILE_FIELDS } from "../flavors/types";
 import { calculateMixAnalysis } from "../mix-analysis";
+import { calculatePredictionReadiness } from "../prediction-readiness";
 import type { MixAnalysisResult } from "../mix-analysis";
 import { mapVerifiedMixRecipeToPublic } from "../verified-mix-recipe";
 import type { VerifiedMixRecipe } from "../verified-mix-recipe";
@@ -25,7 +26,14 @@ const recipeSmokeScore = (recipe: VerifiedMixRecipe): number | null => {
   return score !== null && Number.isFinite(score) && score >= 0 && score <= 10 ? score : null;
 };
 
-const publicAnalysis = (analysis: MixAnalysisResult): PublicVerifiedRecipeAnalysis => ({
+const publicAnalysis = (analysis: MixAnalysisResult): PublicVerifiedRecipeAnalysis => {
+  const predictionReadiness = calculatePredictionReadiness({
+    canonicalMix: analysis.canonicalMix,
+    componentQuality: analysis.scoring.scoreBreakdown.componentQuality,
+    balance: analysis.scoring.scoreBreakdown.balance,
+    verifiedSmokeAvailable: analysis.scoring.isVerifiedSmokeScore,
+  });
+  return ({
   mixProfile: analysis.mixProfile,
   compatibility: analysis.compatibility,
   recommendations: analysis.recommendations,
@@ -34,6 +42,8 @@ const publicAnalysis = (analysis: MixAnalysisResult): PublicVerifiedRecipeAnalys
   predictionConfidenceLabel: analysis.scoring.predictionConfidence.finalConfidenceLabel,
   dataQuality: analysis.scoring.dataQuality,
   riskScore: analysis.scoring.scoreBreakdown.risks,
+  predictionReadiness,
+  publicQualityScore: predictionReadiness.status === "READY" ? analysis.scoring.predictedQualityScore : null,
   proposalComparison: analysis.proposalComparison ? {
     accepted: analysis.proposalComparison.accepted,
     targetRiskReduced: analysis.proposalComparison.targetRiskReduced,
@@ -45,7 +55,8 @@ const publicAnalysis = (analysis: MixAnalysisResult): PublicVerifiedRecipeAnalys
     compatibility: analysis.compatibility.metadata.calculationVersion,
     recommendation: analysis.recommendations.version,
   },
-});
+  });
+};
 
 const flavorSummary = (analysis: MixAnalysisResult): VerifiedRecipeFlavorSummary => ({
   sweetness: analysis.mixProfile.profile.sweetness,
@@ -124,16 +135,19 @@ export const calculateVerifiedRecipeAnalysis = (recipe: VerifiedMixRecipe): Veri
   const components = buildCanonicalMixInputFromVerifiedRecipe(recipe);
   const analysis = calculateMixAnalysis({ components, verifiedSmokeScore: recipeSmokeScore(recipe) });
   const publicRecipe = mapVerifiedMixRecipeToPublic(recipe);
+  const publicResult = publicAnalysis(analysis);
   return {
     recipeId: recipe.recipeId,
     recipe: publicRecipe,
-    analysis: publicAnalysis(analysis),
+    analysis: publicResult,
     flavorSummary: flavorSummary(analysis),
     components: contributionFor(analysis, recipe),
     coverage: coverageFor(analysis, components),
     explainability: explainabilityFor(analysis),
     predicted: {
       qualityScore: analysis.scoring.predictedQualityScore,
+      publicQualityScore: publicResult.publicQualityScore,
+      predictionReadiness: publicResult.predictionReadiness,
       confidenceScore: analysis.scoring.predictionConfidence.score,
       compatibilityScore: analysis.compatibility.compatibilityScore,
       riskScore: analysis.scoring.scoreBreakdown.risks,

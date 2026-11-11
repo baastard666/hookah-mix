@@ -25,7 +25,7 @@ const main = async (): Promise<void> => {
   assert.equal(new Set(snapshot.items.map(item => item.recipeId)).size, snapshot.items.length, "recipeId должны быть уникальны.");
   assert.equal(new Set(snapshot.items.map(item => item.slug)).size, snapshot.items.length, "slug должны быть уникальны.");
   assert.deepEqual(privateTokens.filter(token => serialized.includes(token)), [], "Snapshot раскрыл private/internal provenance.");
-  snapshot.items.forEach(item => { assert.ok(Number.isFinite(item.predicted.qualityScore)); assert.ok(Math.abs(item.components.reduce((sum, component) => sum + component.percentage, 0) - 100) <= 0.0001); });
+  snapshot.items.forEach(item => { assert.ok(item.predicted.qualityScore === null || Number.isFinite(item.predicted.qualityScore)); assert.ok(Math.abs(item.components.reduce((sum, component) => sum + component.percentage, 0) - 100) <= 0.0001); });
   const target = path.resolve("src/data/verified-mix-catalog.generated.json");
   await mkdir(path.dirname(target), { recursive: true }); await writeFile(target, serialized, "utf8");
   const after = await hash(workbook); const sizeAfter = (await stat(workbook)).size;

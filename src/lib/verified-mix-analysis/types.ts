@@ -2,6 +2,7 @@ import type { FlavorProfileField } from "../flavors/types";
 import type { MixAnalysisResult } from "../mix-analysis";
 import type { FlavorNoteCategory } from "../flavor-knowledge";
 import type { PublicVerifiedMixRecipe, VerifiedMixRecipe } from "../verified-mix-recipe";
+import type { PredictionReadiness } from "../prediction-readiness";
 
 export type VerifiedRecipeComponentInput = {
   readonly recipe: VerifiedMixRecipe;
@@ -75,6 +76,9 @@ export type PublicVerifiedRecipeAnalysis = {
   readonly predictionConfidenceLabel: MixAnalysisResult["summary"]["confidenceLabel"];
   readonly dataQuality: number;
   readonly riskScore: number;
+  readonly predictionReadiness: PredictionReadiness;
+  /** Public quality is deliberately nullable; the internal diagnostic score remains above for audits. */
+  readonly publicQualityScore: number | null;
   readonly proposalComparison: {
     readonly accepted: boolean;
     readonly targetRiskReduced: boolean;
@@ -98,6 +102,8 @@ export type VerifiedRecipeAnalysis = {
   readonly explainability: VerifiedRecipeExplainability;
   readonly predicted: {
     readonly qualityScore: number;
+    readonly publicQualityScore: number | null;
+    readonly predictionReadiness: PredictionReadiness;
     readonly confidenceScore: number;
     readonly compatibilityScore: number;
     readonly riskScore: number;
